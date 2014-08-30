@@ -79,15 +79,6 @@
   [widget doc schema]
   (set-opts widget schema doc {:class "form-control"}))
 
-#_(defn- group-item [selections doc widget id multi? [type {:keys [key] :as opts} & body]]
-  (letfn [(handle-click! []
-            (if (= :multiselect widget)
-              (swap! selections update-in [key] not)
-              (reset! selections {key true}))                                     
-            (set-value! doc id (->> @selections (filter second) (map first))))]    
-   ^{:key key}    
-   [type (merge {:class (if (key @selections) "active") :on-click handle-click!} opts) body]))
-
 (defn- group-item [selections doc widget id multi? [type {:keys [key] :as opts} & body]]
   (letfn [(handle-click! []
            (if multi?
@@ -132,6 +123,4 @@
                      (if (fn? widget) [widget] widget))
                    node))
                form)]
-    (println "binding")
     (fn [] form)))
-
