@@ -125,11 +125,11 @@
                        selection-items)]
     (into [type opts] selectors)))
 
-(defmethod init-widget :singleselect
+(defmethod init-widget :single-select
   [widget doc schema]
   (selection-group widget doc schema false))
 
-(defmethod init-widget :multiselect
+(defmethod init-widget :multi-select
   [widget doc schema]
   (selection-group widget doc schema true))
 
@@ -153,6 +153,5 @@
                    (let [widget (init-widget node doc schema)]
                      (if (fn? widget) [widget] widget))
                    node))
-               form)]
-    (println "binding")
+               form)]    
     (fn [] form)))
