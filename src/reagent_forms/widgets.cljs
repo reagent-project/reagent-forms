@@ -45,10 +45,14 @@
 (defmethod bind :textarea [widget id doc]
   (bind-input widget id doc))
 
+(defmethod bind :checkbox [widget id doc]
+  {:value (get-value doc id)
+   :on-change #(set-value! doc id (.-checked (.-target %)))})
+
 (defmethod bind :default [_ _ _])
 
 (defn set-opts
-  [[type {:keys [id widget] :as opts} & body] schema doc & [default-opts]]  
+  [[type {:keys [id widget] :as opts} & body] doc schema & [default-opts]]  
   (into
    [type
     (merge default-opts (id schema) (bind widget id doc) opts)]
@@ -61,23 +65,39 @@
 
 (defmethod init-widget :text
   [widget doc schema]
-  (set-opts widget schema doc {:type :text :class "form-control"}))
+  (set-opts widget doc schema {:type :text :class "form-control"}))
 
 (defmethod init-widget :numeric
   [widget doc schema]
-  (set-opts widget schema doc {:type :text :class "form-control"}))
+  (set-opts widget doc schema {:type :text :class "form-control"}))
 
 (defmethod init-widget :password
   [widget doc schema]
-  (set-opts widget schema doc {:type :password :class "form-control"}))
+  (set-opts widget doc schema {:type :password :class "form-control"}))
 
 (defmethod init-widget :email
   [widget doc schema]
-  (set-opts widget schema doc {:type :email :class "form-control"}))
+  (set-opts widget doc schema {:type :email :class "form-control"}))
 
 (defmethod init-widget :textarea
   [widget doc schema]
-  (set-opts widget schema doc {:class "form-control"}))
+  (set-opts widget doc schema {:class "form-control"}))
+
+(defmethod init-widget :checkbox
+  [widget doc schema]
+  (set-opts widget doc schema {:type :checkbox :class "form-control"}))
+
+(defmethod init-widget :radio
+  [[type {:keys [id widget value] :as opts} & body] doc schema]    
+  (into
+    [type
+     (merge (id schema)
+            {:type :radio
+             :class "form-control"
+             :on-change #(set-value! doc id value)}
+            opts)]
+     body))
+  
 
 (defn- group-item [selections doc widget id multi? [type {:keys [key] :as opts} & body]]
   (letfn [(handle-click! []
@@ -86,21 +106,24 @@
                (swap! selections update-in [key] not)
                (set-value! doc id (->> @selections (filter second) (map first))))
              (do
-               (reset! selections {key true})
-               (set-value! doc id key))))]
-    (fn []            
+               (reset! selections {key (not (key @selections))})                              
+               (set-value! doc id (when (key @selections) key)))))] 
+    
+    (fn []               
       [type (merge {:class (if (key @selections) "active")
                     :on-click handle-click!} opts) body])))
 
-(defn- mk-selections [selectors]
-  (->> selectors (map (fn [[_ {:keys [key]}]] [key false])) (into {}) atom))
+(defn- mk-selections [selectors doc-values]
+  (->> selectors
+       (map (fn [[_ {:keys [key]}]] [key (boolean (some #{key} doc-values))]))
+       (into {}) atom))
 
 (defn selection-group
   [[type {:keys [widget id] :as opts} & selection-items] doc schema multi?]
-  (let [selections (mk-selections selection-items)
+  (let [selections (mk-selections selection-items (get-value doc id))
         selectors (map (fn [item] [(group-item selections doc widget id multi? item)])
                        selection-items)]
-    [type opts (doall selectors)]))
+    (into [type opts] selectors)))
 
 (defmethod init-widget :singleselect
   [widget doc schema]
@@ -109,6 +132,14 @@
 (defmethod init-widget :multiselect
   [widget doc schema]
   (selection-group widget doc schema true))
+
+(defmethod init-widget :list
+  [[type {:keys [widget id] :as opts} & options] doc schema]
+  (let [selection (atom (or
+                         (get-value doc id)
+                         (get-in (first options) [1 :key])))]    
+    (fn []      
+      [type (merge opts {:on-change #(set-value! doc id (value-of %))}) options])))
 
 (defn widget? [node]
   (and (coll? node)
@@ -123,4 +154,5 @@
                      (if (fn? widget) [widget] widget))
                    node))
                form)]
+    (println "binding")
     (fn [] form)))
