@@ -87,6 +87,28 @@ Once a form template is created it can be bound to a document using the `bind-wi
 (reagent/render-component [form] (.getElementById js/document "container"))
 ```
 
+## Adding events
+
+Zero or more events can be passed in to the `bind-widgets` function. Events are triggered whenever the document is updated. The events are executed in order they are listed, and each following event sees that document modified by its predecessor. The event must take 3 parameters, which are `id`, `value`, and `document`. The event can either return an updated document or `nil`, when `nil` is returned then the state of the document is unmodified.
+
+
+The following is an example of an event to calculate the value of the `:bmi` key when the `:weight` and `:height` keys are populated:
+
+```clojure
+[w/bind-widgets
+  form-template
+  doc
+  (fn [id value {:keys [weight height] :as doc}]
+    (when (and (some #{id} [:height :weight]) weight height)
+      (assoc-in doc [:bmi] (/ weight (* height height)))))]
+```
+
+## Adding custom widgets
+
+Custom Widgets can be added by implementing the `reagent-forms.widgets/init-widget` multimethod. The method must
+take two parameters, where the first parameter is the widget component and the second is the options.
+
+By default the options will contain the `doc` key containing the document atom and the `save!` key contining the function that should be used to update the document.
 
 ## License
 
