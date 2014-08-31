@@ -52,17 +52,19 @@
 
 (defmethod init-widget :input-widget
   [[_ {:keys [widget]} :as component] opts]
-  (set-attrs component opts {:type widget :class "form-control"}))
+  (fn []
+    (set-attrs component opts {:type widget :class "form-control"})))
 
 (defmethod init-widget :checkbox
-  [[_ {:keys [widget id]} :as component] {:keys [get] :as opts}]
+  [[_ {:keys [id widget]} :as component] {:keys [get] :as opts}]
   (let [state (atom (get id))]
     (fn []
       (set-attrs component (assoc opts :checked state) {:type widget :class "form-control"}))))
 
 (defmethod init-widget :numeric
   [component opts]
-  (set-attrs component opts {:type :text :class "form-control"}))
+  (fn []
+    (set-attrs component opts {:type :text :class "form-control"})))
 
 (defmethod init-widget :radio
   [[type {:keys [widget id value] :as attrs} & body] {:keys [get save!]}]    
