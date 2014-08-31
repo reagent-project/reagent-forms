@@ -1,6 +1,9 @@
-(defproject reagent-forms "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject reagent-forms "0.1.0"
+  :description "data binding library for Reagent"
+  :url "https://github.com/yogthos/reagent-forms"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.6.0"]])
+  :clojurescript? true
+  :dependencies [[org.clojure/clojure "1.6.0"]
+                 [org.clojure/clojurescript "0.0-2280"]
+                 [reagent "0.4.2"]])
