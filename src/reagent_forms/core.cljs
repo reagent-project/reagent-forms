@@ -67,7 +67,6 @@
     (fn []
       (set-attrs component (assoc opts :checked state) {:type field :class "form-control"}))))
 
-
 (defmethod init-field :alert
   [[type {:keys [id event] :as attrs} & body] {:keys [get save!] :as opts}]
   (let [close-button
@@ -77,8 +76,9 @@
            :on-click #(save! id nil)}
          "X"]]
     (fn []
-      (if (and event (event (get id)))
-        (into [type (dissoc attrs event)] (cons close-button body))
+      (if event
+        (when (event (get id))
+          (into [type (dissoc attrs event)] (cons close-button body)))
         (if-let [message (not-empty (get id))]
           [type attrs close-button message])))))
 
@@ -138,7 +138,7 @@
   [[type {:keys [field id] :as attrs} & options] {:keys [get save!]}]
   (let [selection (atom (or
                          (get id)
-                         (get-in (first options) [1 :key])))]    
+                         (get-in (first options) [1 :key])))]
     (save! id @selection)
     (fn []
       [type (merge attrs {:on-change #(save! id (value-of %))}) options])))
