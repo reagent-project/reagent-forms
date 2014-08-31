@@ -83,8 +83,8 @@
           [type attrs close-button message])))))
 
 (defmethod init-field :radio
-  [[type {:keys [field id value] :as attrs} & body] {:keys [get save!]}]    
-  (let [state (atom (= value (get id)))]    
+  [[type {:keys [field id value] :as attrs} & body] {:keys [get save!]}]
+  (let [state (atom (= value (get id)))]
     (fn []
       (into
         [type
@@ -98,17 +98,17 @@
                 attrs)]
          body))))
 
-(defn- group-item [[type {:keys [key] :as attrs} & body] {:keys [save! multi-select]} selections field id]  
+(defn- group-item [[type {:keys [key] :as attrs} & body] {:keys [save! multi-select]} selections field id]
   (letfn [(handle-click! []
            (if multi-select
              (do
                (swap! selections update-in [key] not)
                (save! id (->> @selections (filter second) (map first))))
-             (let [value (key @selections)]               
-               (reset! selections {key (if value (not value) true)})               
-               (save! id (when (key @selections) key)))))] 
-    
-    (fn []               
+             (let [value (key @selections)]
+               (reset! selections {key (if value (not value) true)})
+               (save! id (when (key @selections) key)))))]
+
+    (fn []
       [type (merge {:class (if (key @selections) "active")
                     :on-click handle-click!} attrs) body])))
 
@@ -138,8 +138,10 @@
   [[type {:keys [field id] :as attrs} & options] {:keys [get save!]}]
   (let [selection (atom (or
                          (get id)
-                         (get-in (first options) [1 :key])))]    
-    (fn []      
+                         (get-in (first options) [1 :key])))]
+    (println "Selection:" @selection)
+    (save! id @selection)
+    (fn []
       [type (merge attrs {:on-change #(save! id (value-of %))}) options])))
 
 (defn field? [node]
@@ -147,7 +149,7 @@
        (map? (second node))
        (contains? (second node) :field)))
 
-(defn bind-fields [form doc & events]  
+(defn bind-fields [form doc & events]
   (let [opts {:get #(get @doc %) :save! (mk-save-fn doc events)}
         form (clojure.walk/prewalk
                (fn [node]
@@ -155,5 +157,5 @@
                    (let [field (init-field node opts)]
                      (if (fn? field) [field] field))
                    node))
-               form)]    
+               form)]
     (fn [] form)))
