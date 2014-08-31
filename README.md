@@ -135,7 +135,7 @@ Once a form template is created it can be bound to a document using the `bind-fi
     (fn []
       [:div
        [:div.page-header [:h1 "Reagent Form"]]
-       [bind-fields form-template nil doc]
+       [bind-fields form-template doc]
        [:label (str @doc)]])))
 
 (reagent/render-component [form] (.getElementById js/document "container"))
@@ -157,7 +157,7 @@ The form can be initialized with a populated document, and the fields will be in
     (fn []
       [:div
        [:div.page-header [:h1 "Reagent Form"]]
-       [bind-fields form-template nil doc]
+       [bind-fields form-template doc]
        [:label (str @doc)]])))
 ```
 
