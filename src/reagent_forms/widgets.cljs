@@ -66,6 +66,12 @@
   (fn []
     (set-attrs component opts {:type :text :class "form-control"})))
 
+(defmethod init-widget :alert
+  [[_ {:keys [id event]} :as component] {:keys [get] :as opts}]
+  (fn []
+    (when (event (get id))
+      (update-in component [1] dissoc :event))))
+
 (defmethod init-widget :radio
   [[type {:keys [widget id value] :as attrs} & body] {:keys [get save!]}]    
   (let [state (atom (= value (get id)))]    
