@@ -107,7 +107,7 @@
                (swap! selections update-in [key] not)
                (save! id (->> @selections (filter second) (map first))))
              (let [value (key @selections)]
-               (reset! selections {key (if value (not value) true)})
+               (reset! selections {key (not value)})
                (save! id (when (key @selections) key)))))]
 
     (fn []
