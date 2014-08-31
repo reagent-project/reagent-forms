@@ -1,6 +1,6 @@
 # reagent-forms
 
-A ClojureScript library to provide form data bindings for [Reagent](http://holmsand.github.io/reagent/). See [here](http://yogthos.github.io/reagent-forms-example.html) for a live demo.
+A ClojureScript library to provide form data bindings for [Reagent](http://holmsand.github.io/reagent/), see [here](http://yogthos.github.io/reagent-forms-example.html) for a live demo.
 
 ## Usage
 
