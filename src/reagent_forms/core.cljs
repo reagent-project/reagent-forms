@@ -1,5 +1,7 @@
 (ns reagent-forms.core
-  (:require [reagent.core :as reagent :refer [atom]]))
+  (:require
+   [clojure.walk :refer [prewalk]]
+   [reagent.core :as reagent :refer [atom]]))
 
 (defn value-of [element]
  (-> element .-target .-value))
@@ -155,7 +157,7 @@
    events - any events that should be triggered when the document state changes"
   [form doc & events]
   (let [opts {:get #(get @doc %) :save! (mk-save-fn doc events)}
-        form (clojure.walk/prewalk
+        form (prewalk
                (fn [node]
                  (if (field? node)
                    (let [field (init-field node opts)]
