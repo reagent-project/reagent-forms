@@ -108,7 +108,7 @@ The following is an example of an event to calculate the value of the `:bmi` key
 Custom Widgets can be added by implementing the `reagent-forms.widgets/init-widget` multimethod. The method must
 take two parameters, where the first parameter is the widget component and the second is the options.
 
-By default the options will contain the `doc` key containing the document atom and the `save!` key contining the function that should be used to update the document.
+By default the options will contain the `get` and the `save!` keys. The `get` key points to a function that accepts an id and returns the value associated with it. The `save!` function accepts an id and a value that will be associated with it.
 
 ## License
 
