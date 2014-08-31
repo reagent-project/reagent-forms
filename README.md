@@ -8,7 +8,7 @@ A ClojureScript library to provide form data bindings for [Reagent](http://holms
 
 ## Usage
 
-The library uses a Reagent atom as the document store. Each form components that we wish to bind must have a `:field` attribute. This key will be used to decide how the specific type of component should be bound. The field must also provie a unique `:id` attribute that is used to bind it in the document. While the library is geared towards usage with Twitter Bootstrap, it is fairly agnoistic about the types of fields that you create.
+The library uses a Reagent atom as the document store. The components are bound to the document using the `:field` attribute. This key will be used to decide how the specific type of component should be bound. The component must also provie a unique `:id` attribute that is used to correlated it to the document. While the library is geared towards usage with Twitter Bootstrap, it is fairly agnoistic about the types of components that you create.
 
 The following types of fields are supported out of the box:
 
