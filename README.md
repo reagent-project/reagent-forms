@@ -118,7 +118,7 @@ The field components behave just like any other Reagent components and can be mi
    [row "last name" [:input {:field :text :id :last-name}]]
    [row "age" [:input {:field :numeric :id :age}]]
    [row "email" [:input {:field :email :id :email}]]
-   [row "comments" [:textarea {:field :textarea :id :comments}]]]
+   [row "comments" [:textarea {:field :textarea :id :comments}]]])
 ```
 Once a form template is created it can be bound to a document using the `bind-fields` function:
 
@@ -135,6 +135,26 @@ Once a form template is created it can be bound to a document using the `bind-fi
        [:label (str @doc)]])))
 
 (reagent/render-component [form] (.getElementById js/document "container"))
+```
+
+The form can be initialized with a populated document, and the fields will be initialize with the values found there:
+
+```clojure
+(def form-template
+  [:div
+   [row "first name" [:input {:field :text :id :first-name}]]
+   [row "last name" [:input {:field :text :id :last-name}]]
+   [row "age" [:input {:field :numeric :id :age}]]
+   [row "email" [:input {:field :email :id :email}]]
+   [row "comments" [:textarea {:field :textarea :id :comments}]]])
+
+(defn form []
+  (let [doc (atom {:first-name "John" :last-name "Doe" :age 35})]
+    (fn []
+      [:div
+       [:div.page-header [:h1 "Reagent Form"]]
+       [bind-fields form-template nil doc]
+       [:label (str @doc)]])))
 ```
 
 ## Adding events
