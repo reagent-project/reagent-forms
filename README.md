@@ -165,7 +165,7 @@ The form can be initialized with a populated document, and the fields will be in
 
 The `bind-fields` function accepts optional events. Events are triggered whenever the document is updated, and will be executed in order they are listed. Each event sees the document modified by its predecessor.
 
-The event must take 3 parameters, which are the `id`, the `value`, and the `document`. The `id` and the `value` represent the value that was changed in the form, and the document is the atom that contins the state of the form. The event can either return an updated document or `nil`, when `nil` is returned then the state of the document is unmodified.
+The event must take 3 parameters, which are the `id`, the `value`, and the `document`. The `id` and the `value` represent the value that was changed in the form, and the document is the atom that contains the state of the form. The event can either return an updated document or `nil`, when `nil` is returned then the state of the document is unmodified.
 
 The following is an example of an event to calculate the value of the `:bmi` key when the `:weight` and `:height` keys are populated:
 
