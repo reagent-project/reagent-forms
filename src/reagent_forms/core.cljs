@@ -4,7 +4,7 @@
 (defn value-of [element]
  (-> element .-target .-value))
 
-(defn mk-save-fn [doc events]
+(defn- mk-save-fn [doc events]
   (fn [id value]
     (swap! doc
       (fn [current-value]
@@ -40,7 +40,7 @@
 
 (defmethod bind :default [_ _])
 
-(defn set-attrs
+(defn- set-attrs
   [[type attrs & body] opts & [default-attrs]]
   (into [type (merge default-attrs (bind attrs opts) attrs)] body))
 
@@ -119,7 +119,7 @@
        (assoc m key (boolean (some #{key} (if multi-select value [value])))))
      {} selectors)))
 
-(defn selection-group
+(defn- selection-group
   [[type {:keys [field id] :as attrs} & selection-items] opts]
   (let [selections (atom (mk-selections id selection-items opts))
         selectors (map (fn [item] [(group-item item opts selections field id)])
@@ -138,18 +138,22 @@
   [[type {:keys [field id] :as attrs} & options] {:keys [get save!]}]
   (let [selection (atom (or
                          (get id)
-                         (get-in (first options) [1 :key])))]
-    (println "Selection:" @selection)
+                         (get-in (first options) [1 :key])))]    
     (save! id @selection)
     (fn []
       [type (merge attrs {:on-change #(save! id (value-of %))}) options])))
 
-(defn field? [node]
+(defn- field? [node]
   (and (coll? node)
        (map? (second node))
        (contains? (second node) :field)))
 
-(defn bind-fields [form doc & events]
+(defn bind-fields
+  "creates data bindings between the form fields and the supplied atom
+   form - the form template with the fields
+   doc - the document that the fields will be bound to
+   events - any events that should be triggered when the document state changes"
+  [form doc & events]
   (let [opts {:get #(get @doc %) :save! (mk-save-fn doc events)}
         form (clojure.walk/prewalk
                (fn [node]
