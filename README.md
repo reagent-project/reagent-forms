@@ -2,6 +2,10 @@
 
 A ClojureScript library to provide form data bindings for [Reagent](http://holmsand.github.io/reagent/), see [here](http://yogthos.github.io/reagent-forms-example.html) for a live demo.
 
+## Install
+
+[![Clojars Project](http://clojars.org/reagent-forms/latest-version.svg)](http://clojars.org/reagent-forms)
+
 ## Usage
 
 The library uses a Reagent atom as the document store. Each form components that we wish to bind must have a `:field` attribute. This key will be used to decide how the specific type of component should be bound. The field must also provie a unique `:id` attribute that is used to bind it in the document. While the library is geared towards usage with Twitter Bootstrap, it is fairly agnoistic about the types of fields that you create.
