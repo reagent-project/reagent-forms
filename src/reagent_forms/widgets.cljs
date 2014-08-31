@@ -4,14 +4,11 @@
 (defn value-of [element]
  (-> element .-target .-value))
 
-(defn get-value [doc id]
-  (get @doc id))
-
-(defn mk-save-fn [listeners]
-  (fn [doc id value]
-    (swap! doc assoc id value)
-    (doseq [listener (id listeners)]
-      (listener doc id value))))
+(defn mk-save-fn [doc events]
+  (fn [id value]
+    (swap! doc
+      (fn [current-value]
+        (reduce #(or (%2 id value %1) %1) (assoc current-value id value) events)))))
 
 ;;coerce the input to the appropriate type
 (defmulti format-type
@@ -31,16 +28,16 @@
       :input-widget widget)))
 
 (defmethod bind :input-widget
-  [{:keys [widget id]} {:keys [doc save!]}]
-  {:value (get-value doc id)
-   :on-change #(save! doc id (->> % (value-of) (format-type widget)))})
+  [{:keys [widget id]} {:keys [get save!]}]
+  {:value (get id)
+   :on-change #(save! id (->> % (value-of) (format-type widget)))})
 
 (defmethod bind :checkbox
-  [{:keys [id]} {:keys [doc save!]}]
-  {:value (get-value doc id)
-   :on-change #(save! doc id (.-checked (.-target %)))})
+  [{:keys [id]} {:keys [get save! checked]}]
+  {:checked @checked
+   :on-change #(save! id (swap! checked not))})
 
-(defmethod bind :default [_ _ _])
+(defmethod bind :default [_ _])
 
 (defn set-attrs
   [[type attrs & body] opts & [default-attrs]]
@@ -50,49 +47,63 @@
 (defmulti init-widget
   (fn [[_ {:keys [widget]}] _]
     (let [widget (keyword widget)]
-      (if (some #{widget} [:text :password :email :textarea :checkbox])
+      (if (some #{widget} [:text :password :email :textarea])
         :input-widget widget))))
 
 (defmethod init-widget :input-widget
   [[_ {:keys [widget]} :as component] opts]
   (set-attrs component opts {:type widget :class "form-control"}))
 
+(defmethod init-widget :checkbox
+  [[_ {:keys [widget id]} :as component] {:keys [get] :as opts}]
+  (let [state (atom (get id))]
+    (fn []
+      (set-attrs component (assoc opts :checked state) {:type widget :class "form-control"}))))
+
 (defmethod init-widget :numeric
   [component opts]
   (set-attrs component opts {:type :text :class "form-control"}))
 
 (defmethod init-widget :radio
-  [[type {:keys [id widget value] :as attrs} & body] {:keys [doc save!]}]    
-  (into
-    [type
-     (merge {:type :radio
-             :class "form-control"
-             :on-change #(save! doc id value)}
-            attrs)]
-     body))
+  [[type {:keys [widget id value] :as attrs} & body] {:keys [get save!]}]    
+  (let [state (atom (= value (get id)))]    
+    (fn []
+      (into
+        [type
+         (merge {:type :radio
+                 :checked @state
+                 :class "form-control"
+                 :on-change
+                 #(do
+                    (save! id value)
+                    (reset! state (= value (get id))))}
+                attrs)]
+         body))))
 
-(defn- group-item [[type {:keys [key] :as attrs} & body] {:keys [doc save! multi-select]} selections widget id]
+(defn- group-item [[type {:keys [key] :as attrs} & body] {:keys [save! multi-select]} selections widget id]  
   (letfn [(handle-click! []
            (if multi-select
              (do
                (swap! selections update-in [key] not)
-               (save! doc id (->> @selections (filter second) (map first))))
-             (do
-               (reset! selections {key (not (key @selections))})                              
-               (save! doc id (when (key @selections) key)))))] 
+               (save! id (->> @selections (filter second) (map first))))
+             (let [value (key @selections)]               
+               (reset! selections {key (if value (not value) true)})               
+               (save! id (when (key @selections) key)))))] 
     
     (fn []               
       [type (merge {:class (if (key @selections) "active")
                     :on-click handle-click!} attrs) body])))
 
-(defn- mk-selections [selectors doc-values]
-  (->> selectors
-       (map (fn [[_ {:keys [key]}]] [key (boolean (some #{key} doc-values))]))
-       (into {}) atom))
+(defn- mk-selections [id selectors {:keys [get multi-select]}]
+  (let [value (get id)]
+    (reduce
+     (fn [m [_ {:keys [key]}]]
+       (assoc m key (boolean (some #{key} (if multi-select value [value])))))
+     {} selectors)))
 
 (defn selection-group
   [[type {:keys [widget id] :as attrs} & selection-items] opts]
-  (let [selections (mk-selections selection-items (get-value (:doc opts) id))
+  (let [selections (atom (mk-selections id selection-items opts))
         selectors (map (fn [item] [(group-item item opts selections widget id)])
                        selection-items)]
     (into [type attrs] selectors)))
@@ -106,20 +117,20 @@
   (selection-group widget (assoc opts :multi-select true)))
 
 (defmethod init-widget :list
-  [[type {:keys [widget id] :as attrs} & options] {:keys [doc save!]}]
+  [[type {:keys [widget id] :as attrs} & options] {:keys [get save!]}]
   (let [selection (atom (or
-                         (get-value doc id)
+                         (get id)
                          (get-in (first options) [1 :key])))]    
     (fn []      
-      [type (merge attrs {:on-change #(save! doc id (value-of %))}) options])))
+      [type (merge attrs {:on-change #(save! id (value-of %))}) options])))
 
 (defn widget? [node]
   (and (coll? node)
        (map? (second node))
        (contains? (second node) :widget)))
 
-(defn bind-widgets [form doc & [listeners]]  
-  (let [opts {:doc doc :save! (mk-save-fn listeners)}
+(defn bind-widgets [form doc & events]  
+  (let [opts {:get #(get @doc %) :save! (mk-save-fn doc events)}
         form (clojure.walk/prewalk
                (fn [node]
                  (if (widget? node)
