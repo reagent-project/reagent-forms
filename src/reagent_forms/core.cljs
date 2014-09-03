@@ -100,7 +100,7 @@
                 attrs)]
          body))))
 
-(defn- group-item [[type {:keys [key] :as attrs} & body] {:keys [save! multi-select]} selections field id]
+(defn- group-item [[type {:keys [key touch-event] :as attrs} & body] {:keys [save! multi-select]} selections field id]
   (letfn [(handle-click! []
            (if multi-select
              (do
@@ -112,7 +112,7 @@
 
     (fn []
       [type (merge {:class (if (key @selections) "active")
-                    :on-click handle-click!} attrs) body])))
+                    (or touch-event :on-click) handle-click!} attrs) body])))
 
 (defn- mk-selections [id selectors {:keys [get multi-select]}]
   (let [value (get id)]
