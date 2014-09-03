@@ -8,13 +8,13 @@ A ClojureScript library to provide form data bindings for [Reagent](http://holms
 
 ## Usage
 
-The library uses a Reagent atom as the document store. The components are bound to the document using the `:field` attribute. This key will be used to decide how the specific type of component should be bound. The component must also provie a unique `:id` attribute that is used to correlated it to the document. While the library is geared towards usage with Twitter Bootstrap, it is fairly agnoistic about the types of components that you create.
+The library uses a Reagent atom as the document store. The components are bound to the document using the `:field` attribute. This key will be used to decide how the specific type of component should be bound. The component must also provide a unique `:id` attribute that is used to correlate it to the document. While the library is geared towards usage with Twitter Bootstrap, it is fairly agnostic about the types of components that you create.
 
 The following types of fields are supported out of the box:
 
 #### :input
 
-An input fields can be of type `:text`, `:numeric`, `:password`, `:email`, and `:textarea`. The inputs behave just like regular HTML inputs and update the document state when the `:on-change` event is triggered.
+An input field can be of type `:text`, `:numeric`, `:password`, `:email`, and `:textarea`. The inputs behave just like regular HTML inputs and update the document state when the `:on-change` event is triggered.
 
 ```clojure
 [:input {:field :text :id :first-name}]
@@ -135,7 +135,7 @@ Once a form template is created it can be bound to a document using the `bind-fi
     (fn []
       [:div
        [:div.page-header [:h1 "Reagent Form"]]
-       [bind-fields form-template nil doc]
+       [bind-fields form-template doc]
        [:label (str @doc)]])))
 
 (reagent/render-component [form] (.getElementById js/document "container"))
@@ -157,15 +157,15 @@ The form can be initialized with a populated document, and the fields will be in
     (fn []
       [:div
        [:div.page-header [:h1 "Reagent Form"]]
-       [bind-fields form-template nil doc]
+       [bind-fields form-template doc]
        [:label (str @doc)]])))
 ```
 
 ## Adding events
 
-The `bind-fields` function accepts optional events. Events are triggered whenever the document is updated, and will be executed in order they are listed. Each event sees the document modified by its predecessor.
+The `bind-fields` function accepts optional events. Events are triggered whenever the document is updated, and will be executed in the order they are listed. Each event sees the document modified by its predecessor.
 
-The event must take 3 parameters, which are the `id`, the `value`, and the `document`. The `id` and the `value` represent the value that was changed in the form, and the document is the atom that contins the state of the form. The event can either return an updated document or `nil`, when `nil` is returned then the state of the document is unmodified.
+The event must take 3 parameters, which are the `id`, the `value`, and the `document`. The `id` and the `value` represent the value that was changed in the form, and the document is the atom that contains the state of the form. The event can either return an updated document or `nil`, when `nil` is returned then the state of the document is unmodified.
 
 The following is an example of an event to calculate the value of the `:bmi` key when the `:weight` and `:height` keys are populated:
 
