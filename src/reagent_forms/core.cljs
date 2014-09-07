@@ -77,11 +77,11 @@
         (into [type (dissoc attrs event)] body))
       (if-let [message (not-empty (get id))]
         [type attrs
-         (when event [:button.close
-                      {:type                      "button"
-                       :aria-hidden               true
-                       (or touch-event :on-click) #(save! id nil)}
-                      "X"])
+         [:button.close
+            {:type                      "button"
+             :aria-hidden               true
+             (or touch-event :on-click) #(save! id nil)}
+            "X"]
          message]))))
 
 (defmethod init-field :radio
