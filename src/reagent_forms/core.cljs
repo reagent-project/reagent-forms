@@ -70,19 +70,19 @@
       (set-attrs component (assoc opts :checked state) {:type field :class "form-control"}))))
 
 (defmethod init-field :alert
-  [[type {:keys [id event] :as attrs} & body] {:keys [get save!] :as opts}]
-  (let [close-button
-        [:button.close
-          {:type "button"
-           :aria-hidden true
-           :on-click #(save! id nil)}
-         "X"]]
-    (fn []
-      (if event
-        (when (event (get id))
-          (into [type (dissoc attrs event)] (cons close-button body)))
-        (if-let [message (not-empty (get id))]
-          [type attrs close-button message])))))
+  [[type {:keys [id event touch-event] :as attrs} & body] {:keys [get save!] :as opts}]
+  (fn []
+    (if event
+      (when (event (get id))
+        (into [type (dissoc attrs event)] body))
+      (if-let [message (not-empty (get id))]
+        [type attrs
+         (when event [:button.close
+                      {:type                      "button"
+                       :aria-hidden               true
+                       (or touch-event :on-click) #(save! id nil)}
+                      "X"])
+         message]))))
 
 (defmethod init-field :radio
   [[type {:keys [field id value] :as attrs} & body] {:keys [get save!]}]
