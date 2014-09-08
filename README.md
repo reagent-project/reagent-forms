@@ -201,7 +201,7 @@ The following is an example of an event to calculate the value of the `:bmi` key
    [row "Weight" [:input {:field :numeric :id :weight}]]
    [row "BMI" [:input {:field :numeric :id :bmi :disabled true}]]])
 
-[w/bind-fields
+[bind-fields
   form-template
   doc
   (fn [id value {:keys [weight height] :as doc}]
