@@ -14,7 +14,7 @@ The following types of fields are supported out of the box:
 
 #### :input
 
-An input field can be of type `:text`, `:numeric`, `:password`, `:email`, and `:textarea`. The inputs behave just like regular HTML inputs and update the document state when the `:on-change` event is triggered.
+An input field can be of type `:text`, `:numeric`, `:range`, `:password`, `:email`, and `:textarea`. The inputs behave just like regular HTML inputs and update the document state when the `:on-change` event is triggered.
 
 ```clojure
 [:input {:field :text :id :first-name}]
