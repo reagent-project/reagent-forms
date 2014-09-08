@@ -127,6 +127,8 @@ When no event is supplied, then the alert is shown whenever the value at the id 
   "save"]
 ```
 
+### Binding your form to a document
+
 The field components behave just like any other Reagent components and can be mixed with them freely. A complete form example can be seen below.
 
 ```clojure
