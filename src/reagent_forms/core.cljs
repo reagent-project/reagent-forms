@@ -73,9 +73,9 @@
       (set-attrs component (assoc opts :checked state) {:type field :class "form-control"}))))
 
 (defmethod init-field :label
-  [[type {:keys [id preamble] :as attrs}] {:keys [get]}]
+  [[type {:keys [id preamble postamble ] :as attrs}] {:keys [get]}]
   (fn []
-    [type attrs preamble (get id)]))
+    [type attrs preamble (get id) postamble]))
 
 (defmethod init-field :alert
   [[type {:keys [id event touch-event] :as attrs} & body] {:keys [get save!] :as opts}]

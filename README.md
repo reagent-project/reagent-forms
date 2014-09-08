@@ -30,6 +30,13 @@ The checkbox field creates a checkbox element:
   [:div.col-md-2 "does data binding make you happy?"]
   [:div.col-md-5 [:input {:field :checkbox :id :happy.bindings}]]]
 ```
+#### :range
+
+Range control uses the `:min` and `:max` keys to create an HTML range input:
+
+```clojure
+[:input {:field :range :min 10 :max 100 :id :some-range}]
+```
 
 #### :radio
 
@@ -79,6 +86,17 @@ The multi-select field allows multiple values to be selected and set in the docu
   [:button.btn.btn-default {:key :left} "Left"]
   [:button.btn.btn-default {:key :middle} "Middle"]
   [:button.btn.btn-default {:key :right} "Right"]]
+```
+
+#### :label
+
+Labels can be associated with a key in the document using the `:id` attribute and will display the value at that key. The lables can have an optional `:preamble` and `:postamble` keys with the text that will be rendered before and after the value respectively:
+
+```clojure
+[:label {:field :label :id :volume}]
+[:label {:field :label :preamble "the value is: " :id :volume}]
+[:label {:field :label :preamble "the value is: " :postamble "ml" :id :volume}]
+
 ```
 
 #### :alert
