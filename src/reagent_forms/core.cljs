@@ -14,7 +14,10 @@
 
 ;;coerce the input to the appropriate type
 (defmulti format-type
-  (fn [field-type _] field-type))
+  (fn [field-type _]
+    (if (some #{field-type} [:range :numeric])
+      :numeric
+      field-type)))
 
 (defmethod format-type :numeric
   [_ value]
@@ -27,7 +30,7 @@
 ;;bind the field to the document based on its type
 (defmulti bind
   (fn [{:keys [field]} _]
-    (if (some #{field} [:text :numeric :password :email :textarea])
+    (if (some #{field} [:text :numeric :password :email :range :textarea])
       :input-field field)))
 
 (defmethod bind :input-field
@@ -50,7 +53,7 @@
 (defmulti init-field
   (fn [[_ {:keys [field]}] _]
     (let [field (keyword field)]
-      (if (some #{field} [:text :password :email :textarea])
+      (if (some #{field} [:range :text :password :email :textarea])
         :input-field field))))
 
 (defmethod init-field :input-field
@@ -69,6 +72,11 @@
     (fn []
       (set-attrs component (assoc opts :checked state) {:type field :class "form-control"}))))
 
+(defmethod init-field :label
+  [[type {:keys [id preamble] :as attrs}] {:keys [get]}]
+  (fn []
+    [type attrs preamble (get id)]))
+
 (defmethod init-field :alert
   [[type {:keys [id event touch-event] :as attrs} & body] {:keys [get save!] :as opts}]
   (fn []
@@ -78,10 +86,10 @@
       (if-let [message (not-empty (get id))]
         [type attrs
          [:button.close
-            {:type                      "button"
-             :aria-hidden               true
-             (or touch-event :on-click) #(save! id nil)}
-            "X"]
+           {:type                      "button"
+            :aria-hidden               true
+            (or touch-event :on-click) #(save! id nil)}
+           "X"]
          message]))))
 
 (defmethod init-field :radio
