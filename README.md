@@ -17,8 +17,8 @@ The following types of fields are supported out of the box:
 An input field can be of type `:text`, `:numeric`, `:range`, `:password`, `:email`, and `:textarea`. The inputs behave just like regular HTML inputs and update the document state when the `:on-change` event is triggered.
 
 ```clojure
-[:input {:field :text :id :first-name}]
-[:input {:field :numeric :id :age}]
+[:input.form-control {:field :text :id :first-name}]
+[:input.form-control {:field :numeric :id :age}]
 ```
 
 #### :checkbox
@@ -28,14 +28,16 @@ The checkbox field creates a checkbox element:
 ```clojure
 [:div.row
   [:div.col-md-2 "does data binding make you happy?"]
-  [:div.col-md-5 [:input {:field :checkbox :id :happy.bindings}]]]
+  [:div.col-md-5
+   [:input.form-control {:field :checkbox :id :happy.bindings}]]]
 ```
 #### :range
 
 Range control uses the `:min` and `:max` keys to create an HTML range input:
 
 ```clojure
-[:input {:field :range :min 10 :max 100 :id :some-range}]
+[:input.form-control
+ {:field :range :min 10 :max 100 :id :some-range}]
 ```
 
 #### :radio
@@ -167,11 +169,16 @@ The form can be initialized with a populated document, and the fields will be in
 ```clojure
 (def form-template
   [:div
-   [row "first name" [:input {:field :text :id :first-name}]]
-   [row "last name" [:input {:field :text :id :last-name}]]
-   [row "age" [:input {:field :numeric :id :age}]]
-   [row "email" [:input {:field :email :id :email}]]
-   [row "comments" [:textarea {:field :textarea :id :comments}]]])
+   [row "first name"
+        [:input.form-control {:field :text :id :first-name}]]
+   [row "last name"
+        [:input.form-control {:field :text :id :last-name}]]
+   [row "age"
+        [:input {:field.form-control :numeric :id :age}]]
+   [row "email"
+        [:input {:field.form-control :email :id :email}]]
+   [row "comments"
+        [:textarea.form-control {:field :textarea :id :comments}]]])
 
 (defn form []
   (let [doc (atom {:first-name "John" :last-name "Doe" :age 35})]
