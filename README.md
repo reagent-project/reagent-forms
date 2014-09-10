@@ -14,7 +14,7 @@ The following types of fields are supported out of the box:
 
 #### :input
 
-An input field can be of type `:text`, `:numeric`, `:password`, `:email`, and `:textarea`. The inputs behave just like regular HTML inputs and update the document state when the `:on-change` event is triggered.
+An input field can be of type `:text`, `:numeric`, `:range`, `:password`, `:email`, and `:textarea`. The inputs behave just like regular HTML inputs and update the document state when the `:on-change` event is triggered.
 
 ```clojure
 [:input {:field :text :id :first-name}]
@@ -127,6 +127,8 @@ When no event is supplied, then the alert is shown whenever the value at the id 
   "save"]
 ```
 
+### Binding the form to a document
+
 The field components behave just like any other Reagent components and can be mixed with them freely. A complete form example can be seen below.
 
 ```clojure
@@ -201,7 +203,7 @@ The following is an example of an event to calculate the value of the `:bmi` key
    [row "Weight" [:input {:field :numeric :id :weight}]]
    [row "BMI" [:input {:field :numeric :id :bmi :disabled true}]]])
 
-[w/bind-fields
+[bind-fields
   form-template
   doc
   (fn [id value {:keys [weight height] :as doc}]
