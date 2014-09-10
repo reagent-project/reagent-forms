@@ -35,7 +35,7 @@
 
 (defmethod bind :input-field
   [{:keys [field id]} {:keys [get save!]}]
-  {:value (get id)
+  {:value (or (get id) "")
    :on-change #(save! id (->> % (value-of) (format-type field)))})
 
 (defmethod bind :checkbox

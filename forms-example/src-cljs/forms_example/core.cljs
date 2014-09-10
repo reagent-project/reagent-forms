@@ -91,7 +91,6 @@
 
 (defn page []
   (let [doc (atom {:first-name "John"
-                    :dob 12345
                     :email "foo@bar.baz"
                     :comments "some interesting comments\non this subject"
                     :weight 100
@@ -106,6 +105,7 @@
     (fn []
       [:div
        [:div.page-header [:h1 "Sample Form"]]
+
        [bind-fields
         form-template
         doc
