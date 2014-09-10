@@ -151,7 +151,7 @@ Once a form template is created it can be bound to a document using the `bind-fi
 
 ```clojure
 (ns myform.core
-  (:require [reagent-forms.core :refer [bind-fields]])
+  (:require [reagent-forms.core :refer [bind-fields]]))
 
 (defn form []
   (let [doc (atom {})]
