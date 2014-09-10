@@ -141,12 +141,17 @@ The field components behave just like any other Reagent components and can be mi
 
 (def form-template
   [:div
-   [row "first name" [:input {:field :text :id :first-name}]]
-   [row "last name" [:input {:field :text :id :last-name}]]
-   [row "age" [:input {:field :numeric :id :age}]]
-   [row "email" [:input {:field :email :id :email}]]
-   [row "comments" [:textarea {:field :textarea :id :comments}]]])
+   (row "first name" [:input {:field :text :id :first-name}])
+   (row "last name" [:input {:field :text :id :last-name}])
+   (row "age" [:input {:field :numeric :id :age}])
+   (row "email" [:input {:field :email :id :email}])
+   (row "comments" [:textarea {:field :textarea :id :comments}])])
 ```
+
+**important note**
+
+The templates are eagerly evaluated, and you should always call the helper functions as in the example above instead of putting them in a vector. These will be replaced by Reagent components when the `bind-field` is called to compile the template.
+
 Once a form template is created it can be bound to a document using the `bind-fields` function:
 
 ```clojure
@@ -169,16 +174,16 @@ The form can be initialized with a populated document, and the fields will be in
 ```clojure
 (def form-template
   [:div
-   [row "first name"
-        [:input.form-control {:field :text :id :first-name}]]
-   [row "last name"
-        [:input.form-control {:field :text :id :last-name}]]
-   [row "age"
-        [:input {:field.form-control :numeric :id :age}]]
-   [row "email"
-        [:input {:field.form-control :email :id :email}]]
-   [row "comments"
-        [:textarea.form-control {:field :textarea :id :comments}]]])
+   (row "first name"
+        [:input.form-control {:field :text :id :first-name})]
+   (row "last name"
+        [:input.form-control {:field :text :id :last-name})]
+   (row "age"
+        [:input {:field.form-control :numeric :id :age})]
+   (row "email"
+        [:input {:field.form-control :email :id :email})]
+   (row "comments"
+        [:textarea.form-control {:field :textarea :id :comments}]))
 
 (defn form []
   (let [doc (atom {:first-name "John" :last-name "Doe" :age 35})]
@@ -206,9 +211,9 @@ The following is an example of an event to calculate the value of the `:bmi` key
 (def form-template
  [:div
    [:h3 "BMI Calculator"]
-   [row "Height" [:input {:field :numeric :id :height}]]
-   [row "Weight" [:input {:field :numeric :id :weight}]]
-   [row "BMI" [:input {:field :numeric :id :bmi :disabled true}]]])
+   (row "Height" [:input {:field :numeric :id :height}])
+   (row "Weight" [:input {:field :numeric :id :weight}])
+   (row "BMI" [:input {:field :numeric :id :bmi :disabled true}])])
 
 [bind-fields
   form-template
