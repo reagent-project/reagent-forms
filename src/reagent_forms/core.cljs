@@ -59,18 +59,18 @@
 (defmethod init-field :input-field
   [[_ {:keys [field]} :as component] opts]
   (fn []
-    (set-attrs component opts {:type field :class "form-control"})))
+    (set-attrs component opts {:type field})))
 
 (defmethod init-field :numeric
   [component opts]
   (fn []
-    (set-attrs component opts {:type :text :class "form-control"})))
+    (set-attrs component opts {:type :text})))
 
 (defmethod init-field :checkbox
   [[_ {:keys [id field]} :as component] {:keys [get] :as opts}]
   (let [state (atom (get id))]
     (fn []
-      (set-attrs component (assoc opts :checked state) {:type field :class "form-control"}))))
+      (set-attrs component (assoc opts :checked state) {:type field}))))
 
 (defmethod init-field :label
   [[type {:keys [id preamble postamble placeholder] :as attrs}] {:keys [get]}]
@@ -103,7 +103,6 @@
         [type
          (merge {:type :radio
                  :checked @state
-                 :class "form-control"
                  :on-change
                  #(do
                     (save! id value)
