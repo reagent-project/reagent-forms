@@ -29,7 +29,7 @@ The checkbox field creates a checkbox element:
 [:div.row
   [:div.col-md-2 "does data binding make you happy?"]
   [:div.col-md-5
-   [:input.form-control {:field :checkbox :id :happy.bindings}]]]
+   [:input.form-control {:field :checkbox :id :happy-bindings}]]]
 ```
 #### :range
 
@@ -54,7 +54,7 @@ Radio buttons are grouped using the `:name` attribute and their `:value` attribu
 The list field will populate the document with the currently selected child element. The child elements must each have a `:key` attribute pointing to the value that will be saved in the document:
 
 ```clojure
-[:select.form-control {:field :list :id :many.options}
+[:select.form-control {:field :list :id :many-options}
   [:option {:key :foo} "foo"]
   [:option {:key :bar} "bar"]
   [:option {:key :baz} "baz"]]
@@ -66,13 +66,13 @@ The single-select field behaves like the list, but supports different types of e
 
 ```clojure
 [:h3 "single-select buttons"]
-[:div.btn-group {:field :single-select :id :unique.position}
+[:div.btn-group {:field :single-select :id :unique-position}
   [:button.btn.btn-default {:key :left} "Left"]
   [:button.btn.btn-default {:key :middle} "Middle"]
   [:button.btn.btn-default {:key :right} "Right"]]
 
 [:h3 "single-select list"]
-[:ul.list-group {:field :single-select :id :pick.one}
+[:ul.list-group {:field :single-select :id :pick-one}
   [:li.list-group-item {:key :foo} "foo"]
   [:li.list-group-item {:key :bar} "bar"]
   [:li.list-group-item {:key :baz} "baz"]]
@@ -125,13 +125,16 @@ When no event is supplied, then the alert is shown whenever the value at the id 
 [:button.btn.btn-default
   {:on-click
     #(if (empty? (:first-name @doc))
-      (swap! doc assoc :errors.first-name "first name is empty!"))}
+      (swap! doc assoc-in [:errors :first-name] "first name is empty!"))}
   "save"]
 ```
 
 ### Binding the form to a document
 
 The field components behave just like any other Reagent components and can be mixed with them freely. A complete form example can be seen below.
+
+Form elements can be bound to a nested structure by using the `.` as a path separator. For example, the following component `[:input {:field :text :id :person.first-name}]` binds to the following path in the state atom `{:person {:first-name field-value}}`
+
 
 ```clojure
 (defn row [label input]
