@@ -1,16 +1,24 @@
 (ns reagent-forms.core
   (:require
    [clojure.walk :refer [prewalk]]
+   [clojure.string :refer [split]]
    [reagent.core :as reagent :refer [atom]]))
 
 (defn value-of [element]
  (-> element .-target .-value))
 
+(def ^:private id->path
+  (memoize
+    (fn [id]
+      (map keyword (-> id name (split  #"\."))))))
+
 (defn- mk-save-fn [doc events]
   (fn [id value]
     (swap! doc
       (fn [current-value]
-        (reduce #(or (%2 id value %1) %1) (assoc current-value id value) events)))))
+        (reduce #(or (%2 (id->path id) value %1) %1)
+                (assoc-in current-value (id->path id) value)
+                events)))))
 
 ;;coerce the input to the appropriate type
 (defmulti format-type
@@ -166,7 +174,7 @@
    doc - the document that the fields will be bound to
    events - any events that should be triggered when the document state changes"
   [form doc & events]
-  (let [opts {:get #(get @doc %) :save! (mk-save-fn doc events)}
+  (let [opts {:get #(get-in @doc (id->path %)) :save! (mk-save-fn doc events)}
         form (prewalk
                (fn [node]
                  (if (field? node)
