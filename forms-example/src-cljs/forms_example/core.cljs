@@ -19,34 +19,44 @@
 
 (def form-template
   [:div
-   (input "first name" :text :first-name)
+   (input "first name" :text :person.first-name)
    [:div.row
     [:div.col-md-2]
     [:div.col-md-5
-     [:div.alert.alert-danger {:field :alert :id :errors.first-name}]]]
+     [:div.alert.alert-danger
+      {:field :alert :id :errors.first-name}]]]
 
-   (input "last name" :text :last-name)
+   (input "last name" :text :person.last-name)
    [:div.row
     [:div.col-md-2]
     [:div.col-md-5
-     [:div.alert.alert-success {:field :alert :id :last-name :event empty?}
+     [:div.alert.alert-success
+      {:field :alert :id :person.last-name :event empty?}
       "last name is empty!"]]]
 
-   (input "age" :numeric :age)
-   (input "email" :email :email)
+   (input "age" :numeric :person.age)
+   (input "email" :email :person.email)
    (row
     "comments"
-    [:textarea.form-control {:field :textarea :id :comments}])
+    [:textarea.form-control
+     {:field :textarea :id :comments}])
 
    [:hr]
    [:h3 "BMI Calculator"]
    (input "height" :numeric :height)
    (input "weight" :numeric :weight)
-   (row "BMI" [:input.form-control {:field :numeric :id :bmi :disabled true}])
+   (row "BMI"
+        [:input.form-control
+         {:field :numeric :id :bmi :disabled true}])
    [:hr]
 
-   [row "isn't data binding lovely?" [:input {:field :checkbox :id :databinding.lovely}]]
-   [:label {:field :label :preamble "The level of awesome: " :placeholder "N/A" :id :awesomeness}]
+   (row "isn't data binding lovely?"
+        [:input {:field :checkbox :id :databinding.lovely}])
+   [:label
+    {:field :label
+     :preamble "The level of awesome: "
+     :placeholder "N/A"
+     :id :awesomeness}]
 
    [:input {:field :range :min 1 :max 10 :id :awesomeness}]
 
@@ -78,30 +88,31 @@
     [:button.btn.btn-default {:key :right} "Right"]]
 
    [:h3 "single-select list"]
-   [:div.list-group {:field :single-select :id :pick.one}
+   [:div.list-group {:field :single-select :id :pick-one}
     [:div.list-group-item {:key :foo} "foo"]
     [:div.list-group-item {:key :bar} "bar"]
     [:div.list-group-item {:key :baz} "baz"]]
 
    [:h3 "multi-select list"]
-   [:ul.list-group {:field :multi-select :id :pick.a.few}
+   [:ul.list-group {:field :multi-select :id :pick-a-few}
     [:li.list-group-item {:key :foo} "foo"]
     [:li.list-group-item {:key :bar} "bar"]
     [:li.list-group-item {:key :baz} "baz"]]])
 
 (defn page []
-  (let [doc (atom {:first-name "John"
-                    :email "foo@bar.baz"
-                    :comments "some interesting comments\non this subject"
-                    :weight 100
-                    :height 200
-                    :bmi 0.5
-                    :radioselection :b
-                    :position [:left :right]
-                    :pick.one :bar
-                    :unique.position :middle
-                    :pick.a.few [:bar :baz]
-                    :many.options :bar})]
+  (let [doc (atom {:person {:first-name "John"
+                            :age 35
+                            :email "foo@bar.baz"}
+                   :weight 100
+                   :height 200
+                   :bmi 0.5
+                   :comments "some interesting comments\non this subject"
+                   :radioselection :b
+                   :position [:left :right]
+                   :pick-one :bar
+                   :unique {:position :middle}
+                   :pick-a-few [:bar :baz]
+                   :many {:options :bar}})]
     (fn []
       [:div
        [:div.page-header [:h1 "Sample Form"]]
@@ -109,14 +120,14 @@
        [bind-fields
         form-template
         doc
-        (fn [id value {:keys [weight height] :as document}]
+        (fn [[id] value {:keys [height weight] :as document}]
           (when (and (some #{id} [:height :weight]) weight height)
             (assoc document :bmi (/ weight (* height height)))))]
 
        [:button.btn.btn-default
          {:on-click
-          #(if (empty? (:first-name @doc))
-             (swap! doc assoc :errors.first-name "first name is empty"))}
+          #(if (empty? (get-in @doc [:person :first-name]))
+             (swap! doc assoc-in [:errors :first-name]"first name is empty"))}
          "save"]
 
        [:hr]
