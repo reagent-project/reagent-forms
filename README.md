@@ -133,7 +133,7 @@ When no event is supplied, then the alert is shown whenever the value at the id 
 
 The field components behave just like any other Reagent components and can be mixed with them freely. A complete form example can be seen below.
 
-Form elements can be bound to a nested structure by using the `.` as a path separator. For example, the following component `[:input {:field :text :id :person.first-name}]` binds to the following path in the state atom `{:person {:first-name field-value}}`
+Form elements can be bound to a nested structure by using the `.` as a path separator. For example, the following component `[:input {:field :text :id :person.first-name}]` binds to the following path in the state atom `{:person {:first-name <field-value>}}`
 
 
 ```clojure
