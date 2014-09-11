@@ -1,5 +1,5 @@
 (ns forms-example.core
-  (:require [json-html.core :refer [edn->hiccup]]
+  (:require [json-html.core :refer [edn->html]]
             [reagent.core :as reagent :refer [atom]]
             [reagent-forms.core :refer [bind-fields init-field value-of]]))
 
@@ -99,6 +99,14 @@
     [:li.list-group-item {:key :bar} "bar"]
     [:li.list-group-item {:key :baz} "baz"]]])
 
+(defn mounted-component [component handler]
+     (with-meta
+       (fn [] component)
+       {:component-did-mount
+        (fn [this]
+          (let [node (reagent.core/dom-node this)]
+            (handler node)))}))
+
 (defn page []
   (let [doc (atom {:person {:first-name "John"
                             :age 35
@@ -132,6 +140,8 @@
 
        [:hr]
        [:h1 "Document State"]
-       [:p (edn->hiccup @doc)]])))
+       [(mounted-component
+         [:p @doc]
+         #(set! (.-innerHTML %) (edn->html @doc)))]])))
 
 (reagent/render-component [page] (.getElementById js/document "app"))
