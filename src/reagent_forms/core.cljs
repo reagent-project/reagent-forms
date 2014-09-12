@@ -29,7 +29,7 @@
 
 (defmethod format-type :numeric
   [_ value]
-  (let [parsed (js/parseInt value)]
+  (let [parsed (js/parseFloat value)]
     (when-not (js/isNaN parsed) parsed)))
 
 (defmethod format-type :default
