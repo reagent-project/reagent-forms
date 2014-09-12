@@ -85,14 +85,17 @@
       [type (merge
              {:type :text
               :value
-              (if fmt (gstring/format fmt @display-value) @display-value)
+              (let [doc-value (get id)
+                    value (if (= doc-value (js/parseFloat @display-value))
+                            @display-value doc-value)]
+                (if fmt (gstring/format fmt value) value))
               :on-change
               #(if-let [value (format-type :numeric (value-of %))]
                  (do
-                   (reset! display-value value)
+                   (reset! display-value {:changed? true :value value})
                    (save! id (js/parseFloat value)))
                  "")}
-             (dissoc attrs :type))])))
+             attrs)])))
 
 (defmethod init-field :checkbox
   [[_ {:keys [id field]} :as component] {:keys [get] :as opts}]
