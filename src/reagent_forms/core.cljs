@@ -88,6 +88,7 @@
               (let [doc-value (get id)
                     {:keys [changed-self? value]} @display-value
                     value (if changed-self? value doc-value)]
+                (swap! display-value dissoc :changed-self?)
                 (if fmt (gstring/format fmt value) value))
               :on-change
               #(if-let [value (format-type :numeric (value-of %))]
