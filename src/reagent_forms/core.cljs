@@ -80,19 +80,19 @@
 
 (defmethod init-field :numeric
   [[type {:keys [id fmt] :as attrs}] {:keys [get save!]}]
-  (let [display-value (atom (get id))]
+  (let [display-value (atom {:changed-self? false :value (get id)})]
     (fn []
       [type (merge
              {:type :text
               :value
               (let [doc-value (get id)
-                    value (if (= doc-value (js/parseFloat @display-value))
-                            @display-value doc-value)]
+                    {:keys [changed-self? value]} @display-value
+                    value (if changed-self? value doc-value)]
                 (if fmt (gstring/format fmt value) value))
               :on-change
               #(if-let [value (format-type :numeric (value-of %))]
                  (do
-                   (reset! display-value {:changed? true :value value})
+                   (reset! display-value {:changed-self? true :value value})
                    (save! id (js/parseFloat value)))
                  "")}
              attrs)])))
