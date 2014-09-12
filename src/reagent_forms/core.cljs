@@ -2,6 +2,8 @@
   (:require
    [clojure.walk :refer [prewalk]]
    [clojure.string :refer [split]]
+   [goog.string :as gstring]
+   [goog.string.format]
    [reagent.core :as reagent :refer [atom]]))
 
 (defn value-of [element]
@@ -27,10 +29,16 @@
       :numeric
       field-type)))
 
+(defn valid-number-ending? [n]
+  (or (and (not= "." (last (butlast n))) (= "." (last n)))
+      (= "0" (last n))))
+
 (defmethod format-type :numeric
-  [_ value]
-  (let [parsed (js/parseFloat value)]
-    (when-not (js/isNaN parsed) parsed)))
+  [_ n]
+  (let [parsed (js/parseFloat n)]
+    (when-not (js/isNaN parsed)
+      (if (valid-number-ending? n)
+        n parsed))))
 
 (defmethod format-type :default
   [_ value] value)
@@ -42,8 +50,9 @@
       :input-field field)))
 
 (defmethod bind :input-field
-  [{:keys [field id]} {:keys [get save!]}]
-  {:value (or (get id) "")
+  [{:keys [field id fmt]} {:keys [get save!]}]
+  {:value (let [value (or (get id) "")]
+            (if fmt (gstring/format fmt value) value))
    :on-change #(save! id (->> % (value-of) (format-type field)))})
 
 (defmethod bind :checkbox
@@ -70,9 +79,20 @@
     (set-attrs component opts {:type field})))
 
 (defmethod init-field :numeric
-  [component opts]
-  (fn []
-    (set-attrs component opts {:type :text})))
+  [[type {:keys [id fmt] :as attrs}] {:keys [get save!]}]
+  (let [display-value (atom (get id))]
+    (fn []
+      [type (merge
+             {:type :text
+              :value
+              (if fmt (gstring/format fmt @display-value) @display-value)
+              :on-change
+              #(if-let [value (format-type :numeric (value-of %))]
+                 (do
+                   (reset! display-value value)
+                   (save! id (js/parseFloat value)))
+                 "")}
+             (dissoc attrs :type))])))
 
 (defmethod init-field :checkbox
   [[_ {:keys [id field]} :as component] {:keys [get] :as opts}]
