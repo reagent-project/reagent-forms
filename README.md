@@ -16,6 +16,13 @@ The following types of fields are supported out of the box:
 
 An input field can be of type `:text`, `:numeric`, `:range`, `:password`, `:email`, and `:textarea`. The inputs behave just like regular HTML inputs and update the document state when the `:on-change` event is triggered.
 
+The input fields can have an optional `:fmt` attribute that can provide a format string for the value:
+
+```clojure
+[:input.form-control
+  {:field :numeric :fmt "%.2f" :id :bmi :disabled true}]
+```
+
 ```clojure
 [:input.form-control {:field :text :id :first-name}]
 [:input.form-control {:field :numeric :id :age}]
