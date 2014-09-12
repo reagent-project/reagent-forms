@@ -42,6 +42,10 @@
      {:field :textarea :id :comments}])
 
    [:hr]
+   (input "kg" :numeric :weight-kg)
+   (input "lb" :numeric :weight-lb)
+   
+   [:hr]
    [:h3 "BMI Calculator"]
    (input "height" :numeric :height)
    (input "weight" :numeric :weight)
@@ -128,6 +132,13 @@
        [bind-fields
         form-template
         doc
+        (fn [[id] value {:keys [weight-lb weight-kg] :as document}]
+           (cond 
+            (= id :weight-lb)
+            (assoc document :weight-kg (/ value 2.2046))
+            (= id :weight-kg)
+            (assoc document :weight-lb (* value 2.2046))
+            :else nil))
         (fn [[id] value {:keys [height weight] :as document}]
           (when (and (some #{id} [:height :weight]) weight height)
             (assoc document :bmi (/ weight (* height height)))))]
