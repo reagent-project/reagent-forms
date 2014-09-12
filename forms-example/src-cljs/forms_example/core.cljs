@@ -47,7 +47,7 @@
    (input "weight" :numeric :weight)
    (row "BMI"
         [:input.form-control
-         {:field :numeric :id :bmi :disabled true}])
+         {:field :numeric :fmt "%.2f" :id :bmi :disabled true}])
    [:hr]
 
    (row "isn't data binding lovely?"
