@@ -2,8 +2,7 @@
   (:require [compojure.core :refer [GET defroutes]]
             [noir.util.middleware :refer [app-handler]]
             [compojure.route :as route]
-            [selmer.parser :as parser]
-            [environ.core :refer [env]]))
+            [selmer.parser :as parser]))
 
 (defn resource [r]
  (-> (Thread/currentThread)
@@ -12,10 +11,9 @@
      slurp))
 
 (defroutes base-routes
-  (GET "/" []
+  (GET "/" []       
     (parser/render-file "templates/app.html"
-                        {:dev (env :dev)
-                         :json-css (resource "json.human.css")}))
+                        {:json-css (resource "json.human.css")}))
   (route/resources "/")
   (route/not-found "Not Found"))
 
