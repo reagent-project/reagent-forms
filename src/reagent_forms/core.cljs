@@ -33,6 +33,9 @@
   (or (and (not= "." (last (butlast n))) (= "." (last n)))
       (= "0" (last n))))
 
+(defn format-value [fmt value]
+  (if (and value fmt) (gstring/format fmt value) value))
+
 (defmethod format-type :numeric
   [_ n]
   (let [parsed (js/parseFloat n)]
@@ -52,7 +55,7 @@
 (defmethod bind :input-field
   [{:keys [field id fmt]} {:keys [get save!]}]
   {:value (let [value (or (get id) "")]
-            (if fmt (gstring/format fmt value) value))
+            (format-value fmt value))
    :on-change #(save! id (->> % (value-of) (format-type field)))})
 
 (defmethod bind :checkbox
@@ -89,7 +92,7 @@
                     {:keys [changed-self? value]} @display-value
                     value (if changed-self? value doc-value)]
                 (swap! display-value dissoc :changed-self?)
-                (if fmt (gstring/format fmt value) value))
+                (format-value fmt value))
               :on-change
               #(if-let [value (format-type :numeric (value-of %))]
                  (do
