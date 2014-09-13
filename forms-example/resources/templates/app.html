@@ -19,19 +19,9 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <style>{{json-css}}</style>
     {% style "/css/screen.css" %}
-
-    {% if dev %}
-      <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.11.0/react.js"></script>
-      {% script "/js/goog/base.js" %}
-      {% script "/js/app.js" %}
-      <script type="text/javascript">goog.require("forms_example.core");</script>
-    {% else %}
-      <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.11.0/react.min.js"></script>
-      {% script "/js/app.js" %}
-    {% endif %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.11.0/react.js"></script>
+    {% script "/js/goog/base.js" %}
+    {% script "/js/app.js" %}
+    <script type="text/javascript">goog.require("forms_example.core");</script>    
   </body>
 </html>
-
-
-
-
