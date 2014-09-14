@@ -21,9 +21,8 @@
             events)))
 
 (defn- mk-save-fn [doc events]
-  (let [events (map-events events)]
-    (fn [id value]
-      (swap! doc set-doc-value id value events))))
+  (fn [id value]
+    (swap! doc set-doc-value id value events)))
 
 ;;coerce the input to the appropriate type
 (defmulti format-type
