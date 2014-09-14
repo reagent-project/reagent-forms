@@ -14,13 +14,22 @@
     (fn [id]
       (map keyword (-> id name (split  #"\."))))))
 
+(defn map-events [events]
+  (reduce
+   (fn [m [k v]]
+     (merge m (into {} (map vector k (repeat v)))))
+   {} events))
+
+(defn set-doc-value [doc id value events]
+  (let [path    (id->path id)
+        updated (assoc-in doc path value)]
+    (if-let [event (events id)]
+      (event path value updated) updated)))
+
 (defn- mk-save-fn [doc events]
-  (fn [id value]
-    (swap! doc
-      (fn [current-value]
-        (reduce #(or (%2 (id->path id) value %1) %1)
-                (assoc-in current-value (id->path id) value)
-                events)))))
+  (let [events (map-events events)]
+    (fn [id value]
+      (swap! doc set-doc-value id value events))))
 
 ;;coerce the input to the appropriate type
 (defmulti format-type
