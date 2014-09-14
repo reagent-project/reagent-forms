@@ -15,8 +15,10 @@
       (map keyword (-> id name (split  #"\."))))))
 
 (defn set-doc-value [doc id value events]
-  (let [path    (id->path id)]
-    (reduce #(or (%2 path value %1) %1) (assoc-in doc path value) events)))
+  (let [path (id->path id)]
+    (reduce #(or (%2 path value %1) %1)
+            (assoc-in doc path value)
+            events)))
 
 (defn- mk-save-fn [doc events]
   (let [events (map-events events)]
