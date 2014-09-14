@@ -14,17 +14,9 @@
     (fn [id]
       (map keyword (-> id name (split  #"\."))))))
 
-(defn map-events [events]
-  (reduce
-   (fn [m [k v]]
-     (merge m (into {} (map vector k (repeat v)))))
-   {} events))
-
 (defn set-doc-value [doc id value events]
-  (let [path    (id->path id)
-        updated (assoc-in doc path value)]
-    (if-let [event (events id)]
-      (event path value updated) updated)))
+  (let [path    (id->path id)]
+    (reduce #(or (%2 path value %1) %1) (assoc-in doc path value) events)))
 
 (defn- mk-save-fn [doc events]
   (let [events (map-events events)]
@@ -209,7 +201,7 @@
    form - the form template with the fields
    doc - the document that the fields will be bound to
    events - any events that should be triggered when the document state changes"
-  [form doc & [events]]
+  [form doc & events]
   (let [opts {:get #(get-in @doc (id->path %)) :save! (mk-save-fn doc events)}
         form (prewalk
                (fn [node]
