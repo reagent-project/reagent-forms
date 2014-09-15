@@ -65,7 +65,22 @@ The list field will populate the document with the currently selected child elem
   [:option {:key :foo} "foo"]
   [:option {:key :bar} "bar"]
   [:option {:key :baz} "baz"]]
+
+(def months
+  ["January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"])
+
+[:select {:field :list :id :dob.day}
+  (for [i (range 1 32)]
+    [:option {:key (keyword i)} i])]
+[:select {:field :list :id :dob.month}
+  (for [month months]
+    [:option {:key (keyword month)} month])]
+[:select {:field :list :id :dob.year}
+  (for [i (range 1950 (inc (.getFullYear (js/Date.))))]
+    [:option {:key (keyword i)} i])])
 ```
+
+
 
 #### :single-select
 
