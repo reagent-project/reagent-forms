@@ -219,7 +219,9 @@
     (save! id @selection)
     (fn []
       [type
-       (merge attrs {:on-change #(save! id (clojure.core/get options-lookup (value-of %)))})
+       (merge attrs
+              {:default-value @selection
+               :on-change #(save! id (clojure.core/get options-lookup (value-of %)))})
        (doall
          (filter
            #(if-let [visible? (:visible? (second %))]

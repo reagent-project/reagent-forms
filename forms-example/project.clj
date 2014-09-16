@@ -4,7 +4,7 @@
 
   :dependencies
   [[org.clojure/clojure "1.6.0"]
-   [reagent-forms "0.1.8"]
+   [reagent-forms "0.2.1"]
    [json-html "0.2.2"]
    [org.clojure/clojurescript "0.0-2322"]
    [selmer "0.7.1"]
@@ -15,7 +15,7 @@
 
   :cljsbuild
   {:builds
-   [{:source-paths ["src-cljs"],     
+   [{:source-paths ["src-cljs"],
      :compiler
      {:output-dir "resources/public/js/",
       :optimizations :none,
@@ -24,11 +24,11 @@
       :pretty-print true}}]}
 
   :plugins
-  [[lein-ring "0.8.10"]   
+  [[lein-ring "0.8.10"]
    [lein-cljsbuild "1.0.3"]]
 
   :jvm-opts ["-server"]
-  
+
   :profiles
   {:uberjar {:aot :all}
    :release {:ring {:open-browser? false
