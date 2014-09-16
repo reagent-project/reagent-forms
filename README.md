@@ -270,6 +270,6 @@ By default the options will contain the `get` and the `save!` keys. The `get` ke
 
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2014 Yogthos
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
