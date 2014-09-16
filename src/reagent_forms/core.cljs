@@ -40,10 +40,11 @@
 
 (defmethod format-type :numeric
   [_ n]
-  (let [parsed (js/parseFloat n)]
-    (when-not (js/isNaN parsed)
-      (if (valid-number-ending? n)
-        n parsed))))
+  (when (not-empty n)
+    (let [parsed (js/parseFloat n)]
+      (when-not (js/isNaN parsed)
+        (if (valid-number-ending? n)
+          n parsed)))))
 
 (defmethod format-type :default
   [_ value] value)
@@ -90,7 +91,7 @@
       [type (merge
              {:type :text
               :value
-              (let [doc-value (get id)
+              (let [doc-value (or (get id) "")
                     {:keys [changed-self? value]} @display-value
                     value (if changed-self? value doc-value)]
                 (swap! display-value dissoc :changed-self?)
@@ -100,7 +101,7 @@
                  (do
                    (reset! display-value {:changed-self? true :value value})
                    (save! id (js/parseFloat value)))
-                 "")}
+                 (save! id nil))}
              attrs)])))
 
 (defmethod init-field :checkbox
@@ -168,29 +169,55 @@
        (assoc m key (boolean (some #{key} (if multi-select value [value])))))
      {} selectors)))
 
+(defn extract-selectors
+  "selectors might be passed in inline or as a collection"
+  [selectors]
+  (if (keyword? (ffirst selectors))
+    selectors (first selectors)))
+
 (defn- selection-group
   [[type {:keys [field id] :as attrs} & selection-items] opts]
-  (let [selections (atom (mk-selections id selection-items opts))
-        selectors (map (fn [item] [(group-item item opts selections field id)])
+  (let [selection-items (extract-selectors selection-items)
+        selections (atom (mk-selections id selection-items opts))
+        selectors (map (fn [item]
+                         {:visible? (:visible? (second item))
+                          :selector [(group-item item opts selections field id)]})
                        selection-items)]
-    (into [type attrs] selectors)))
+    (fn []
+      [type
+       attrs
+       (->> selectors
+           (filter
+           #(if-let [visible? (:visible? %)]
+             (visible? @(:doc opts)) true))
+           (map :selector)
+           (doall))])))
 
 (defmethod init-field :single-select
   [field opts]
-  (selection-group field opts))
+  (fn []
+    [selection-group field opts]))
 
 (defmethod init-field :multi-select
   [field opts]
-  (selection-group field (assoc opts :multi-select true)))
+  (fn []
+    [selection-group field (assoc opts :multi-select true)]))
 
 (defmethod init-field :list
-  [[type {:keys [field id] :as attrs} & options] {:keys [get save!]}]
-  (let [selection (atom (or
+  [[type {:keys [field id] :as attrs} & options] {:keys [doc get save!]}]
+  (let [options (extract-selectors options)
+        selection (atom (or
                          (get id)
                          (get-in (first options) [1 :key])))]
     (save! id @selection)
     (fn []
-      [type (merge attrs {:on-change #(save! id (value-of %))}) options])))
+      [type
+       (merge attrs {:on-change #(save! id (value-of %))})
+       (doall
+         (filter
+           #(if-let [visible? (:visible? (second %))]
+             (visible? @doc) true)
+           options))])))
 
 (defn- field? [node]
   (and (coll? node)
@@ -203,7 +230,7 @@
    doc - the document that the fields will be bound to
    events - any events that should be triggered when the document state changes"
   [form doc & events]
-  (let [opts {:get #(get-in @doc (id->path %)) :save! (mk-save-fn doc events)}
+  (let [opts {:doc doc :get #(get-in @doc (id->path %)) :save! (mk-save-fn doc events)}
         form (prewalk
                (fn [node]
                  (if (field? node)
