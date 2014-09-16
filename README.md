@@ -12,7 +12,7 @@ The library uses a Reagent atom as the document store. The components are bound 
 
 The following types of fields are supported out of the box:
 
-#### :input
+### :input
 
 An input field can be of type `:text`, `:numeric`, `:range`, `:password`, `:email`, and `:textarea`. The inputs behave just like regular HTML inputs and update the document state when the `:on-change` event is triggered.
 
@@ -28,7 +28,7 @@ The input fields can have an optional `:fmt` attribute that can provide a format
   {:field :numeric :fmt "%.2f" :id :bmi :disabled true}]
 ```
 
-#### :checkbox
+### :checkbox
 
 The checkbox field creates a checkbox element:
 
@@ -38,7 +38,7 @@ The checkbox field creates a checkbox element:
   [:div.col-md-5
    [:input.form-control {:field :checkbox :id :happy-bindings}]]]
 ```
-#### :range
+### :range
 
 Range control uses the `:min` and `:max` keys to create an HTML range input:
 
@@ -47,7 +47,7 @@ Range control uses the `:min` and `:max` keys to create an HTML range input:
  {:field :range :min 10 :max 100 :id :some-range}]
 ```
 
-#### :radio
+### :radio
 
 Radio buttons are grouped using the `:name` attribute and their `:value` attribute is saved to the document:
 
@@ -56,11 +56,14 @@ Radio buttons are grouped using the `:name` attribute and their `:value` attribu
 [:input {:field :radio :value :b :name :foo :id :radioselection} "bar"]
 [:input {:field :radio :value :c :name :foo :id :radioselection} "baz"]
 ```
+
+### Lists
+
+The list field will populate the document with the currently selected child element. The child elements must each have a `:key` attribute pointing to the value that will be saved in the document. The selection items can have an optional `:visible?` keyword that points to a predicate function. The function should accept the document and return a boolean value indicatiing whether the field should be shown.
+
 #### :list
 
-The list field will populate the document with the currently selected child element. The child elements must each have a `:key` attribute pointing to the value that will be saved in the document. The selection items can have an optional `:visible?`
-keyword that points to a predicate function. The function should accept the document and return a boolean value indicatiing
-whether the field should be shown:
+The `:list` field is used for creating HTML `select` elements containing `option` child elements:
 
 ```clojure
 [:select.form-control {:field :list :id :many-options}
@@ -97,7 +100,7 @@ whether the field should be shown:
 
 #### :single-select
 
-The single-select field behaves like the list, but supports different types of elements and allows the fields to be deselected. The `:key` attribute of the selected child element is persisted:
+The single-select field behaves like the list, but supports different types of elements and allows the fields to be deselected:
 
 ```clojure
 [:h3 "single-select buttons"]
@@ -115,7 +118,7 @@ The single-select field behaves like the list, but supports different types of e
 
 #### :multi-select
 
-The multi-select field allows multiple values to be selected and set in the document, the `:key` attribute of the selected children are persisted:
+The multi-select field allows multiple values to be selected and set in the document:
 
 ```clojure
 [:h3 "multi-select list"]
@@ -125,7 +128,7 @@ The multi-select field allows multiple values to be selected and set in the docu
   [:button.btn.btn-default {:key :right} "Right"]]
 ```
 
-#### :label
+### :label
 
 Labels can be associated with a key in the document using the `:id` attribute and will display the value at that key. The lables can have an optional `:preamble` and `:postamble` keys with the text that will be rendered before and after the value respectively. The `:placeholder` key can be used to provide text that will be displayed in absence of a value:
 
@@ -137,7 +140,7 @@ Labels can be associated with a key in the document using the `:id` attribute an
 
 ```
 
-#### :alert
+### :alert
 
 Alerts are bound to an id of a field that triggers the alert and can have an optional `:event` key. The event key should point to a function that returns a boolean value.
 
@@ -164,7 +167,7 @@ When no event is supplied, then the alert is shown whenever the value at the id 
   "save"]
 ```
 
-### Binding the form to a document
+## Binding the form to a document
 
 The field components behave just like any other Reagent components and can be mixed with them freely. A complete form example can be seen below.
 
