@@ -59,7 +59,9 @@ Radio buttons are grouped using the `:name` attribute and their `:value` attribu
 
 ### Lists
 
-The list field will populate the document with the currently selected child element. The child elements must each have a `:key` attribute pointing to the value that will be saved in the document. The selection items can have an optional `:visible?` keyword that points to a predicate function. The function should accept the document and return a boolean value indicatiing whether the field should be shown.
+List fields contain child elements whose values are populated in the document when they are selected. The child elements must each have a `:key` attribute pointing to the value that will be saved in the document. The value of the element must be a keyword.
+
+The elements can have an optional `:visible?` keyword that points to a predicate function. The function should accept the document and return a boolean value indicatiing whether the field should be shown.
 
 #### :list
 
