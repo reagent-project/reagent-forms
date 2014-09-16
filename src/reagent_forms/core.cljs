@@ -203,16 +203,23 @@
   (fn []
     [selection-group field (assoc opts :multi-select true)]))
 
+(defn map-options [options]
+  (into
+   {}
+   (for [[_ {:keys [key]} label] options]
+     [label key])))
+
 (defmethod init-field :list
   [[type {:keys [field id] :as attrs} & options] {:keys [doc get save!]}]
   (let [options (extract-selectors options)
+        options-lookup (map-options options)
         selection (atom (or
                          (get id)
                          (get-in (first options) [1 :key])))]
     (save! id @selection)
     (fn []
       [type
-       (merge attrs {:on-change #(save! id (value-of %))})
+       (merge attrs {:on-change #(save! id (clojure.core/get options-lookup (value-of %)))})
        (doall
          (filter
            #(if-let [visible? (:visible? (second %))]
