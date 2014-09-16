@@ -58,7 +58,9 @@ Radio buttons are grouped using the `:name` attribute and their `:value` attribu
 ```
 #### :list
 
-The list field will populate the document with the currently selected child element. The child elements must each have a `:key` attribute pointing to the value that will be saved in the document:
+The list field will populate the document with the currently selected child element. The child elements must each have a `:key` attribute pointing to the value that will be saved in the document. The selection items can have an optional `:visible?`
+keyword that points to a predicate function. The function should accept the document and return a boolean value indicatiing
+whether the field should be shown:
 
 ```clojure
 [:select.form-control {:field :list :id :many-options}
@@ -67,17 +69,28 @@ The list field will populate the document with the currently selected child elem
   [:option {:key :baz} "baz"]]
 
 (def months
-  ["January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"])
+  ["January" "February" "March" "April" "May" "June"
+   "July" "August" "September" "October" "November" "December"])
 
 [:select {:field :list :id :dob.day}
-  (for [i (range 1 32)]
-    [:option {:key (keyword i)} i])]
-[:select {:field :list :id :dob.month}
-  (for [month months]
-    [:option {:key (keyword month)} month])]
-[:select {:field :list :id :dob.year}
-  (for [i (range 1950 (inc (.getFullYear (js/Date.))))]
-    [:option {:key (keyword i)} i])])
+      (for [i (range 1 32)]
+        [:option
+         {:key (keyword (str i))
+          :visible? #(let [month (get-in % [:dob :month])]
+                       (cond
+                        (< i 29) true
+                        (= i 30)
+                        (not= month "February")
+                        (= i 31)
+                        (some #{month} ["January" "March" "May" "July" "August" "October" "December"])
+                        :else false))}
+         i])]
+   [:select {:field :list :id :dob.month}
+      (for [month months]
+        [:option {:key (keyword month)} month])]
+   [:select {:field :list :id :dob.year}
+      (for [i (range 1950 (inc (.getFullYear (js/Date.))))]
+        [:option {:key (keyword (str i))} i])]
 ```
 
 
