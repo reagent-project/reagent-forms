@@ -84,7 +84,7 @@ The `:list` field is used for creating HTML `select` elements containing `option
           :visible? #(let [month (get-in % [:dob :month])]                       
                        (cond
                         (< i 29) true
-                        (= i 30) (not= month :February)
+                        (< i 31) (not= month :February)
                         (= i 31) (some #{month} [:January :March :May :July :July :October :December])
                         :else false))}
           i])]
