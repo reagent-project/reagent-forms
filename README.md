@@ -81,21 +81,19 @@ The `:list` field is used for creating HTML `select` elements containing `option
       (for [i (range 1 32)]
         [:option
          {:key (keyword (str i))
-          :visible? #(let [month (get-in % [:dob :month])]
+          :visible? #(let [month (get-in % [:dob :month])]                       
                        (cond
                         (< i 29) true
-                        (= i 30)
-                        (not= month "February")
-                        (= i 31)
-                        (some #{month} ["January" "March" "May" "July" "August" "October" "December"])
+                        (= i 30) (not= month :February)
+                        (= i 31) (some #{month} [:January :March :May :July :July :October :December])
                         :else false))}
-         i])]
-   [:select {:field :list :id :dob.month}
-      (for [month months]
-        [:option {:key (keyword month)} month])]
-   [:select {:field :list :id :dob.year}
-      (for [i (range 1950 (inc (.getFullYear (js/Date.))))]
-        [:option {:key (keyword (str i))} i])]
+          i])]
+[:select {:field :list :id :dob.month}
+  (for [month months]
+    [:option {:key (keyword month)} month])]
+[:select {:field :list :id :dob.year}
+  (for [i (range 1950 (inc (.getFullYear (js/Date.))))]
+    [:option {:key (keyword (str i))} i])]
 ```
 
 
