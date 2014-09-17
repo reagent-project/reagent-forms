@@ -207,7 +207,7 @@
   (into
    {}
    (for [[_ {:keys [key]} label] options]
-     [label key])))
+     [(str label) key])))
 
 (defmethod init-field :list
   [[type {:keys [field id] :as attrs} & options] {:keys [doc get save!]}]
