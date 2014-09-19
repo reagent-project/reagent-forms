@@ -1,0 +1,12 @@
+.typeahead {
+    list-style-type: none;
+    padding: 5px;
+    margin-top: 3px;
+    border: solid 1px grey;
+    border-radius: 3px;
+    position: absolute;
+    z-index: 2;
+    background-color: white;
+    overflow-y: scroll;
+    max-height: 300px;
+    width: 200px}
