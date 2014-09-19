@@ -147,6 +147,30 @@
                     (reset! state (= value (get id))))}
                 attrs)]
          body))))
+       
+
+(defmethod init-field :typeahead
+           [[type {:keys [id data-source]}] {:keys [get save!]}]
+  (let [typeahead-hidden? (atom true)
+        mouse-on-list? (atom false)]
+    (fn []
+      [type
+       [:input {:type      :text
+                :value     (get id)
+                :on-blur   #(when-not @mouse-on-list?
+                             (reset! typeahead-hidden? true))
+                :on-change #(do
+                             (save! id (-> % (.-target) (.-value)))
+                             (reset! typeahead-hidden? false))}]
+       (when-let [value (get id)]
+         (let [results (data-source (.toLowerCase value))]
+           [:ul.typeahead {:hidden         (or (empty? results) @typeahead-hidden?)
+                           :on-mouse-enter #(reset! mouse-on-list? true)
+                           :on-mouse-leave #(reset! mouse-on-list? false)}
+            (for [result results]
+              [:li {:on-click #(do
+                                (reset! typeahead-hidden? true)
+                                (save! id result))} result])]))])))
 
 (defn- group-item [[type {:keys [key touch-event] :as attrs} & body] {:keys [save! multi-select]} selections field id]
   (letfn [(handle-click! []
