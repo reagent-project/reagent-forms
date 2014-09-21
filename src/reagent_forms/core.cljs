@@ -147,7 +147,6 @@
                     (reset! state (= value (get id))))}
                 attrs)]
          body))))
-       
 
 (defmethod init-field :typeahead
            [[type {:keys [id data-source]}] {:keys [get save!]}]
@@ -160,7 +159,7 @@
                 :on-blur   #(when-not @mouse-on-list?
                              (reset! typeahead-hidden? true))
                 :on-change #(do
-                             (save! id (-> % (.-target) (.-value)))
+                             (save! id (save! id (value-of %)))
                              (reset! typeahead-hidden? false))}]
        (when-let [value (get id)]
          (let [results (data-source (.toLowerCase value))]
