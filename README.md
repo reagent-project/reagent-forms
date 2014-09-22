@@ -27,6 +27,16 @@ The input fields can have an optional `:fmt` attribute that can provide a format
 [:input.form-control
   {:field :numeric :fmt "%.2f" :id :bmi :disabled true}]
 ```
+#### :typeahead
+
+The typeahead field uses a `:data-source` key bound to a function that takes the current input and returns a list of matching results:
+
+```clojure
+(defn source [text]
+  (filter #(some #{text} %) ["Alice" "Alan" "Bob" "Beth"]))
+
+[:div {:field :typeahead :id :ta :data-source source}]
+```
 
 #### :checkbox
 
@@ -81,7 +91,7 @@ The `:list` field is used for creating HTML `select` elements containing `option
       (for [i (range 1 32)]
         [:option
          {:key (keyword (str i))
-          :visible? #(let [month (get-in % [:dob :month])]                       
+          :visible? #(let [month (get-in % [:dob :month])]
                        (cond
                         (< i 29) true
                         (< i 31) (not= month :February)
