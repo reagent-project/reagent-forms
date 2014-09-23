@@ -4,7 +4,9 @@
    [clojure.string :refer [split]]
    [goog.string :as gstring]
    [goog.string.format]
-   [reagent.core :as reagent :refer [atom]]))
+   [reagent.core :as reagent :refer [atom]]
+   [reagent-forms.datepicker
+    :refer [parse-format format-date datepicker]]))
 
 (defn value-of [element]
  (-> element .-target .-value))
@@ -104,6 +106,24 @@
                  (save! id nil))}
              attrs)])))
 
+(defmethod init-field :datepicker
+  [[_ {:keys [id date-format inline]}] {:keys [get save!]}]
+  (let [fmt (parse-format date-format)
+        today (js/Date.)
+        expanded? (atom false)]
+    (fn[]
+      [:div
+       [:div.input-group.date
+         [:input.form-control
+          {:read-only true
+           :type :text
+           :value (when-let [date (get id)] (format-date date fmt))}]
+         [:span.input-group-addon
+          {:on-click #(swap! expanded? not)}
+          [:i.glyphicon.glyphicon-calendar]]]
+       [datepicker (.getFullYear today) (.getMonth today) expanded? #(get id) #(save! id %)]])))
+
+
 (defmethod init-field :checkbox
   [[_ {:keys [id field]} :as component] {:keys [get] :as opts}]
   (let [state (atom (get id))]
@@ -171,7 +191,7 @@
                                 (reset! typeahead-hidden? true)
                                 (save! id result))} result])]))])))
 
-(defn- group-item [[type {:keys [key touch-event] :as attrs} & body] {:keys [save! multi-select]} selections field id]
+(defn- group-item [[type {:keys [key touch-event] :as attrs} & body] {:keys [get save! multi-select]} selections field id]
   (letfn [(handle-click! []
            (if multi-select
              (do
@@ -199,7 +219,7 @@
     selectors (first selectors)))
 
 (defn- selection-group
-  [[type {:keys [field id] :as attrs} & selection-items] opts]
+  [[type {:keys [field id] :as attrs} & selection-items] {:keys [get] :as opts}]
   (let [selection-items (extract-selectors selection-items)
         selections (atom (mk-selections id selection-items opts))
         selectors (map (fn [item]
@@ -207,6 +227,8 @@
                           :selector [(group-item item opts selections field id)]})
                        selection-items)]
     (fn []
+      (when-not (get id)
+        (swap! selections #(into {} (map (fn [[k]] [k false]) %))))
       [type
        attrs
        (->> selectors
