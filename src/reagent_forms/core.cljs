@@ -1,6 +1,6 @@
 (ns reagent-forms.core
   (:require
-   [clojure.walk :refer [prewalk]]
+   [clojure.walk :refer [postwalk]]
    [clojure.string :refer [split]]
    [goog.string :as gstring]
    [goog.string.format]
@@ -285,7 +285,7 @@
    events - any events that should be triggered when the document state changes"
   [form doc & events]
   (let [opts {:doc doc :get #(get-in @doc (id->path %)) :save! (mk-save-fn doc events)}
-        form (prewalk
+        form (postwalk
                (fn [node]
                  (if (field? node)
                    (let [field (init-field node opts)]
