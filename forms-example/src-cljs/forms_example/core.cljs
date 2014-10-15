@@ -1,5 +1,5 @@
 (ns forms-example.core
-  (:require [json-html.core :refer [edn->html]]
+  (:require [json-html.core :refer [edn->hiccup]]
             [reagent.core :as reagent :refer [atom]]
             [reagent-forms.core :refer [bind-fields init-field value-of]]))
 
@@ -44,7 +44,7 @@
    [:hr]
    (input "kg" :numeric :weight-kg)
    (input "lb" :numeric :weight-lb)
-   
+
    [:hr]
    [:h3 "BMI Calculator"]
    (input "height" :numeric :height)
@@ -103,14 +103,6 @@
     [:li.list-group-item {:key :bar} "bar"]
     [:li.list-group-item {:key :baz} "baz"]]])
 
-(defn mounted-component [component handler]
-     (with-meta
-       (fn [] component)
-       {:component-did-mount
-        (fn [this]
-          (let [node (reagent.core/dom-node this)]
-            (handler node)))}))
-
 (defn page []
   (let [doc (atom {:person {:first-name "John"
                             :age 35
@@ -133,7 +125,7 @@
         form-template
         doc
         (fn [[id] value {:keys [weight-lb weight-kg] :as document}]
-           (cond 
+           (cond
             (= id :weight-lb)
             (assoc document :weight-kg (/ value 2.2046))
             (= id :weight-kg)
@@ -151,8 +143,6 @@
 
        [:hr]
        [:h1 "Document State"]
-       [(mounted-component
-         [:p @doc]
-         #(set! (.-innerHTML %) (edn->html @doc)))]])))
+       [edn->hiccup @doc]])))
 
 (reagent/render-component [page] (.getElementById js/document "app"))
