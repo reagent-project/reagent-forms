@@ -281,6 +281,16 @@ take two parameters, where the first parameter is the field component and the se
 
 By default the options will contain the `get` and the `save!` keys. The `get` key points to a function that accepts an id and returns the document value associated with it. The `save!` function accepts an id and a value that will be associated with it.
 
+## Mobile Gotchas
+
+Safari on iOS will have a 300ms delay for `:on-click` events, it's possible to set a custom trigger event using the `:touch-event` key. See [here](http://facebook.github.io/react/docs/events.html) for the list of events available in React. For example, if we wanted to use `:on-touch-start` instead of `:on-click` to trigger the event then we could do the following:
+
+```clojure
+[:input.form-control {:field :text :id :first-name :touch-event :on-touch-start}]
+```
+
+Note that you will also have to set the style of `cursor: pointer` for any elements other than buttons in order for events to work on iOS.
+
 ## License
 
 Copyright © 2014 Yogthos
