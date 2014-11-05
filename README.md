@@ -226,13 +226,13 @@ The form can be initialized with a populated document, and the fields will be in
 (def form-template
   [:div
    (row "first name"
-        [:input.form-control {:field :text :id :first-name})]
+        [:input.form-control {:field :text :id :first-name}])
    (row "last name"
-        [:input.form-control {:field :text :id :last-name})]
+        [:input.form-control {:field :text :id :last-name}])
    (row "age"
-        [:input {:field.form-control :numeric :id :age})]
+        [:input {:field.form-control :numeric :id :age}])
    (row "email"
-        [:input {:field.form-control :email :id :email})]
+        [:input {:field.form-control :email :id :email}])
    (row "comments"
         [:textarea.form-control {:field :textarea :id :comments}]))
 
