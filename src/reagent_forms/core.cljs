@@ -254,6 +254,12 @@
    (for [[_ {:keys [key]} label] options]
      [(str label) key])))
 
+(defn default-selection [options v]
+  (->> options
+       (filter #(= v (get-in % [1 :key])))
+       (first)
+       (last)))
+
 (defmethod init-field :list
   [[type {:keys [field id] :as attrs} & options] {:keys [doc get save!]}]
   (let [options (extract-selectors options)
@@ -265,7 +271,7 @@
     (fn []
       [type
        (merge attrs
-              {:default-value @selection
+              {:default-value (default-selection options @selection)
                :on-change #(save! id (clojure.core/get options-lookup (value-of %)))})
        (doall
          (filter
