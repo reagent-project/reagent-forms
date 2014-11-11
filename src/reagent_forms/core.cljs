@@ -38,7 +38,7 @@
       (= "0" (last n))))
 
 (defn format-value [fmt value]
-  (if (and value fmt) (gstring/format fmt value) value))
+  (if (and (not (js/isNaN (js/parseFloat value))) fmt) (gstring/format fmt value) value))
 
 (defmethod format-type :numeric
   [_ n]
