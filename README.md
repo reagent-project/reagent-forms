@@ -107,7 +107,6 @@ The `:list` field is used for creating HTML `select` elements containing `option
 ```
 
 
-
 #### :single-select
 
 The single-select field behaves like the list, but supports different types of elements and allows the fields to be deselected:
@@ -176,6 +175,27 @@ When no event is supplied, then the alert is shown whenever the value at the id 
       (swap! doc assoc-in [:errors :first-name] "first name is empty!"))}
   "save"]
 ```
+
+#### :datepicker
+
+```clojure
+[:div {:field :datepicker :id :birthday :date-format "yyyy/mm/dd" :inline true}]
+```
+
+The datepicker requires additional CSS in order to be rendered correctly. The default CSS is provided
+in `reagent-forms.css` in the resource path. Simply make sure that it's included on the page.
+The File can be read using:
+
+```clojure
+(defn resource [r]
+ (-> (Thread/currentThread)
+     (.getContextClassLoader)
+     (.getResource r)
+     slurp))
+
+(resource "reagent-forms.css")
+```
+
 
 ## Binding the form to a document
 
