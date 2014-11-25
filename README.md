@@ -181,6 +181,11 @@ When no event is supplied, then the alert is shown whenever the value at the id 
 ```clojure
 [:div {:field :datepicker :id :birthday :date-format "yyyy/mm/dd" :inline true}]
 ```
+The date is stored in the document using the following format:
+
+```clojure
+{:year 2014 :month 11 :day 24}
+```
 
 The datepicker requires additional CSS in order to be rendered correctly. The default CSS is provided
 in `reagent-forms.css` in the resource path. Simply make sure that it's included on the page.
