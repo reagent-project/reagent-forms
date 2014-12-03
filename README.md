@@ -308,6 +308,12 @@ By default the options will contain the `get` and the `save!` keys. The `get` ke
 
 ## Mobile Gotchas
 
+React requires additional initialization in order to handle touch events:
+
+```clojure
+(.initializeTouchEvents js/React true)
+```
+
 Safari on iOS will have a 300ms delay for `:on-click` events, it's possible to set a custom trigger event using the `:touch-event` key. See [here](http://facebook.github.io/react/docs/events.html) for the list of events available in React. For example, if we wanted to use `:on-touch-start` instead of `:on-click` to trigger the event then we could do the following:
 
 ```clojure
