@@ -9,18 +9,24 @@
    :months ["January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"]
    :month-short ["Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]})
 
-(defn split-parts [fmt separator]
-  (vec
-    (map keyword
-         (s/split fmt (if separator (re-pattern separator) #"W+")))))
+(defn separator-matcher [fmt]
+  (if-let [separator (or (re-find #"[.\/\-\s].*?" fmt) " ")]
+    [separator
+     (condp = separator
+       "." #"\."
+       " " #"W+"
+       (re-pattern separator))]))
+
+(defn split-parts [fmt matcher]
+  (->> (s/split fmt matcher) (map keyword) vec))
 
 (defn parse-format [fmt]
   (let [fmt (or fmt "mm/dd/yyyy")
-        separator (re-find #"[.\/\-\s].*?" fmt)
-        parts (split-parts fmt separator)]
-    (when (or (empty? parts) (nil? separator))
+        [separator matcher] (separator-matcher fmt)
+        parts (split-parts fmt matcher)]
+    (when (empty? parts)
       (throw (js/Error. "Invalid date format.")))
-    {:separator separator :parts parts}))
+    {:separator separator :matcher matcher :parts parts}))
 
 (defn leap-year? [year]
   (or
@@ -40,7 +46,7 @@
       (.setMilliseconds 0)))
 
 (defn parse-date [date fmt]
-  (let [parts (s/split date (re-pattern (:separator fmt)))
+  (let [parts (s/split date (:matcher fmt))
         date (blank-date)
         fmt-parts (count (:parts fmt))]
     (if (= (count (:parts fmt)) (count parts))
