@@ -115,13 +115,11 @@
      (map (fn [week] (into [:tr] week))))))
 
 (defn last-date [[year month]]
-  (.log js/console year month)
   (if (pos? month)
     [year (dec month)]
     [(dec year) 11]))
 
 (defn next-date [[year month]]
-  (.log js/console year month)
   (if (= month 11)
     [(inc year) 0]
     [year (inc month)]))
