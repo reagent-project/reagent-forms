@@ -117,6 +117,7 @@
          [:input.form-control
           {:read-only true
            :type :text
+           :on-click #(swap! expanded? not)
            :value (when-let [date (get id)] (format-date date fmt))}]
          [:span.input-group-addon
           {:on-click #(swap! expanded? not)}
