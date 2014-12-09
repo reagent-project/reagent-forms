@@ -99,7 +99,7 @@
            (- last-month-days (dec (- first-day i))))]
          (< i (+ first-day num-days))
          (let [day (inc (- i first-day))
-               date {:year year :month month :day day}]
+               date {:year year :month (inc month) :day day}]
            [:td.day
              {:class (when-let [doc-date (get)]
                       (when (= doc-date date) "active"))
@@ -115,13 +115,15 @@
      (map (fn [week] (into [:tr] week))))))
 
 (defn last-date [[year month]]
+  (.log js/console year month)
   (if (pos? month)
     [year (dec month)]
     [(dec year) 11]))
 
 (defn next-date [[year month]]
+  (.log js/console year month)
   (if (= month 11)
-    [(inc year) 1]
+    [(inc year) 0]
     [year (inc month)]))
 
 ;;TODO handle month, year views
