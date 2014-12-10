@@ -17,6 +17,11 @@
 (defn input [label type id]
   (row label [:input.form-control {:field type :id id}]))
 
+(defn friend-source [text]
+  (filter
+   #(-> % (.toLowerCase %) (.indexOf text) (> -1))
+   ["Alice" "Alan" "Bob" "Beth" "Jim" "Jane" "Kim" "Rob" "Zoe"]))
+
 (def form-template
   [:div
    (input "first name" :text :person.first-name)
@@ -53,6 +58,11 @@
         [:input.form-control
          {:field :numeric :fmt "%.2f" :id :bmi :disabled true}])
    [:hr]
+
+   [:div
+    [:span "Best friend:"]
+    [:div {:field :typeahead :id :ta :data-source friend-source}]]
+   [:br]
 
    (row "isn't data binding lovely?"
         [:input {:field :checkbox :id :databinding.lovely}])
