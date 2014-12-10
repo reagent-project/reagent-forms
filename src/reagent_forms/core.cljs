@@ -180,7 +180,7 @@
                 :on-blur   #(when-not @mouse-on-list?
                              (reset! typeahead-hidden? true))
                 :on-change #(do
-                             (save! id (save! id (value-of %)))
+                             (save! id (value-of %))
                              (reset! typeahead-hidden? false))}]
        (when-let [value (get id)]
          (let [results (data-source (.toLowerCase value))]
