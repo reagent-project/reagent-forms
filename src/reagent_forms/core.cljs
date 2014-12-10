@@ -294,11 +294,9 @@
   (let [opts {:doc doc
               :get #(get-in @doc (id->path %))
               :save! (mk-save-fn doc events)}
-        form (postwalk
-               (fn [node]
-                 (if (field? node)
-                   (let [field (init-field node opts)]
-                     (if (fn? field) [field] field))
-                   node))
-               form)]
-    (fn [] form)))
+        transform (fn [node]
+                    (if (field? node)
+                      (let [field (init-field node opts)]
+                        (if (fn? field) [field] field))
+                      node))]
+    (postwalk transform form)))
