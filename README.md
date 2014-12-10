@@ -32,10 +32,12 @@ The input fields can have an optional `:fmt` attribute that can provide a format
 The typeahead field uses a `:data-source` key bound to a function that takes the current input and returns a list of matching results:
 
 ```clojure
-(defn source [text]
-  (filter #(some #{text} %) ["Alice" "Alan" "Bob" "Beth"]))
+(defn friend-source [text]  
+  (filter
+   #(-> % (.toLowerCase %) (.indexOf text) (> -1))
+   ["Alice" "Alan" "Bob" "Beth" "Jim" "Jane" "Kim" "Rob" "Zoe"]))
 
-[:div {:field :typeahead :id :ta :data-source source}]
+[:div {:field :typeahead :id :ta :data-source friend-source}]
 ```
 
 #### :checkbox
