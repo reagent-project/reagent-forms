@@ -34,8 +34,8 @@ The typeahead field uses a `:data-source` key bound to a function that takes the
 ```clojure
 (defn friend-source [text]  
   (filter
-   #(-> % (.toLowerCase %) (.indexOf text) (> -1))
-   ["Alice" "Alan" "Bob" "Beth" "Jim" "Jane" "Kim" "Rob" "Zoe"]))
+    #(-> % (.toLowerCase %) (.indexOf text) (> -1))
+    ["Alice" "Alan" "Bob" "Beth" "Jim" "Jane" "Kim" "Rob" "Zoe"]))
 
 [:div {:field :typeahead :id :ta :data-source friend-source}]
 ```
