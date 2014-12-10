@@ -291,12 +291,12 @@
    doc - the document that the fields will be bound to
    events - any events that should be triggered when the document state changes"
   [form doc & events]
-  (let [opts {:doc doc :get #(get-in @doc (id->path %)) :save! (mk-save-fn doc events)}
-        form (postwalk
-               (fn [node]
-                 (if (field? node)
-                   (let [field (init-field node opts)]
-                     (if (fn? field) [field] field))
-                   node))
-               form)]
-    (fn [] form)))
+  (let [opts {:doc doc
+              :get #(get-in @doc (id->path %))
+              :save! (mk-save-fn doc events)}
+        transform (fn [node]
+                    (if (field? node)
+                      (let [field (init-field node opts)]
+                        (if (fn? field) [field] field))
+                      node))]
+    (postwalk transform form)))
