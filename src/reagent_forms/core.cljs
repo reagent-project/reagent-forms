@@ -192,18 +192,18 @@
                                 (reset! typeahead-hidden? true)
                                 (save! id result))} result])]))])))
 
-(defn- group-item [[type {:keys [key touch-event] :as attrs} & body] {:keys [get save! multi-select]} selections field id]
+(defn- group-item [[type {:keys [key touch-event] :as attrs} & body] {:keys [save! multi-select]} selections field id]
   (letfn [(handle-click! []
            (if multi-select
              (do
                (swap! selections update-in [key] not)
                (save! id (->> @selections (filter second) (map first))))
-             (let [value (key @selections)]
+             (let [value (get @selections key)]
                (reset! selections {key (not value)})
-               (save! id (when (key @selections) key)))))]
+               (save! id (when (get @selections key) key)))))]
 
     (fn []
-      [type (merge {:class (if (key @selections) "active")
+      [type (merge {:class (if (get @selections key) "active")
                     (or touch-event :on-click) handle-click!} attrs) body])))
 
 (defn- mk-selections [id selectors {:keys [get multi-select]}]
