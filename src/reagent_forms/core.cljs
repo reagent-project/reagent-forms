@@ -83,8 +83,7 @@
 
 (defmethod init-field :input-field
   [[_ {:keys [field]} :as component] opts]
-  (fn []
-    (set-attrs component opts {:type field})))
+  (set-attrs component opts {:type field}))
 
 (defmethod init-field :numeric
   [[type {:keys [id fmt] :as attrs}] {:keys [get save!]}]
