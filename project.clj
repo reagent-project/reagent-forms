@@ -1,11 +1,11 @@
-(defproject reagent-forms "0.2.9"
+(defproject reagent-forms "0.3.0"
   :description "data binding library for Reagent"
   :url "https://github.com/yogthos/reagent-forms"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :clojurescript? true
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [reagent "0.4.2"]]
+                 [reagent "0.4.3"]]
   :plugins [[codox "0.6.4"]]
   :profiles {:dev
              {:dependencies [[org.clojure/clojurescript "0.0-2322"]]
