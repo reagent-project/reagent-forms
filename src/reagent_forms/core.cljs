@@ -83,8 +83,7 @@
 
 (defmethod init-field :input-field
   [[_ {:keys [field]} :as component] opts]
-  (fn []
-    (set-attrs component opts {:type field})))
+  (set-attrs component opts {:type field}))
 
 (defmethod init-field :numeric
   [[type {:keys [id fmt] :as attrs}] {:keys [get save!]}]
@@ -294,11 +293,9 @@
   (let [opts {:doc doc
               :get #(get-in @doc (id->path %))
               :save! (mk-save-fn doc events)}
-        form (postwalk
-               (fn [node]
-                 (if (field? node)
-                   (let [field (init-field node opts)]
-                     (if (fn? field) [field] field))
-                   node))
-               form)]
-    (fn [] form)))
+        transform (fn [node]
+                    (if (field? node)
+                      (let [field (init-field node opts)]
+                        (if (fn? field) [field] field))
+                      node))]
+    (postwalk transform form)))
