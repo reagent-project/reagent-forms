@@ -124,26 +124,82 @@
     [(inc year) 0]
     [year (inc month)]))
 
-;;TODO handle month, year views
-(defn datepicker [year month expanded? get save!]
-  (let [date (atom [year month])]
+(defn year-picker [year-month view-selector]
+  (let [start-year (atom (- (first @year-month) 10))]
+   (fn []
+     [:table.table-condensed
+      [:thead
+       [:tr
+        [:th.prev {:on-click #(swap! start-year - 10)} "‹"]
+         [:th.switch
+          {:col-span 2}
+          (str @start-year " - " (+ @start-year 10))]
+         [:th.next {:on-click #(swap! start-year + 10)} "›"]]]
+      [:tbody
+       (for [row (->> (range @start-year (+ @start-year 12))
+                  (partition 4))]
+    [:tr
+     (for [year row]
+       [:td.year
+        {:on-click #(do
+                      (swap! year-month assoc-in [0] year)
+                      (reset! view-selector :month))}
+        year])])]])))
+
+(defn month-picker [year-month view-selector]
+  (let [year (atom (first @year-month))]
     (fn []
-      [:div
-       {:class (str "datepicker"(when-not @expanded? " dropdown-menu"))}
-       [:table.table-condensed
-        [:thead
-         [:tr
-           [:th.prev {:on-click #(swap! date last-date)} "‹"]
-           [:th.switch
-            {:col-span 5}
-            (str (get-in dates [:months (second @date)]) " " (first @date))]
-           [:th.next {:on-click #(swap! date next-date)} "›"]]
-         [:tr
-           [:th.dow "Su"]
-           [:th.dow "Mo"]
-           [:th.dow "Tu"]
-           [:th.dow "We"]
-           [:th.dow "Th"]
-           [:th.dow "Fr"]
-           [:th.dow "Sa"]]]
-        (into [:tbody] (gen-days @date get save!))]])))
+      [:table.table-condensed
+       [:thead
+        [:tr
+         [:th.prev {:on-click #(swap! year dec)} "‹"]
+         [:th.switch
+          {:col-span 2 :on-click #(reset! view-selector :year)} @year]
+         [:th.next {:on-click #(swap! year inc)} "›"]]]
+       [:tbody
+
+        (for [row (->> ["Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]
+                       (map-indexed vector)
+                       (partition 4))]
+          ^{:key row}
+          [:tr
+           (for [[idx month-name] row]
+             ^{:key idx}
+             [:td.month
+              {:on-click
+               #(do
+                 (swap! year-month (fn [_] [@year idx]))
+                 (reset! view-selector :day))}
+              month-name])])]])))
+
+(defn day-picker [date get save! view-selector]
+  [:table.table-condensed
+   [:thead
+    [:tr
+     [:th.prev {:on-click #(swap! date last-date)} "‹"]
+     [:th.switch
+      {:col-span 5
+       :on-click #(reset! view-selector :month)}
+      (str (get-in dates [:months (second @date)]) " " (first @date))]
+     [:th.next {:on-click #(swap! date next-date)} "›"]]
+    [:tr
+     [:th.dow "Su"]
+     [:th.dow "Mo"]
+     [:th.dow "Tu"]
+     [:th.dow "We"]
+     [:th.dow "Th"]
+     [:th.dow "Fr"]
+     [:th.dow "Sa"]]]
+   (into [:tbody]
+         (gen-days @date get save!))])
+
+(defn datepicker [year month expanded? get save!]
+
+  (let [date (atom [year month])
+        view-selector (atom :day)]
+    (fn []
+      [:div {:class (str "datepicker"(when-not @expanded? " dropdown-menu"))}
+       (condp = @view-selector
+         :day   [day-picker date get save! view-selector]
+         :month [month-picker date view-selector]
+         :year  [year-picker date view-selector])])))

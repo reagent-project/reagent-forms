@@ -61,6 +61,7 @@
   width: 100%;
   margin: 0;
 }
+
 .datepicker td,
 .datepicker th {
   text-align: center;
@@ -123,7 +124,8 @@
 .datepicker td.active:hover.active {
   background-color: #003399 \9;
 }
-.datepicker td span {
+
+.datepicker td, td span {
   display: block;
   width: 47px;
   height: 54px;
@@ -135,7 +137,7 @@
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
-.datepicker td span:hover {
+.datepicker td:hover, td span:hover {
   background: #eeeeee;
 }
 .datepicker td span.active {
@@ -193,4 +195,7 @@
   cursor: pointer;
   width: 16px;
   height: 16px;
+}
+td.year, td.month {
+  text-align: center;
 }
