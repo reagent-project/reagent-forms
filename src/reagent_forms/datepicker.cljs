@@ -146,7 +146,7 @@
                        [:td.year
                         {:on-click #(do
                                      (swap! date assoc-in [0] year)
-                                     (save! {:year (@date 0) :month (inc (@date 1)) :day (@date 2)})
+                                     (save! {:year (@date 0) :month (inc (@date 1)) :day (or (@date 2) 1)})
                                      (reset! view-selector :month))
                          :class (when (= year (first @date)) "active")}
                         year]))))])))
@@ -175,7 +175,7 @@
                      :on-click
                      #(do
                        (swap! date (fn [[_ _ day]] [@year idx day]))
-                       (save! {:year (@date 0) :month (inc (@date 1)) :day (@date 2)})
+                       (save! {:year (@date 0) :month (inc (@date 1)) :day (or (@date 2) 1)})
                        (reset! view-selector :day))}
                     month-name]))))])))
 
