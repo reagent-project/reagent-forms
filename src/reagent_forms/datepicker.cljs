@@ -126,25 +126,27 @@
 
 (defn year-picker [year-month view-selector]
   (let [start-year (atom (- (first @year-month) 10))]
-   (fn []
-     [:table.table-condensed
-      [:thead
-       [:tr
-        [:th.prev {:on-click #(swap! start-year - 10)} "‹"]
+    (fn []
+      [:table.table-condensed
+       [:thead
+        [:tr
+         [:th.prev {:on-click #(swap! start-year - 10)} "‹"]
          [:th.switch
           {:col-span 2}
           (str @start-year " - " (+ @start-year 10))]
          [:th.next {:on-click #(swap! start-year + 10)} "›"]]]
-      [:tbody
-       (for [row (->> (range @start-year (+ @start-year 12))
-                  (partition 4))]
-    [:tr
-     (for [year row]
-       [:td.year
-        {:on-click #(do
-                      (swap! year-month assoc-in [0] year)
-                      (reset! view-selector :month))}
-        year])])]])))
+       [:tbody
+        (for [row (->> (range @start-year (+ @start-year 12))
+                       (partition 4))]
+          ^{:key row}
+          [:tr
+           (for [year row]
+             ^{:key year}
+             [:td.year
+              {:on-click #(do
+                           (swap! year-month assoc-in [0] year)
+                           (reset! view-selector :month))}
+              year])])]])))
 
 (defn month-picker [year-month view-selector]
   (let [year (atom (first @year-month))]
