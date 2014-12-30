@@ -62,6 +62,25 @@
   margin: 0;
 }
 
+.datepicker td.month, td.year, {
+    text-align: center;
+    line-height: 54px;
+    margin: 2px;
+    cursor: pointer;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+.datepicker td span {
+    display: block;
+    line-height: 54px;
+    float: left;
+    margin: 2px;
+    cursor: pointer;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
 .datepicker td,
 .datepicker th {
   text-align: center;
@@ -195,7 +214,4 @@
   cursor: pointer;
   width: 16px;
   height: 16px;
-}
-td.year, td.month {
-  text-align: center;
 }
