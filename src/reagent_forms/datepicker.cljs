@@ -86,33 +86,36 @@
      (.setMonth month)
      (.setDate 1))))
 
-(defn gen-days [[year month] get save!]
-  (let [num-days (days-in-month year month)
+(defn gen-days [current-date get save!]
+  (let [[year month day] @current-date
+        num-days (days-in-month year month)
         last-month-days (if (pos? month) (days-in-month year (dec month)))
         first-day (first-day-of-week year month)]
     (->>
-     (for [i (range 42)]
-       (cond
-         (< i first-day)
-         [:td.day.old
-          (when last-month-days
-           (- last-month-days (dec (- first-day i))))]
-         (< i (+ first-day num-days))
-         (let [day (inc (- i first-day))
-               date {:year year :month (inc month) :day day}]
-           [:td.day
+      (for [i (range 42)]
+        (cond
+          (< i first-day)
+          [:td.day.old
+           (when last-month-days
+             (- last-month-days (dec (- first-day i))))]
+          (< i (+ first-day num-days))
+          (let [day (inc (- i first-day))
+                date {:year year :month (inc month) :day day}]
+            [:td.day
              {:class (when-let [doc-date (get)]
-                      (when (= doc-date date) "active"))
-             :on-click #(if (= (get) date)
-                          (save! nil)
-                          (save! date))}
-            day])
-         :else
-         [:td.day.new
-          (when (< month 11)
-           (inc (- i (+ first-day num-days))))]))
-     (partition 7)
-     (map (fn [week] (into [:tr] week))))))
+                       (when (= doc-date date) "active"))
+              :on-click #(do
+                          (swap! current-date assoc-in [2] day)
+                          (if (= (get) date)
+                            (save! nil)
+                            (save! date)))}
+             day])
+          :else
+          [:td.day.new
+           (when (< month 11)
+             (inc (- i (+ first-day num-days))))]))
+      (partition 7)
+      (map (fn [week] (into [:tr] week))))))
 
 (defn last-date [[year month]]
   (if (pos? month)
@@ -124,8 +127,9 @@
     [(inc year) 0]
     [year (inc month)]))
 
-(defn year-picker [year-month view-selector]
-  (let [start-year (atom (- (first @year-month) 10))]
+
+(defn year-picker [date save! view-selector]
+  (let [start-year (atom (- (first @date) 10))]
     (fn []
       [:table.table-condensed
        [:thead
@@ -141,13 +145,14 @@
                      (for [year row]
                        [:td.year
                         {:on-click #(do
-                                     (swap! year-month assoc-in [0] year)
+                                     (swap! date assoc-in [0] year)
+                                     (save! {:year (@date 0) :month (inc (@date 1)) :day (@date 2)})
                                      (reset! view-selector :month))
-                         :class (when (= year (first @year-month)) "active")}
+                         :class (when (= year (first @date)) "active")}
                         year]))))])))
 
-(defn month-picker [year-month view-selector]
-  (let [year (atom (first @year-month))]
+(defn month-picker [date save! view-selector]
+  (let [year (atom (first @date))]
     (fn []
       [:table.table-condensed
        [:thead
@@ -165,11 +170,12 @@
                  (for [[idx month-name] row]
                    [:td.month
                     {:class
-                     (let [[cur-year cur-month] @year-month]
+                     (let [[cur-year cur-month] @date]
                        (when (and (= @year cur-year) (= idx cur-month)) "active"))
                      :on-click
                      #(do
-                       (swap! year-month (fn [_] [@year idx]))
+                       (swap! date (fn [[_ _ day]] [@year idx day]))
+                       (save! {:year (@date 0) :month (inc (@date 1)) :day (@date 2)})
                        (reset! view-selector :day))}
                     month-name]))))])))
 
@@ -192,7 +198,7 @@
      [:th.dow "Fr"]
      [:th.dow "Sa"]]]
    (into [:tbody]
-         (gen-days @date get save!))])
+         (gen-days date get save!))])
 
 (defn datepicker [year month expanded? get save!]
 
@@ -202,5 +208,5 @@
       [:div {:class (str "datepicker"(when-not @expanded? " dropdown-menu"))}
        (condp = @view-selector
          :day   [day-picker date get save! view-selector]
-         :month [month-picker date view-selector]
-         :year  [year-picker date view-selector])])))
+         :month [month-picker date save! view-selector]
+         :year  [year-picker date save! view-selector])])))
