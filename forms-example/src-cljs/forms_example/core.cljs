@@ -39,7 +39,12 @@
       {:field :alert :id :person.last-name :event empty?}
       "last name is empty!"]]]
 
-   (input "age" :numeric :person.age)
+   [:div.row
+    [:div.col-md-2 [:label "Age"]]
+    [:div.col-md-5
+     [:div
+      {:field :datepicker :id :age :date-format "yyyy/mm/dd" :inline true}]]]
+
    (input "email" :email :person.email)
    (row
     "comments"

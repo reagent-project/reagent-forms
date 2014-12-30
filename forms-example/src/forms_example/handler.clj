@@ -11,9 +11,10 @@
      slurp))
 
 (defroutes base-routes
-  (GET "/" []       
+  (GET "/" []
     (parser/render-file "templates/app.html"
-                        {:json-css (resource "json.human.css")}))
+                        {:forms-css (resource "reagent-forms.css")
+                         :json-css (resource "json.human.css")}))
   (route/resources "/")
   (route/not-found "Not Found"))
 

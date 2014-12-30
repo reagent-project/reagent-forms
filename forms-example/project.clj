@@ -4,12 +4,12 @@
 
   :dependencies
   [[org.clojure/clojure "1.6.0"]
-   [reagent-forms "0.3.0"]
-   [json-html "0.2.3"]
+   [reagent-forms "0.3.3"]
+   [json-html "0.2.6"]
    [org.clojure/clojurescript "0.0-2322"]
-   [selmer "0.7.2"]
+   [selmer "0.7.7"]
    [ring-server "0.3.1"]
-   [lib-noir "0.9.4"]]
+   [lib-noir "0.9.5"]]
 
   :ring {:handler forms-example.handler/app}
 
