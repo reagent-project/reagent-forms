@@ -135,18 +135,16 @@
           {:col-span 2}
           (str @start-year " - " (+ @start-year 10))]
          [:th.next {:on-click #(swap! start-year + 10)} "›"]]]
-       [:tbody
-        (for [row (->> (range @start-year (+ @start-year 12))
-                       (partition 4))]
-          ^{:key row}
-          [:tr
-           (for [year row]
-             ^{:key year}
-             [:td.year
-              {:on-click #(do
-                           (swap! year-month assoc-in [0] year)
-                           (reset! view-selector :month))}
-              year])])]])))
+       (into [:tbody]
+             (for [row (->> (range @start-year (+ @start-year 12)) (partition 4))]
+               (into [:tr]
+                     (for [year row]
+                       [:td.year
+                        {:on-click #(do
+                                     (swap! year-month assoc-in [0] year)
+                                     (reset! view-selector :month))
+                         :class (when (= year (first @year-month)) "active")}
+                        year]))))])))
 
 (defn month-picker [year-month view-selector]
   (let [year (atom (first @year-month))]
@@ -158,21 +156,22 @@
          [:th.switch
           {:col-span 2 :on-click #(reset! view-selector :year)} @year]
          [:th.next {:on-click #(swap! year inc)} "›"]]]
-       [:tbody
-
-        (for [row (->> ["Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]
-                       (map-indexed vector)
-                       (partition 4))]
-          ^{:key row}
-          [:tr
-           (for [[idx month-name] row]
-             ^{:key idx}
-             [:td.month
-              {:on-click
-               #(do
-                 (swap! year-month (fn [_] [@year idx]))
-                 (reset! view-selector :day))}
-              month-name])])]])))
+       (into
+         [:tbody]
+         (for [row (->> ["Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]
+                        (map-indexed vector)
+                        (partition 4))]
+           (into [:tr]
+                 (for [[idx month-name] row]
+                   [:td.month
+                    {:class
+                     (let [[cur-year cur-month] @year-month]
+                       (when (and (= @year cur-year) (= idx cur-month)) "active"))
+                     :on-click
+                     #(do
+                       (swap! year-month (fn [_] [@year idx]))
+                       (reset! view-selector :day))}
+                    month-name]))))])))
 
 (defn day-picker [date get save! view-selector]
   [:table.table-condensed
