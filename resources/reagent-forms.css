@@ -146,7 +146,7 @@
   background-color: #003399 \9;
 }
 
-.datepicker td, td span {
+.datepicker td, .datepicker td span {
   display: block;
   width: 47px;
   height: 54px;
