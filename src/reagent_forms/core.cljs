@@ -122,7 +122,7 @@
          [:span.input-group-addon
           {:on-click #(swap! expanded? not)}
           [:i.glyphicon.glyphicon-calendar]]]
-       [datepicker (.getFullYear today) (.getMonth today) expanded? #(get id) #(save! id %)]])))
+       [datepicker (.getFullYear today) (.getMonth today) (.getDate today) expanded? #(get id) #(save! id %)]])))
 
 
 (defmethod init-field :checkbox
