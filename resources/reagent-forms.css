@@ -61,7 +61,9 @@
   width: 100%;
   margin: 0;
 }
-
+.datepicker td {
+    cursor: pointer;
+}
 .datepicker td.month, td.year, {
     text-align: center;
     line-height: 54px;
