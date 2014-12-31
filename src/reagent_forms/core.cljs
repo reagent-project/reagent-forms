@@ -82,6 +82,10 @@
       (if (some #{field} [:range :text :password :email :textarea])
         :input-field field))))
 
+(defmethod init-field :container
+  [[_ attrs :as component] {:keys [doc]}]
+  (render-element attrs doc component))
+
 (defmethod init-field :input-field
   [[_ {:keys [field] :as attrs} :as component] {:keys [doc] :as opts}]
   (render-element attrs doc

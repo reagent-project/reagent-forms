@@ -32,7 +32,7 @@ The input fields can have an optional `:fmt` attribute that can provide a format
 The typeahead field uses a `:data-source` key bound to a function that takes the current input and returns a list of matching results:
 
 ```clojure
-(defn friend-source [text]  
+(defn friend-source [text]
   (filter
     #(-> % (.toLowerCase %) (.indexOf text) (> -1))
     ["Alice" "Alan" "Bob" "Beth" "Jim" "Jane" "Kim" "Rob" "Zoe"]))
@@ -203,6 +203,19 @@ The File can be read using:
 (resource "reagent-forms.css")
 ```
 
+#### :container
+
+The container element can be used to group different element.
+The container can be used to set the visibility of multiple elements.
+
+```clojure
+[:div.form-group
+ {:field :container
+  :visible? #(:show-name? %)}
+ [:input {:field :text :id :first-name}]
+ [:input {:field :text :id :last-name}]]
+```
+
 ### Setting component visibility
 
 The components may  supply an optional `:visible?` key in their attributes that points to a decision function.
@@ -217,7 +230,7 @@ to decide whether the component should be rendered, eg:
    [:input {:field :text
             :visible? #(empty? (:foo %))
             :id :bar}]])
-```            
+```
 
 ## Binding the form to a document
 
