@@ -203,6 +203,21 @@ The File can be read using:
 (resource "reagent-forms.css")
 ```
 
+### Setting component visibility
+
+The components may  supply an optional `:visible?` key in their attributes that points to a decision function.
+The function is expected to take the current value of the document and produce a truthy value that will be used
+to decide whether the component should be rendered, eg:
+
+```clojure
+(def form
+  [:div
+   [:input {:field :text
+            :id :foo}]
+   [:input {:field :text
+            :visible? #(empty? (:foo %))
+            :id :bar}]])
+```            
 
 ## Binding the form to a document
 
