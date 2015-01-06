@@ -86,7 +86,7 @@
      (.setMonth month)
      (.setDate 1))))
 
-(defn gen-days [current-date get save!]
+(defn gen-days [current-date get save! expanded? auto-close?]
   (let [[year month day] @current-date
         num-days (days-in-month year month)
         last-month-days (if (pos? month) (days-in-month year (dec month)))
@@ -108,7 +108,8 @@
                           (swap! current-date assoc-in [2] day)
                           (if (= (get) date)
                             (save! nil)
-                            (save! date)))}
+                            (save! date))
+                          (when auto-close? (reset! expanded? false)))}
              day])
           :else
           [:td.day.new
@@ -179,7 +180,7 @@
                        (reset! view-selector :day))}
                     month-name]))))])))
 
-(defn day-picker [date get save! view-selector]
+(defn day-picker [date get save! view-selector expanded? auto-close?]
   [:table.table-condensed
    [:thead
     [:tr
@@ -198,15 +199,15 @@
      [:th.dow "Fr"]
      [:th.dow "Sa"]]]
    (into [:tbody]
-         (gen-days date get save!))])
+         (gen-days date get save! expanded? auto-close?))])
 
-(defn datepicker [year month day expanded? get save!]
+(defn datepicker [year month day expanded? auto-close? get save!]
 
   (let [date (atom [year month day])
         view-selector (atom :day)]
     (fn []
       [:div {:class (str "datepicker"(when-not @expanded? " dropdown-menu"))}
        (condp = @view-selector
-         :day   [day-picker date get save! view-selector]
+         :day   [day-picker date get save! view-selector expanded? auto-close?]
          :month [month-picker date save! view-selector]
          :year  [year-picker date save! view-selector])])))

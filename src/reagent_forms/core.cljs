@@ -65,9 +65,9 @@
    :on-change #(save! id (->> % (value-of) (format-type field)))})
 
 (defmethod bind :checkbox
-  [{:keys [id]} {:keys [get save! checked]}]
-  {:checked @checked
-   :on-change #(save! id (swap! checked not))})
+  [{:keys [id]} {:keys [get save!]}]
+  {:checked (get id)
+   :on-change #(->> id get not (save! id))})
 
 (defmethod bind :default [_ _])
 
@@ -112,7 +112,7 @@
              attrs)])))
 
 (defmethod init-field :datepicker
-  [[_ {:keys [id date-format inline] :as attrs}] {:keys [doc get save!]}]
+  [[_ {:keys [id date-format inline auto-close?] :as attrs}] {:keys [doc get save!]}]
   (let [fmt (parse-format date-format)
         today (js/Date.)
         expanded? (atom false)]
@@ -127,14 +127,13 @@
          [:span.input-group-addon
           {:on-click #(swap! expanded? not)}
           [:i.glyphicon.glyphicon-calendar]]]
-       [datepicker (.getFullYear today) (.getMonth today) (.getDate today) expanded? #(get id) #(save! id %)]])))
+       [datepicker (.getFullYear today) (.getMonth today) (.getDate today) expanded? auto-close? #(get id) #(save! id %)]])))
 
 
 (defmethod init-field :checkbox
   [[_ {:keys [id field] :as attrs} :as component] {:keys [doc get] :as opts}]
-  (let [state (atom (get id))]
-    (render-element attrs doc
-      (set-attrs component (assoc opts :checked state) {:type field}))))
+  (render-element attrs doc
+      (set-attrs component opts {:type field})))
 
 (defmethod init-field :label
   [[type {:keys [id preamble postamble placeholder] :as attrs}] {:keys [doc get]}]
