@@ -189,6 +189,9 @@ The date is stored in the document using the following format:
 {:year 2014 :month 11 :day 24}
 ```
 
+The date picker can also take an optional `:auto-close?` key to indicate that it should be closed when the day is clicked. This defaults to `false`.
+
+
 The datepicker requires additional CSS in order to be rendered correctly. The default CSS is provided
 in `reagent-forms.css` in the resource path. Simply make sure that it's included on the page.
 The File can be read using:
