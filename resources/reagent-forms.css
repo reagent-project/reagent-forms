@@ -142,7 +142,7 @@
   background-color: #003399 \9;
 }
 
-.datepicker td, .datepicker td span {
+.datepicker td span {
   display: block;
   float: left;
   margin: 2px;
@@ -151,6 +151,7 @@
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
+
 .datepicker td:hover, td span:hover {
   background: #eeeeee;
 }
