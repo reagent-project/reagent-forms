@@ -201,12 +201,12 @@
    (into [:tbody]
          (gen-days date get save! expanded? auto-close?))])
 
-(defn datepicker [year month day expanded? auto-close? get save!]
+(defn datepicker [year month day expanded? auto-close? get save! inline]
 
   (let [date (atom [year month day])
         view-selector (atom :day)]
     (fn []
-      [:div {:class (str "datepicker"(when-not @expanded? " dropdown-menu"))}
+      [:div {:class (str "datepicker" (when-not @expanded? " dropdown-menu") (if inline " dp-inline" " dp-dropdown"))}
        (condp = @view-selector
          :day   [day-picker date get save! view-selector expanded? auto-close?]
          :month [month-picker date save! view-selector]
