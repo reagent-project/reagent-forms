@@ -117,7 +117,7 @@
         today (js/Date.)
         expanded? (atom false)]
     (render-element attrs doc
-      [:div
+      [:div.datepicker-wrapper
        [:div.input-group.date
          [:input.form-control
           {:read-only true
@@ -127,7 +127,7 @@
          [:span.input-group-addon
           {:on-click #(swap! expanded? not)}
           [:i.glyphicon.glyphicon-calendar]]]
-       [datepicker (.getFullYear today) (.getMonth today) (.getDate today) expanded? auto-close? #(get id) #(save! id %)]])))
+       [datepicker (.getFullYear today) (.getMonth today) (.getDate today) expanded? auto-close? #(get id) #(save! id %) inline]])))
 
 
 (defmethod init-field :checkbox

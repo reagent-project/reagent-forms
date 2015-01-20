@@ -20,7 +20,10 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  */
-.datepicker {
+.datepicker-wrapper {
+  position: relative;
+}
+.datepicker.dp-inline {
   top: 0;
   left: 0;
   padding: 4px;
@@ -28,6 +31,24 @@
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
+}
+.datepicker.dp-dropdown {
+  position: absolute;
+  z-index: 1000;
+  top: 100%;
+  left: 0;
+  padding: 4px;
+  margin-top: 1px;
+  min-width: 160px;
+  float: left;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  background-color: white;
+  border: 1px solid #ccc; // IE8 fallback
+  border: 1px solid rgba(0,0,0,.15);
+  background-clip: padding-box;
+  
 }
 .datepicker:before {
   content: '';
