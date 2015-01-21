@@ -27,6 +27,22 @@
   (fn [id value]
     (swap! doc set-doc-value id value events)))
 
+(defn wrap-get-fn [get wrapper]
+  (fn [id]
+    (wrapper (get id))))
+
+(defn wrap-save-fn [save! wrapper]
+  (fn [id value]
+    (save! id (wrapper value))))
+
+(defn wrap-fns [opts node]
+  {:get (if-let [in-fn (:in-fn (second node))]
+          (wrap-get-fn (:get opts) in-fn)
+          (:get opts))
+   :save! (if-let [out-fn (:out-fn (second node))]
+            (wrap-save-fn (:save! opts) out-fn)
+            (:save! opts))})
+
 ;;coerce the input to the appropriate type
 (defmulti format-type
   (fn [field-type _]
@@ -301,7 +317,8 @@
         form (postwalk
                (fn [node]
                  (if (field? node)
-                   (let [field (init-field node opts)]
+                   (let [opts (wrap-fns opts node)
+                         field (init-field node opts)]
                      (if (fn? field) [field] field))
                    node))
                form)]
