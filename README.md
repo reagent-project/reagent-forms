@@ -333,6 +333,18 @@ take two parameters, where the first parameter is the field component and the se
 
 By default the options will contain the `get` and the `save!` keys. The `get` key points to a function that accepts an id and returns the document value associated with it. The `save!` function accepts an id and a value that will be associated with it.
 
+## Using adapters
+
+Adapters can be provided to fields so as to create custom storage formats for field values. These are a pair of functions passed to the field through the keys `:in-fn` and `:out-fn`. `:in-fn` modifies the stored item so that the field can make use of it while `:out-fn` modifies the output of the field before it is stored. For example, in order to use a native `js/Date` object as the storage format, the datepicker can be initialized thusly:
+
+```clojure
+[:div {:field :datepicker :id :birthday :date-format "yyyy/mm/dd" :inline true
+       :in-fn #(when % {:year (.getFullYear %) :month (.getMonth %) :day (.getDate %)})
+       :out-fn #(when % (js/Date (:year %) (:month %) (:day %)))}]
+```
+
+Adapters may be passed nulls so they must be able to handle those.
+
 ## Mobile Gotchas
 
 React requires additional initialization in order to handle touch events:
