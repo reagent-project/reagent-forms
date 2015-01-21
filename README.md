@@ -197,13 +197,7 @@ in `reagent-forms.css` in the resource path. Simply make sure that it's included
 The File can be read using:
 
 ```clojure
-(defn resource [r]
- (-> (Thread/currentThread)
-     (.getContextClassLoader)
-     (.getResource r)
-     slurp))
-
-(resource "reagent-forms.css")
+(-> "reagent-forms.css" clojure.java.io/resource slurp)
 ```
 
 #### :container
