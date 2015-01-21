@@ -282,11 +282,11 @@ The form can be initialized with a populated document, and the fields will be in
    (row "last name"
         [:input.form-control {:field :text :id :last-name}])
    (row "age"
-        [:input {:field.form-control :numeric :id :age}])
+        [:input.form-control {:field :numeric :id :age}])
    (row "email"
-        [:input {:field.form-control :email :id :email}])
+        [:input.form-control {:field :email :id :email}])
    (row "comments"
-        [:textarea.form-control {:field :textarea :id :comments}]))
+        [:textarea.form-control {:field :textarea :id :comments}])])
 
 (defn form []
   (let [doc (atom {:first-name "John" :last-name "Doe" :age 35})]
