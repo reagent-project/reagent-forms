@@ -8,10 +8,10 @@
    [:div.col-md-2 [:label label]]
    [:div.col-md-5 input]])
 
-(defn radio [label id name value]
+(defn radio [label name value]
   [:div.radio
    [:label
-    [:input {:field :radio :id id :name name :value value}]
+    [:input {:field :radio :name name :value value}]
     label]])
 
 (defn input [label type id]
@@ -89,10 +89,10 @@
 
    (radio
     "Option one is this and that—be sure to include why it's great"
-    :radioselection :foo :a)
+    :foo :a)
    (radio
     "Option two can be something else and selecting it will deselect option one"
-    :radioselection :foo :b)
+    :foo :b)
 
    [:h3 "multi-select buttons"]
    [:div.btn-group {:field :multi-select :id :every.position}

@@ -61,12 +61,12 @@ Range control uses the `:min` and `:max` keys to create an HTML range input:
 
 #### :radio
 
-Radio buttons are grouped using the `:name` attribute and their `:value` attribute is saved to the document:
+Radio buttons do not use the `:id` key since it must be unique and are instead grouped using the `:name` attribute. The `:value` attribute is used to indicate the value that is saved to the document:
 
 ```clojure
-[:input {:field :radio :value :a :name :foo :id :radioselection} "foo"]
-[:input {:field :radio :value :b :name :foo :id :radioselection} "bar"]
-[:input {:field :radio :value :c :name :foo :id :radioselection} "baz"]
+[:input {:field :radio :value :a :name :radioselection} "foo"]
+[:input {:field :radio :value :b :name :radioselection} "bar"]
+[:input {:field :radio :value :c :name :radioselection} "baz"]
 ```
 
 ### Lists

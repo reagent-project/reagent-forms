@@ -175,8 +175,8 @@
          message]))))
 
 (defmethod init-field :radio
-  [[type {:keys [field id value] :as attrs} & body] {:keys [doc get save!]}]
-  (let [state (atom (= value (get id)))]
+  [[type {:keys [field name value] :as attrs} & body] {:keys [doc get save!]}]
+  (let [state (atom (= value (get name)))]
     (render-element attrs doc
       (into
         [type
@@ -184,8 +184,8 @@
                  :checked @state
                  :on-change
                  #(do
-                    (save! id value)
-                    (reset! state (= value (get id))))}
+                    (save! name value)
+                    (reset! state (= value (get name))))}
                 attrs)]
          body))))
 
