@@ -176,18 +176,14 @@
 
 (defmethod init-field :radio
   [[type {:keys [field name value] :as attrs} & body] {:keys [doc get save!]}]
-  (let [state (atom (= value (get name)))]
-    (render-element attrs doc
-      (into
-        [type
-         (merge {:type :radio
-                 :checked @state
-                 :on-change
-                 #(do
-                    (save! name value)
-                    (reset! state true))}
-                attrs)]
-         body))))
+  (render-element attrs doc
+    (into
+      [type
+       (merge {:type :radio
+               :checked (= value (get name))
+               :on-change #(save! name value)}
+              attrs)]
+       body)))
 
 (defmethod init-field :typeahead
   [[type {:keys [id data-source] :as attrs}] {:keys [doc get save!]}]
