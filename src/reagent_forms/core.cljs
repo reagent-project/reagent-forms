@@ -185,7 +185,7 @@
                  :on-change
                  #(do
                     (save! name value)
-                    (reset! state (= value (get name))))}
+                    (reset! state true))}
                 attrs)]
          body))))
 
