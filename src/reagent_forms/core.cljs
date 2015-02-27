@@ -75,11 +75,12 @@
       :input-field field)))
 
 (defmethod bind :input-field
-  [{:keys [field id fmt]} {:keys [get save!]}]
+  [{:keys [field id fmt disabled]} {:keys [get save!]}]
   {:value (let [value (or (get id) "")]
             (format-value fmt value))
-   :on-change #(save! id (->> % (value-of) (format-type field)))})
-
+   :on-change #(save! id (->> % (value-of) (format-type field)))
+   :disabled disabled})
+ 
 (defmethod bind :checkbox
   [{:keys [id]} {:keys [get save!]}]
   {:checked (get id)
