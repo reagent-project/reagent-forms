@@ -36,7 +36,8 @@
     (save! id (wrapper value))))
 
 (defn wrap-fns [opts node]
-  {:get (if-let [in-fn (:in-fn (second node))]
+  {:doc (:doc opts)
+   :get (if-let [in-fn (:in-fn (second node))]
           (wrap-get-fn (:get opts) in-fn)
           (:get opts))
    :save! (if-let [out-fn (:out-fn (second node))]
