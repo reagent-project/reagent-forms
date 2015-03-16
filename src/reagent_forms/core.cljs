@@ -15,7 +15,8 @@
 (def ^:private id->path
   (memoize
     (fn [id]
-      (map keyword (-> id name (split  #"\."))))))
+      (let [segments (split (subs (str id) 1 ) #"\.")]
+        (map keyword segments)))))
 
 (defn set-doc-value [doc id value events]
   (let [path (id->path id)]
