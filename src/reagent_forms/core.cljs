@@ -194,6 +194,7 @@
         selected-index (atom 0)
         selections (atom [])]
     (render-element attrs doc
+<<<<<<< HEAD
                     [type
                      [:input {:type        :text
                               :class       input-class
@@ -235,6 +236,7 @@
                                   :on-click      #(do
                                                     (reset! typeahead-hidden? true)
                                                     (save! id result))} result]) @selections))])])))
+
 
 (defn- group-item [[type {:keys [key touch-event] :as attrs} & body] {:keys [save! multi-select]} selections field id]
   (letfn [(handle-click! []
