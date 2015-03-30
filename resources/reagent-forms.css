@@ -1,4 +1,5 @@
-.typeahead {
+
+.typeahead-list {
     list-style-type: none;
     padding: 5px;
     margin-top: 3px;
@@ -9,8 +10,20 @@
     background-color: white;
     overflow-y: scroll;
     max-height: 300px;
-    width: 200px}
+    width: 445px}
 
+
+.typeahead-item {
+  padding: 3px;
+}
+
+li.highlighted
+{
+  padding: 3px;
+  border: 1px solid grey;
+  background-color: grey;
+  color: white;
+}
 
 /*!
  * Datepicker for Bootstrap
