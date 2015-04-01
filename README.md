@@ -37,7 +37,13 @@ The typeahead field uses a `:data-source` key bound to a function that takes the
     #(-> % (.toLowerCase %) (.indexOf text) (> -1))
     ["Alice" "Alan" "Bob" "Beth" "Jim" "Jane" "Kim" "Rob" "Zoe"]))
 
-[:div {:field :typeahead :id :ta :data-source friend-source :input-class "form-control" :list-class "typeahead-list" :item-class "typeahead-item" :highlight-class "highlighted}]
+[:div {:field :typeahead 
+       :id :ta 
+       :data-source friend-source 
+       :input-class "form-control" 
+       :list-class "typeahead-list" 
+       :item-class "typeahead-item" 
+       :highlight-class "highlighted"}]
 ```
 
 The typeahead field supports both mouse and keyboard selection. 
