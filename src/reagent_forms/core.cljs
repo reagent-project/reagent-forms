@@ -193,7 +193,7 @@
         mouse-on-list? (atom false)
         selected-index (atom 0)
         selections (atom [])]
-    (render-element attrs doc
+    (render-element attrs doc               
                     [type
                      [:input {:type        :text
                               :class       input-class
@@ -202,39 +202,42 @@
                                               (reset! typeahead-hidden? true)
                                               (reset! selected-index 0))
                               :on-change   #(do
+                                              (reset! selections (data-source (.toLowerCase (value-of %))))
                                               (save! id (value-of %))
                                               (reset! typeahead-hidden? false)
                                               (reset! selected-index 0))
-                              :on-key-down #(do
+                              :on-key-down #(do                                               
                                               (case (.-which %)
-                                                38 (if-not
-                                                     (= @selected-index 0)
-                                                     (reset! selected-index (- @selected-index 1)))
-                                                40 (if-not
-                                                     (= @selected-index (- (count @selections) 1))
-                                                     (reset! selected-index (+ @selected-index 1)))
+                                                38 (do 
+                                                     (.preventDefault %)
+                                                     (if-not (= @selected-index 0)
+                                                       (reset! selected-index (- @selected-index 1))))
+                                                40 (do
+                                                     (.preventDefault %)
+                                                     (if-not (= @selected-index (- (count @selections) 1)) 
+                                                       (reset! selected-index (+ @selected-index 1))))
                                                 13 (do (save! id (nth @selections @selected-index))
-                                                     (reset! typeahead-hidden? true))
+                                                       (reset! typeahead-hidden? true))
                                                 27 (do (reset! typeahead-hidden? true)
-                                                     (reset! selected-index 0))
+                                                       (reset! selected-index 0))
                                                 "default"))}]
-                     (when-let [value (get id)]
-                       (reset! selections (data-source (.toLowerCase value)))
-                       [:ul {:hidden (or (empty? @selections) @typeahead-hidden?)
-                             :class list-class
-                             :on-mouse-enter #(reset! mouse-on-list? true)
-                             :on-mouse-leave #(reset! mouse-on-list? false)}
-                        (doall
-                         (map-indexed
-                          (fn [index result]
-                            [:li {:tab-index     index
-                                  :key           index
-                                  :class         (if (= @selected-index index) highlight-class item-class)
-                                  :on-mouse-over #(do
-                                                    (reset! selected-index (js/parseInt (.getAttribute (.-target %) "tabIndex"))))
-                                  :on-click      #(do
-                                                    (reset! typeahead-hidden? true)
-                                                    (save! id result))} result]) @selections))])])))
+
+                     [:ul {:hidden (or (empty? @selections) @typeahead-hidden?)
+                           :class list-class
+                           :on-mouse-enter #(reset! mouse-on-list? true)
+                           :on-mouse-leave #(reset! mouse-on-list? false)}
+                      (doall  
+                       (map-indexed 
+                        (fn [index result] 
+                          [:li {:tab-index     index 
+                                :key           index
+                                :class         (if (= @selected-index index) highlight-class  item-class)
+                                :on-mouse-over #(do
+                                                  (reset! selected-index (js/parseInt (.getAttribute (.-target %) "tabIndex"))))
+                                :on-click      #(do
+                                                  (reset! typeahead-hidden? true)
+                                                  (save! id result))} result]) @selections))]])))
+
 
 
 (defn- group-item [[type {:keys [key touch-event] :as attrs} & body] {:keys [save! multi-select]} selections field id]
