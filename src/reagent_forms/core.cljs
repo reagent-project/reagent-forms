@@ -138,10 +138,12 @@
       [:div.datepicker-wrapper
        [:div.input-group.date
          [:input.form-control
-          {:read-only true
-           :type :text
-           :on-click #(swap! expanded? not)
-           :value (when-let [date (get id)] (format-date date fmt))}]
+          (merge
+           attrs
+           {:read-only true
+            :type :text
+            :on-click #(swap! expanded? not)
+            :value (when-let [date (get id)] (format-date date fmt))})]
          [:span.input-group-addon
           {:on-click #(swap! expanded? not)}
           [:i.glyphicon.glyphicon-calendar]]]
@@ -193,7 +195,7 @@
         mouse-on-list? (atom false)
         selected-index (atom 0)
         selections (atom [])]
-    (render-element attrs doc               
+    (render-element attrs doc
                     [type
                      [:input {:type        :text
                               :class       input-class
@@ -206,15 +208,15 @@
                                               (save! id (value-of %))
                                               (reset! typeahead-hidden? false)
                                               (reset! selected-index 0))
-                              :on-key-down #(do                                               
+                              :on-key-down #(do
                                               (case (.-which %)
-                                                38 (do 
+                                                38 (do
                                                      (.preventDefault %)
                                                      (if-not (= @selected-index 0)
                                                        (reset! selected-index (- @selected-index 1))))
                                                 40 (do
                                                      (.preventDefault %)
-                                                     (if-not (= @selected-index (- (count @selections) 1)) 
+                                                     (if-not (= @selected-index (- (count @selections) 1))
                                                        (reset! selected-index (+ @selected-index 1))))
                                                 13 (do (save! id (nth @selections @selected-index))
                                                        (reset! typeahead-hidden? true))
@@ -226,10 +228,10 @@
                            :class list-class
                            :on-mouse-enter #(reset! mouse-on-list? true)
                            :on-mouse-leave #(reset! mouse-on-list? false)}
-                      (doall  
-                       (map-indexed 
-                        (fn [index result] 
-                          [:li {:tab-index     index 
+                      (doall
+                       (map-indexed
+                        (fn [index result]
+                          [:li {:tab-index     index
                                 :key           index
                                 :class         (if (= @selected-index index) highlight-class  item-class)
                                 :on-mouse-over #(do
