@@ -164,7 +164,7 @@ Labels can be associated with a key in the document using the `:id` attribute an
 
 Alerts are bound to an id of a field that triggers the alert and can have an optional `:event` key. The event key should point to a function that returns a boolean value.
 
-When an event is supplied then the body of the alert is rendered wheneve the event returns true:
+When an event is supplied then the body of the alert is rendered whenever the event returns true:
 
 ```clojure
 [:input {:field :text :id :first-name}]
