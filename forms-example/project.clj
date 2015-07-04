@@ -4,7 +4,7 @@
 
   :dependencies
   [[org.clojure/clojure "1.6.0"]
-   [reagent-forms "0.3.9"]
+   [reagent-forms "0.5.1"]
    [json-html "0.2.8"]
    [org.clojure/clojurescript "0.0-2322"]
    [selmer "0.7.7"]
