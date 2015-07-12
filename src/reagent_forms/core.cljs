@@ -195,7 +195,7 @@
        body)))
 
 (defmethod init-field :typeahead
-  [[type {:keys [id data-source input-class list-class item-class highlight-class] :as attrs}] {:keys [doc get save!]}]
+  [[type {:keys [id data-source input-class list-class item-class highlight-class result-fn] :as attrs :or {result-fn identity}}] {:keys [doc get save!]}]
   (let [typeahead-hidden? (atom true)
         mouse-on-list? (atom false)
         selected-index (atom 0)
@@ -243,7 +243,9 @@
                                                   (reset! selected-index (js/parseInt (.getAttribute (.-target %) "tabIndex"))))
                                 :on-click      #(do
                                                   (reset! typeahead-hidden? true)
-                                                  (save! id result))} result]) @selections))]])))
+                                                  (save! id result))}
+                           [result-fn result]])
+                        @selections))]])))
 
 
 
