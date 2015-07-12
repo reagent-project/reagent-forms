@@ -195,7 +195,7 @@
        body)))
 
 (defmethod init-field :typeahead
-  [[type {:keys [id data-source input-class list-class item-class highlight-class result-fn] :as attrs :or {result-fn identity}}] {:keys [doc get save!]}]
+  [[type {:keys [id data-source input-class list-class item-class highlight-class result-fn clear-on-focus?] :as attrs :or {result-fn identity clear-on-focus? true}}] {:keys [doc get save!]}]
   (let [typeahead-hidden? (atom true)
         mouse-on-list? (atom false)
         selected-index (atom 0)
@@ -205,6 +205,7 @@
                      [:input {:type        :text
                               :class       input-class
                               :value       (get id)
+                              :on-focus    #(when clear-on-focus? (save! id ""))
                               :on-blur     #(when-not @mouse-on-list?
                                               (reset! typeahead-hidden? true)
                                               (reset! selected-index 0))
