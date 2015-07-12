@@ -208,7 +208,9 @@
                     [type
                      [:input {:type        :text
                               :class       input-class
-                              :value       (get id)
+                              :value       (let [v (get id)]
+                                             (if-not (iterable? v)
+                                               v (first v)))
                               :on-focus    #(when clear-on-focus? (save! id ""))
                               :on-blur     #(when-not @mouse-on-list?
                                               (reset! typeahead-hidden? true)
