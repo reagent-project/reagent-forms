@@ -203,7 +203,11 @@
   (let [typeahead-hidden? (atom true)
         mouse-on-list? (atom false)
         selected-index (atom 0)
-        selections (atom [])]
+        selections (atom [])
+        choose-selected #(do (let [choice (nth @selections @selected-index)]
+                               (save! id choice)
+                               (choice-fn choice))
+                             (reset! typeahead-hidden? true))]
     (render-element attrs doc
                     [type
                      [:input {:type        :text
@@ -230,11 +234,8 @@
                                                      (.preventDefault %)
                                                      (if-not (= @selected-index (- (count @selections) 1))
                                                        (reset! selected-index (+ @selected-index 1))))
-                                                13 (do
-                                                     (let [choice (nth @selections @selected-index)]
-                                                       (save! id choice)
-                                                       (choice-fn choice))
-                                                     (reset! typeahead-hidden? true))
+                                                9  (choose-selected)
+                                                13 (choose-selected)
                                                 27 (do (reset! typeahead-hidden? true)
                                                        (reset! selected-index 0))
                                                 "default"))}]
