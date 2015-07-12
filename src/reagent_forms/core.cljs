@@ -229,7 +229,7 @@
                                                        (reset! selected-index 0))
                                                 "default"))}]
 
-                     [:ul {:hidden (or (empty? @selections) @typeahead-hidden?)
+                     [:ul {:style {:display (if (or (empty? @selections) @typeahead-hidden?) :none :block) }
                            :class list-class
                            :on-mouse-enter #(reset! mouse-on-list? true)
                            :on-mouse-leave #(reset! mouse-on-list? false)}
