@@ -64,9 +64,14 @@
          {:field :numeric :fmt "%.2f" :id :bmi :disabled true}])
    [:hr]
 
-   [:div
-    [:span "Best friend:"]
-    [:div {:field :typeahead :id :ta :data-source friend-source}]]
+   (row "Best friend"
+        [:div {:field           :typeahead
+               :id              :ta
+               :data-source     friend-source
+               :input-class     "form-control"
+               :list-class      "typeahead-list"
+               :item-class      "typeahead-item"
+               :highlight-class "highlighted"}])
    [:br]
 
    (row "isn't data binding lovely?"
