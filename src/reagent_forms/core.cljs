@@ -256,7 +256,7 @@
                                                   (reset! typeahead-hidden? true)
                                                   (save! id result)
                                                   (choice-fn result))}
-                           [result-fn result]])
+                           (result-fn result)])
                         @selections))]])))
 
 
