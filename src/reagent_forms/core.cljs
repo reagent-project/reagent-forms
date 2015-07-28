@@ -292,21 +292,19 @@
   [[type {:keys [field id] :as attrs} & selection-items] {:keys [get] :as opts}]
   (let [selection-items (extract-selectors selection-items)
         selections (atom (mk-selections id selection-items opts))
-        selectors (map (fn [item]
-                         {:visible? (:visible? (second item))
-                          :selector [(group-item item opts selections field id)]})
-                       selection-items)]
+        selectors  (map (fn [item]
+                          {:visible? (:visible? (second item))
+                           :selector [(group-item item opts selections field id)]})
+                        selection-items)]
     (fn []
       (when-not (get id)
         (swap! selections #(into {} (map (fn [[k]] [k false]) %))))
-      [type
-       attrs
-       (->> selectors
-           (filter
-           #(if-let [visible? (:visible? %)]
-             (visible? @(:doc opts)) true))
-           (map :selector)
-           (doall))])))
+      (into [type attrs]
+            (->> selectors
+                  (filter
+                   #(if-let [visible? (:visible? %)]
+                      (visible? @(:doc opts)) true))
+                  (map :selector))))))
 
 (defmethod init-field :single-select
   [[_ attrs :as field] {:keys [doc] :as opts}]
