@@ -229,11 +229,11 @@
                                                 38 (do
                                                      (.preventDefault %)
                                                      (if-not (= @selected-index 0)
-                                                       (reset! selected-index (- @selected-index 1))))
+                                                       (swap! selected-index dec)))
                                                 40 (do
                                                      (.preventDefault %)
                                                      (if-not (= @selected-index (- (count @selections) 1))
-                                                       (reset! selected-index (+ @selected-index 1))))
+                                                       (swap! selected-index inc)))
                                                 9  (choose-selected)
                                                 13 (choose-selected)
                                                 27 (do (reset! typeahead-hidden? true)
