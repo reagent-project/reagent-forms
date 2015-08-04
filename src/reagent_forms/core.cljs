@@ -232,7 +232,7 @@
                                                        (swap! selected-index dec)))
                                                 40 (do
                                                      (.preventDefault %)
-                                                     (if-not (= @selected-index (- (count @selections) 1))
+                                                     (if-not (= @selected-index (dec (count @selections)))
                                                        (swap! selected-index inc)))
                                                 9  (choose-selected)
                                                 13 (choose-selected)
