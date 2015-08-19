@@ -73,7 +73,7 @@
 ;;bind the field to the document based on its type
 (defmulti bind
   (fn [{:keys [field]} _]
-    (if (some #{field} [:text :numeric :password :email :range :textarea])
+    (if (some #{field} [:text :numeric :password :email :tel :range :textarea])
       :input-field field)))
 
 (defmethod bind :input-field
@@ -97,7 +97,7 @@
 (defmulti init-field
   (fn [[_ {:keys [field]}] _]
     (let [field (keyword field)]
-      (if (some #{field} [:range :text :password :email :textarea])
+      (if (some #{field} [:range :text :password :email :tel :textarea])
         :input-field field))))
 
 (defmethod init-field :container
