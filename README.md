@@ -370,6 +370,8 @@ Safari on iOS will have a 300ms delay for `:on-click` events, it's possible to s
 
 Note that you will also have to set the style of `cursor: pointer` for any elements other than buttons in order for events to work on iOS.
 
+The [TapEventPlugin](https://github.com/zilverline/react-tap-event-plugin) for react is another option for creating responsive events, until the functionality becomes available in React itself.
+
 ## License
 
 Copyright © 2014 Yogthos
