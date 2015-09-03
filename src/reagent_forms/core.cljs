@@ -139,11 +139,11 @@
        [:div.input-group.date
          [:input.form-control
           (merge
-           attrs
            {:read-only true
             :type :text
             :on-click #(swap! expanded? not)
-            :value (when-let [date (get id)] (format-date date fmt))})]
+            :value (when-let [date (get id)] (format-date date fmt))}
+           attrs)]
          [:span.input-group-addon
           {:on-click #(swap! expanded? not)}
           [:i.glyphicon.glyphicon-calendar]]]
