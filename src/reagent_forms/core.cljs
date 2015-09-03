@@ -64,8 +64,7 @@
   (when (not-empty n)
     (let [parsed (js/parseFloat n)]
       (when-not (js/isNaN parsed)
-        (if (valid-number-ending? n)
-          n parsed)))))
+        parsed))))
 
 (defmethod format-type :default
   [_ value] value)
@@ -116,23 +115,15 @@
 
 (defmethod init-field :numeric
   [[type {:keys [id fmt] :as attrs}] {:keys [doc get save!]}]
-  (let [display-value (atom {:changed-self? false :value (get id)})]
+  (let [input-value (atom nil)]
     (render-element attrs doc
       [type (merge
              {:type :text
-              :value
-              (let [doc-value (or (get id) "")
-                    {:keys [changed-self? value]} @display-value
-                    value (if changed-self? value doc-value)]
-                (swap! display-value dissoc :changed-self?)
-                (format-value fmt value))
-              :on-change
-              #(if-let [value (format-type :numeric (value-of %))]
-                 (do
-                   (reset! display-value {:changed-self? true :value value})
-                   (save! id (js/parseFloat value)))
-                 (save! id nil))}
-             attrs)])))
+              :value (format-value fmt (or @input-value (get id "")))
+              :on-change #(reset! input-value (value-of %))
+              :on-blur #(do
+                          (reset! input-value nil)
+                          (save! id (format-type :numeric (value-of %))))})])))
 
 (defmethod init-field :datepicker
   [[_ {:keys [id date-format inline auto-close?] :as attrs}] {:keys [doc get save!]}]
