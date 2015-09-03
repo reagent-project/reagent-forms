@@ -126,7 +126,8 @@
                           (->> (value-of %)
                                (format-value fmt)
                                (format-type :numeric)
-                               (save! id)))})])))
+                               (save! id)))}
+             attrs)])))
 
 (defmethod init-field :datepicker
   [[_ {:keys [id date-format inline auto-close?] :as attrs}] {:keys [doc get save!]}]
