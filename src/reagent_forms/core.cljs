@@ -123,7 +123,10 @@
               :on-change #(reset! input-value (value-of %))
               :on-blur #(do
                           (reset! input-value nil)
-                          (->> % value-of (format-value fmt) (format-type :numeric) (save! id)))})])))
+                          (->> (value-of %)
+                               (format-value fmt)
+                               (format-type :numeric)
+                               (save! id)))})])))
 
 (defmethod init-field :datepicker
   [[_ {:keys [id date-format inline auto-close?] :as attrs}] {:keys [doc get save!]}]
