@@ -119,11 +119,11 @@
     (render-element attrs doc
       [type (merge
              {:type :text
-              :value (format-value fmt (or @input-value (get id "")))
+              :value (or @input-value (get id ""))
               :on-change #(reset! input-value (value-of %))
               :on-blur #(do
                           (reset! input-value nil)
-                          (save! id (format-type :numeric (value-of %))))})])))
+                          (->> % value-of (format-value fmt) (format-type :numeric) (save! id)))})])))
 
 (defmethod init-field :datepicker
   [[_ {:keys [id date-format inline auto-close?] :as attrs}] {:keys [doc get save!]}]
