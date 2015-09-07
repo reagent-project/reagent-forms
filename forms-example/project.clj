@@ -4,10 +4,10 @@
 
   :dependencies
   [[org.clojure/clojure "1.7.0"]
-   [reagent-forms "0.5.7"]
-   [json-html "0.2.8"]
+   [reagent-forms "0.5.8"]
+   [json-html "0.3.5"]
    [org.clojure/clojurescript "1.7.122"]
-   [selmer "0.7.7"]
+   [selmer "0.9.1"]
    [ring-server "0.4.0"]
    [lib-noir "0.9.7"]]
 
