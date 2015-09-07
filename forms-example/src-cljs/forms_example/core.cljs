@@ -68,6 +68,7 @@
         [:div {:field           :typeahead
                :id              :ta
                :data-source     friend-source
+               :input-placeholder "Who's your best friend? You can pick only one"
                :input-class     "form-control"
                :list-class      "typeahead-list"
                :item-class      "typeahead-item"
