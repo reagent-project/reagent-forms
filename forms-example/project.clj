@@ -3,13 +3,13 @@
   :url "https://github.com/yogthos/reagent-forms"
 
   :dependencies
-  [[org.clojure/clojure "1.6.0"]
-   [reagent-forms "0.5.1"]
+  [[org.clojure/clojure "1.7.0"]
+   [reagent-forms "0.5.7"]
    [json-html "0.2.8"]
-   [org.clojure/clojurescript "0.0-2322"]
+   [org.clojure/clojurescript "1.7.122"]
    [selmer "0.7.7"]
-   [ring-server "0.3.1"]
-   [lib-noir "0.9.5"]]
+   [ring-server "0.4.0"]
+   [lib-noir "0.9.7"]]
 
   :ring {:handler forms-example.handler/app}
 
@@ -25,7 +25,7 @@
 
   :plugins
   [[lein-ring "0.8.10"]
-   [lein-cljsbuild "1.0.3"]]
+   [lein-cljsbuild "1.0.6"]]
 
   :jvm-opts ["-server"]
 
@@ -35,4 +35,4 @@
                     :stacktraces?  false
                     :auto-reload?  false}}
    :dev {:dependencies [[ring-mock "0.1.5"]
-                        [ring/ring-devel "1.3.0"]]}})
+                        [ring/ring-devel "1.4.0"]]}})
