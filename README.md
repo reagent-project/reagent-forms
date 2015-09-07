@@ -39,6 +39,7 @@ The typeahead field uses a `:data-source` key bound to a function that takes the
 
 [:div {:field :typeahead 
        :id :ta 
+       :input-placeholder "pick a friend"
        :data-source friend-source 
        :input-class "form-control" 
        :list-class "typeahead-list" 
