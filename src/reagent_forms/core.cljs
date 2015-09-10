@@ -2,7 +2,7 @@
   (:require-macros [reagent-forms.macros :refer [render-element]])
   (:require
    [clojure.walk :refer [postwalk]]
-   [clojure.string :refer [split]]
+   [clojure.string :refer [split trim]]
    [goog.string :as gstring]
    [goog.string.format]
    [reagent.core :as reagent :refer [atom]]
@@ -199,10 +199,10 @@
         mouse-on-list? (atom false)
         selected-index (atom 0)
         selections (atom [])
-        choose-selected #(do (let [choice (nth @selections @selected-index)]
-                               (save! id choice)
-                               (choice-fn choice))
-                             (reset! typeahead-hidden? true))]
+        choose-selected #(let [choice (nth @selections @selected-index)]
+                           (save! id choice)
+                           (choice-fn choice)
+                           (reset! typeahead-hidden? true))]
     (render-element attrs doc
                     [type
                      [:input {:type        :text
@@ -211,12 +211,12 @@
                               :value       (let [v (get id)]
                                              (if-not (iterable? v)
                                                v (first v)))
-                              :on-focus    #(when clear-on-focus? (save! id ""))
+                              :on-focus    #(when clear-on-focus? (save! id nil))
                               :on-blur     #(when-not @mouse-on-list?
                                               (reset! typeahead-hidden? true)
                                               (reset! selected-index 0))
-                              :on-change   #(do
-                                              (reset! selections (data-source (.toLowerCase (value-of %))))
+                              :on-change   #(when-let [value (trim (value-of %))]
+                                              (reset! selections (data-source (.toLowerCase value)))
                                               (save! id (value-of %))
                                               (reset! typeahead-hidden? false)
                                               (reset! selected-index 0))
