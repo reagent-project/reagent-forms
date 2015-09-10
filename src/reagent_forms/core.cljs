@@ -199,10 +199,11 @@
         mouse-on-list? (atom false)
         selected-index (atom 0)
         selections (atom [])
-        choose-selected #(let [choice (nth @selections @selected-index)]
-                           (save! id choice)
-                           (choice-fn choice)
-                           (reset! typeahead-hidden? true))]
+        choose-selected #(when (not-empty @selections)
+                           (let [choice (nth @selections @selected-index)]
+                             (save! id choice)
+                             (choice-fn choice)
+                             (reset! typeahead-hidden? true)))]
     (render-element attrs doc
                     [type
                      [:input {:type        :text
@@ -245,7 +246,7 @@
                         (fn [index result]
                           [:li {:tab-index     index
                                 :key           index
-                                :class         (if (= @selected-index index) highlight-class  item-class)
+                                :class         (if (= @selected-index index) highlight-class item-class)
                                 :on-mouse-over #(do
                                                   (reset! selected-index (js/parseInt (.getAttribute (.-target %) "tabIndex"))))
                                 :on-click      #(do
