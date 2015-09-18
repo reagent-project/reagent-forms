@@ -199,9 +199,9 @@
                clear-on-focus? true}}] {:keys [doc get save!]}]
   (let [typeahead-hidden? (atom true)
         mouse-on-list? (atom false)
-        selected-index (atom 0)
+        selected-index (atom -1)
         selections (atom [])
-        choose-selected #(when (not-empty @selections)
+        choose-selected #(when (and (not-empty @selections) (> @selected-index -1))
                            (let [choice (nth @selections @selected-index)]
                              (save! id choice)
                              (choice-fn choice)
@@ -217,21 +217,22 @@
                               :on-focus    #(when clear-on-focus? (save! id nil))
                               :on-blur     #(when-not @mouse-on-list?
                                               (reset! typeahead-hidden? true)
-                                              (reset! selected-index 0))
+                                              (reset! selected-index -1))
                               :on-change   #(when-let [value (trim (value-of %))]
                                               (reset! selections (data-source (.toLowerCase value)))
                                               (save! id (value-of %))
                                               (reset! typeahead-hidden? false)
-                                              (reset! selected-index 0))
+                                              (reset! selected-index -1))
                               :on-key-down #(do
                                               (case (.-which %)
                                                 38 (do
                                                      (.preventDefault %)
-                                                     (if-not (= @selected-index 0)
+                                                     (when-not (= @selected-index 0)
                                                        (swap! selected-index dec)))
                                                 40 (do
                                                      (.preventDefault %)
-                                                     (if-not (= @selected-index (dec (count @selections)))
+                                                     (when-not (= @selected-index (dec (count @selections)))
+                                                       (save! id (value-of %))
                                                        (swap! selected-index inc)))
                                                 9  (choose-selected)
                                                 13 (choose-selected)
