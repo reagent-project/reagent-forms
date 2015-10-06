@@ -85,7 +85,7 @@
 
 (defmethod bind :checkbox
   [{:keys [id]} {:keys [get save!]}]
-  {:checked (get id)
+  {:default-checked (get id)
    :on-change #(->> id get not (save! id))})
 
 (defmethod bind :default [_ _])
@@ -153,7 +153,9 @@
 
 
 (defmethod init-field :checkbox
-  [[_ {:keys [id field] :as attrs} :as component] {:keys [doc get] :as opts}]
+  [[_ {:keys [id field checked] :as attrs} :as component] {:keys [doc get save!] :as opts}]
+  (when checked
+    (save! id true))
   (render-element attrs doc
       (set-attrs component opts {:type field})))
 
@@ -181,12 +183,14 @@
          message]))))
 
 (defmethod init-field :radio
-  [[type {:keys [field name value] :as attrs} & body] {:keys [doc get save!]}]
+  [[type {:keys [field name value checked] :as attrs} & body] {:keys [doc get save!]}]
+  (when checked
+    (save! name value))
   (render-element attrs doc
     (into
       [type
        (merge {:type :radio
-               :checked (= value (get name))
+               :default-checked (= value (get name))
                :on-change #(save! name value)}
               attrs)]
        body)))
