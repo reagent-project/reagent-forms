@@ -62,6 +62,18 @@ The checkbox field creates a checkbox element:
   [:div.col-md-5
    [:input.form-control {:field :checkbox :id :happy-bindings}]]]
 ```
+
+The checkbox accepts an optional `:checked` attribute. When set the
+checkbox will be selected and the document path pointed to by the `:id`
+key will be set to `true`.
+
+```clojure
+[:div.row
+  [:div.col-md-2 "does data binding make you happy?"]
+  [:div.col-md-5
+   [:input.form-control {:field :checkbox :id :happy-bindings :checked true}]]]
+```
+
 #### :range
 
 Range control uses the `:min` and `:max` keys to create an HTML range input:
@@ -80,6 +92,17 @@ Radio buttons do not use the `:id` key since it must be unique and are instead g
 [:input {:field :radio :value :b :name :radioselection} "bar"]
 [:input {:field :radio :value :c :name :radioselection} "baz"]
 ```
+
+The radio button accepts an optional `:checked` attribute. When set the
+checkbox will be selected and the document path pointed to by the `:name` key
+will be set to `true`.
+
+```clojure
+[:input {:field :radio :value :a :name :radioselection} "foo"]
+[:input {:field :radio :value :b :name :radioselection :checked true} "bar"]
+[:input {:field :radio :value :c :name :radioselection} "baz"]
+```
+
 
 ### Lists
 
