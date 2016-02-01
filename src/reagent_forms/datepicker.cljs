@@ -80,11 +80,7 @@
            parts)))
 
 (defn first-day-of-week [year month]
-  (.getDay
-   (doto (js/Date.)
-     (.setYear year)
-     (.setMonth month)
-     (.setDate 1))))
+  (.getDay (js/Date. year month 1)))
 
 (defn gen-days [current-date get save! expanded? auto-close?]
   (let [[year month day] @current-date
