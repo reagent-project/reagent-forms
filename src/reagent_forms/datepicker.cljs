@@ -5,7 +5,7 @@
 
 (def dates
   {:days ["Sunday" "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday"]
-   :days-short ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun"]
+   :days-short ["Su" "Mo" "Tu" "We" "Th" "Fr" "Sa" "Su"]
    :months ["January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"]
    :month-short ["Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]})
 
@@ -164,7 +164,8 @@
          [:th.next {:on-click #(swap! year inc)} "›"]]]
        (into
          [:tbody]
-         (for [row (->> ["Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]
+         (for [row (->> dates
+                        :month-short
                         (map-indexed vector)
                         (partition 4))]
            (into [:tr]
@@ -190,14 +191,10 @@
        :on-click #(reset! view-selector :month)}
       (str (get-in dates [:months (second @date)]) " " (first @date))]
      [:th.next {:on-click #(swap! date next-date)} "›"]]
-    [:tr
-     [:th.dow "Su"]
-     [:th.dow "Mo"]
-     [:th.dow "Tu"]
-     [:th.dow "We"]
-     [:th.dow "Th"]
-     [:th.dow "Fr"]
-     [:th.dow "Sa"]]]
+    (into
+      [:tr]
+      (for [dow (take 7 (:days-short dates))]
+        [:th.dow {:key dow} dow]))]
    (into [:tbody]
          (gen-days date get save! expanded? auto-close?))])
 
