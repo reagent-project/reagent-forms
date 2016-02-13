@@ -181,12 +181,14 @@
   [:table.table-condensed
    [:thead
     [:tr
-     [:th.prev {:on-click #(swap! date last-date)} "‹"]
+     [:th.prev {:on-click #(let [prev-ym (last-date @date)]
+                             (swap! date assoc 0 (first prev-ym) 1 (second prev-ym)))} "‹"]
      [:th.switch
       {:col-span 5
        :on-click #(reset! view-selector :month)}
       (str (get-in dates [:months (second @date)]) " " (first @date))]
-     [:th.next {:on-click #(swap! date next-date)} "›"]]
+     [:th.next {:on-click #(let [next-ym (next-date @date)]
+                             (swap! date assoc 0 (first next-ym) 1 (second next-ym)))} "›"]]
     (into
       [:tr]
       (for [dow (take 7 (:days-short dates))]
