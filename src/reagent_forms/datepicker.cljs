@@ -114,15 +114,15 @@
       (partition 7)
       (map (fn [week] (into [:tr] week))))))
 
-(defn last-date [[year month]]
+(defn last-date [[year month day]]
   (if (pos? month)
-    [year (dec month)]
-    [(dec year) 11]))
+    [year (dec month) day]
+    [(dec year) 11 day]))
 
-(defn next-date [[year month]]
+(defn next-date [[year month day]]
   (if (= month 11)
-    [(inc year) 0]
-    [year (inc month)]))
+    [(inc year) 0 day]
+    [year (inc month) day]))
 
 
 (defn year-picker [date save! view-selector]
@@ -181,14 +181,12 @@
   [:table.table-condensed
    [:thead
     [:tr
-     [:th.prev {:on-click #(let [prev-ym (last-date @date)]
-                             (swap! date assoc 0 (first prev-ym) 1 (second prev-ym)))} "‹"]
+     [:th.prev {:on-click #(swap! date last-date)} "‹"]
      [:th.switch
       {:col-span 5
        :on-click #(reset! view-selector :month)}
       (str (get-in dates [:months (second @date)]) " " (first @date))]
-     [:th.next {:on-click #(let [next-ym (next-date @date)]
-                             (swap! date assoc 0 (first next-ym) 1 (second next-ym)))} "›"]]
+     [:th.next {:on-click #(swap! date next-date)} "›"]]
     (into
       [:tr]
       (for [dow (take 7 (:days-short dates))]
