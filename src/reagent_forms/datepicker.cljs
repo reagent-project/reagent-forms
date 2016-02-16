@@ -125,7 +125,7 @@
     [year (inc month) day]))
 
 
-(defn year-picker [date save! view-selector]
+(defn year-picker [date view-selector]
   (let [start-year (atom (- (first @date) 10))]
     (fn []
       [:table.table-condensed
@@ -143,12 +143,11 @@
                        [:td.year
                         {:on-click #(do
                                      (swap! date assoc-in [0] year)
-                                     (save! {:year (@date 0) :month (inc (@date 1)) :day (@date 2)})
                                      (reset! view-selector :month))
                          :class (when (= year (first @date)) "active")}
                         year]))))])))
 
-(defn month-picker [date save! view-selector]
+(defn month-picker [date view-selector]
   (let [year (atom (first @date))]
     (fn []
       [:table.table-condensed
@@ -173,7 +172,6 @@
                      :on-click
                      #(do
                        (swap! date (fn [[_ _ day]] [@year idx day]))
-                       (save! {:year (@date 0) :month (inc (@date 1)) :day (@date 2)})
                        (reset! view-selector :day))}
                     month-name]))))])))
 
@@ -202,5 +200,5 @@
       [:div {:class (str "datepicker" (when-not @expanded? " dropdown-menu") (if inline " dp-inline" " dp-dropdown"))}
        (condp = @view-selector
          :day   [day-picker date get save! view-selector expanded? auto-close?]
-         :month [month-picker date save! view-selector]
-         :year  [year-picker date save! view-selector])])))
+         :month [month-picker date view-selector]
+         :year  [year-picker date view-selector])])))
