@@ -134,7 +134,11 @@
 (defmethod init-field :datepicker
   [[_ {:keys [id date-format inline auto-close?] :as attrs}] {:keys [doc get save!]}]
   (let [fmt (parse-format date-format)
+        selected-date (get id)
         today (js/Date.)
+        year (or (:year selected-date) (.getFullYear today))
+        month (or (dec (:month selected-date)) (.getMonth today))
+        day (or (:day selected-date) (.getDate today))
         expanded? (atom false)]
     (render-element attrs doc
       [:div.datepicker-wrapper
@@ -149,7 +153,7 @@
          [:span.input-group-addon
           {:on-click #(swap! expanded? not)}
           [:i.glyphicon.glyphicon-calendar]]]
-       [datepicker (.getFullYear today) (.getMonth today) (.getDate today) expanded? auto-close? #(get id) #(save! id %) inline]])))
+       [datepicker year month day expanded? auto-close? #(get id) #(save! id %) inline]])))
 
 
 (defmethod init-field :checkbox
