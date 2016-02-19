@@ -4,10 +4,41 @@
    [reagent.core :as reagent :refer [atom]]))
 
 (def dates
-  {:days ["Sunday" "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday"]
-   :days-short ["Su" "Mo" "Tu" "We" "Th" "Fr" "Sa" "Su"]
-   :months ["January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"]
-   :month-short ["Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]})
+  {:en-US {:days        ["Sunday" "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday"]
+           :days-short  ["Su" "Mo" "Tu" "We" "Th" "Fr" "Sa"]
+           :months      ["January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"]
+           :months-short ["Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]
+           :first-day 0}
+   :ru-RU {:days        ["воскресенье" "понедельник" "вторник" "среда" "четверг" "пятница" "суббота"]
+           :days-short  ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
+           :months      ["Январь" "Февраль" "Март" "Апрель" "Май" "Июнь"  "Июль" "Август" "Сентябрь" "Октябрь" "Ноябрь" "Декабрь"]
+           :months-short ["Янв" "Фев" "Мар" "Апр" "Май" "Июн"  "Июл" "Авг" "Сен" "Окт" "Ноя" "Дек"]
+           :first-day 1}
+   :fr-FR {:days        ["dimanche" "lundi" "mardi" "mercredi" "jeudi" "vendredi" "samedi"]
+           :days-short  ["D" "L" "M" "M" "J" "V" "S"]
+           :months      ["janvier" "février" "mars" "avril" "mai" "juin" "juillet" "août" "septembre" "octobre" "novembre" "décembre"]
+           :months-short ["janv." "févr." "mars" "avril" "mai" "juin" "juil." "aût" "sept." "oct." "nov." "déc."]
+           :first-day 1}
+   :de-DE {:days        ["Sonntag" "Montag" "Dienstag" "Mittwoch" "Donnerstag" "Freitag" "Samstag"]
+           :days-short  ["So" "Mo" "Di" "Mi" "Do" "Fr" "Sa"]
+           :months      ["Januar" "Februar" "März" "April" "Mai" "Juni" "Juli" "August" "September" "Oktober" "November" "Dezember"]
+           :months-short ["Jan" "Feb" "Mär" "Apr" "Mai" "Jun"  "Jul" "Aug" "Sep" "Okt" "Nov" "Dez"]
+           :first-day 1}
+   :es-ES {:days        ["domingo" "lunes" "martes" "miércoles" "jueves" "viernes" "sábado"]
+           :days-short  ["D" "L" "M" "X" "J" "V" "S"]
+           :months      ["enero" "febrero" "marzo" "abril" "mayo" "junio" "julio" "agosto" "septiembre" "octubre" "noviembre" "diciembre"]
+           :months-short ["ene" "feb" "mar" "abr" "may" "jun"  "jul" "ago" "sep" "oct" "nov" "dic"]
+           :first-day 1}
+   :pt-PT {:days        ["Domingo" "Segunda-feira" "Terça-feira" "Quarta-feira" "Quinta-feira" "Sexta-feira" "Sábado"]
+           :days-short  ["Dom" "Seg" "Ter" "Qua" "Qui" "Sex" "Sáb"]
+           :months      ["Janeiro" "Fevereiro" "Março" "Abril" "Maio" "Junho" "Julho" "Agosto" "Setembro" "Outubro" "Novembro" "Dezembro"]
+           :months-short ["Jan" "Fev" "Mar" "Abr" "Mai" "Jun" "Jul" "Ago" "Set" "Out" "Nov" "Dez"]
+           :first-day 1}
+   :fi-FI {:days        ["Sunnuntai" "Maanantai" "Tiistai" "Keskiviikko" "Torstai" "Perjantai" "Lauantai"]
+           :days-short  ["Su" "Ma" "Ti" "Ke" "To" "Pe" "La"]
+           :months      ["Tammikuu" "Helmikuu" "Maaliskuu" "Huhtikuu" "Toukokuu" "Kesäkuu" "Heinäkuu" "Elokuu" "Syyskuu" "Lokakuu" "Marraskuu" "Joulukuu"]
+           :months-short ["Tammi" "Helmi" "Maalis" "Huhti" "Touko" "Kesä" "Heinä" "Elo" "Syys" "Marras" "Joulu"]
+           :first-day 1}})
 
 (defn separator-matcher [fmt]
   (if-let [separator (or (re-find #"[.\/\-\s].*?" fmt) " ")]
@@ -27,16 +58,6 @@
     (when (empty? parts)
       (throw (js/Error. "Invalid date format.")))
     {:separator separator :matcher matcher :parts parts}))
-
-(defn leap-year? [year]
-  (or
-   (and
-     (= 0 (mod year 4))
-     (not= 0 (mod year 100)))
-   (= 0 (mod year 400))))
-
-(defn days-in-month [year month]
-  ([31 (if (leap-year? year) 29 28) 31 30 31 30 31 31 30 31 30 31] month))
 
 (defn blank-date []
   (doto (js/Date.)
@@ -79,14 +100,25 @@
              (= % :yyyy)          year)
            parts)))
 
-(defn first-day-of-week [year month]
-  (.getDay (js/Date. year month 1)))
+(defn leap-year? [year]
+  (or
+   (and
+     (= 0 (mod year 4))
+     (not= 0 (mod year 100)))
+   (= 0 (mod year 400))))
 
-(defn gen-days [current-date get save! expanded? auto-close?]
+(defn days-in-month [year month]
+  ([31 (if (leap-year? year) 29 28) 31 30 31 30 31 31 30 31 30 31] month))
+
+(defn first-day-of-week [year month local-first-day]
+  (let [day-num (.getDay (js/Date. year month 1))]
+    (mod (- day-num local-first-day) 7)))
+
+(defn gen-days [current-date get save! expanded? auto-close? local-first-day]
   (let [[year month day] @current-date
         num-days (days-in-month year month)
         last-month-days (if (pos? month) (days-in-month year (dec month)))
-        first-day (first-day-of-week year month)]
+        first-day (first-day-of-week year month local-first-day)]
     (->>
       (for [i (range 42)]
         (cond
@@ -124,7 +156,6 @@
     [(inc year) 0 day]
     [year (inc month) day]))
 
-
 (defn year-picker [date view-selector]
   (let [start-year (atom (- (first @date) 10))]
     (fn []
@@ -147,7 +178,7 @@
                          :class (when (= year (first @date)) "active")}
                         year]))))])))
 
-(defn month-picker [date view-selector]
+(defn month-picker [date view-selector {:keys [months-short]}]
   (let [year (atom (first @date))]
     (fn []
       [:table.table-condensed
@@ -159,8 +190,7 @@
          [:th.next {:on-click #(swap! year inc)} "›"]]]
        (into
          [:tbody]
-         (for [row (->> dates
-                        :month-short
+         (for [row (->> months-short
                         (map-indexed vector)
                         (partition 4))]
            (into [:tr]
@@ -175,30 +205,38 @@
                        (reset! view-selector :day))}
                     month-name]))))])))
 
-(defn day-picker [date get save! view-selector expanded? auto-close?]
-  [:table.table-condensed
-   [:thead
-    [:tr
-     [:th.prev {:on-click #(swap! date last-date)} "‹"]
-     [:th.switch
-      {:col-span 5
-       :on-click #(reset! view-selector :month)}
-      (str (get-in dates [:months (second @date)]) " " (first @date))]
-     [:th.next {:on-click #(swap! date next-date)} "›"]]
-    (into
-      [:tr]
-      (for [dow (take 7 (:days-short dates))]
-        [:th.dow {:key dow} dow]))]
-   (into [:tbody]
-         (gen-days date get save! expanded? auto-close?))])
+(defn day-picker [date get save! view-selector expanded? auto-close? {:keys [months days-short first-day]}]
+  (let [local-first-day first-day
+        local-days-short (->> (cycle days-short)
+                              (drop local-first-day) ; first day as offset
+                              (take 7))]
+    [:table.table-condensed
+     [:thead
+      [:tr
+       [:th.prev {:on-click #(swap! date last-date)} "‹"]
+       [:th.switch
+        {:col-span 5
+         :on-click #(reset! view-selector :month)}
+        (str (nth months (second @date)) " " (first @date))]
+       [:th.next {:on-click #(swap! date next-date)} "›"]]
+      (into
+        [:tr]
+        (for [dow local-days-short]
+          [:th.dow {:key dow} dow]))]
+     (into [:tbody]
+           (gen-days date get save! expanded? auto-close? local-first-day))]))
 
-(defn datepicker [year month day expanded? auto-close? get save! inline]
-
+(defn datepicker [year month day expanded? auto-close? get save! inline lang]
   (let [date (atom [year month day])
-        view-selector (atom :day)]
+        view-selector (atom :day)
+        names (if (and (keyword? lang) (contains? dates lang))
+                (lang dates)
+                (if (every? #(contains? lang %) [:months :months-short :days :days-short :first-day])
+                  lang
+                  (:en-US dates)))]
     (fn []
       [:div {:class (str "datepicker" (when-not @expanded? " dropdown-menu") (if inline " dp-inline" " dp-dropdown"))}
        (condp = @view-selector
-         :day   [day-picker date get save! view-selector expanded? auto-close?]
-         :month [month-picker date view-selector]
+         :day   [day-picker date get save! view-selector expanded? auto-close? names]
+         :month [month-picker date view-selector names]
          :year  [year-picker date view-selector])])))
