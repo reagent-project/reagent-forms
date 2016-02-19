@@ -135,9 +135,10 @@
   [[_ {:keys [id date-format inline auto-close?] :as attrs}] {:keys [doc get save!]}]
   (let [fmt (parse-format date-format)
         selected-date (get id)
+        selected-month (if (pos? (:month selected-date)) (dec (:month selected-date)) (:month selected-date))
         today (js/Date.)
         year (or (:year selected-date) (.getFullYear today))
-        month (or (dec (:month selected-date)) (.getMonth today))
+        month (or selected-month (.getMonth today))
         day (or (:day selected-date) (.getDate today))
         expanded? (atom false)]
     (render-element attrs doc
