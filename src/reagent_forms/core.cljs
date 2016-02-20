@@ -268,7 +268,20 @@
                            (result-fn result)])
                         @selections))]])))
 
+(defmethod init-field :file
+  [[type {:keys [id] :as attrs}] {:keys [doc save!]}]
+  (render-element attrs doc
+    [type (merge {:type :file
+                  :on-change #(save! id (-> % .-target .-files array-seq first))}
+                 attrs)]))
 
+(defmethod init-field :files
+  [[type {:keys [id] :as attrs}] {:keys [doc save!]}]
+  (render-element attrs doc
+    [type (merge {:type :file
+                  :multiple true
+                  :on-change #(save! id (-> % .-target .-files))}
+                 attrs)]))
 
 (defn- group-item [[type {:keys [key touch-event] :as attrs} & body] {:keys [save! multi-select]} selections field id]
   (letfn [(handle-click! []
