@@ -132,7 +132,7 @@
              attrs)])))
 
 (defmethod init-field :datepicker
-  [[_ {:keys [id date-format inline auto-close?] :as attrs}] {:keys [doc get save!]}]
+  [[_ {:keys [id date-format inline auto-close? lang] :or {lang :en-US} :as attrs}] {:keys [doc get save!]}]
   (let [fmt (parse-format date-format)
         selected-date (get id)
         selected-month (if (pos? (:month selected-date)) (dec (:month selected-date)) (:month selected-date))
@@ -154,7 +154,7 @@
          [:span.input-group-addon
           {:on-click #(swap! expanded? not)}
           [:i.glyphicon.glyphicon-calendar]]]
-       [datepicker year month day expanded? auto-close? #(get id) #(save! id %) inline]])))
+       [datepicker year month day expanded? auto-close? #(get id) #(save! id %) inline lang]])))
 
 
 (defmethod init-field :checkbox
