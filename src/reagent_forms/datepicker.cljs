@@ -221,8 +221,9 @@
        [:th.next {:on-click #(swap! date next-date)} "›"]]
       (into
         [:tr]
-        (for [dow local-days-short]
-          [:th.dow {:key dow} dow]))]
+        (map-indexed (fn [i dow]
+                     ^{:key i}  [:th.dow dow])
+                     local-days-short))]
      (into [:tbody]
            (gen-days date get save! expanded? auto-close? local-first-day))]))
 
