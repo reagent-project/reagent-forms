@@ -31,7 +31,7 @@ The input fields can have an optional `:fmt` attribute that can provide a format
 ```
 #### :typeahead
 
-The typeahead field uses a `:data-source` key bound to a function that takes the current input and returns a list of matching results. The control uses an input element to handle user input and renders the list of choices as an  unordered list element containing one or more list item elements. Users may specify the css classes used to render each of these elements using the keys :input-class, :list-class and :item-class. Users may additionally specify a css class to handle highlighting of the current selection with the :highlight-class key. Reference css classes are included in the resources/public/css/reagent-forms.css file. 
+The typeahead field uses a `:data-source` key bound to a function that takes the current input and returns a list of matching results. The control uses an input element to handle user input and renders the list of choices as an  unordered list element containing one or more list item elements. Users may specify the css classes used to render each of these elements using the keys :input-class, :list-class and :item-class. Users may additionally specify a css class to handle highlighting of the current selection with the :highlight-class key. Reference css classes are included in the resources/public/css/reagent-forms.css file.
 
 ```clojure
 (defn friend-source [text]
@@ -39,17 +39,17 @@ The typeahead field uses a `:data-source` key bound to a function that takes the
     #(-> % (.toLowerCase %) (.indexOf text) (> -1))
     ["Alice" "Alan" "Bob" "Beth" "Jim" "Jane" "Kim" "Rob" "Zoe"]))
 
-[:div {:field :typeahead 
-       :id :ta 
+[:div {:field :typeahead
+       :id :ta
        :input-placeholder "pick a friend"
-       :data-source friend-source 
-       :input-class "form-control" 
-       :list-class "typeahead-list" 
-       :item-class "typeahead-item" 
+       :data-source friend-source
+       :input-class "form-control"
+       :list-class "typeahead-list"
+       :item-class "typeahead-item"
        :highlight-class "highlighted"}]
 ```
 
-The typeahead field supports both mouse and keyboard selection. 
+The typeahead field supports both mouse and keyboard selection.
 
 
 #### :checkbox
@@ -103,6 +103,21 @@ will be set to `true`.
 [:input {:field :radio :value :c :name :radioselection} "baz"]
 ```
 
+#### :file
+
+The file field binds the `File` object of an `<input type="file"/>`.
+
+```clojure
+[:input {:field :file :type :file}]
+```
+
+#### :files
+
+Same as file, except it works with `<input type="file" multiple/>` and binds the entire `FileList` object.
+
+```clojure
+[:input {:field :file :type :file :multiple true}]
+```
 
 ### Lists
 
