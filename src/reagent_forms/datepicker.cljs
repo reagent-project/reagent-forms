@@ -38,6 +38,11 @@
            :days-short  ["Su" "Ma" "Ti" "Ke" "To" "Pe" "La"]
            :months      ["Tammikuu" "Helmikuu" "Maaliskuu" "Huhtikuu" "Toukokuu" "Kesäkuu" "Heinäkuu" "Elokuu" "Syyskuu" "Lokakuu" "Marraskuu" "Joulukuu"]
            :months-short ["Tammi" "Helmi" "Maalis" "Huhti" "Touko" "Kesä" "Heinä" "Elo" "Syys" "Marras" "Joulu"]
+           :first-day 1}
+   :nl-NL {:days        ["zondag" "maandag" "dinsdag" "woensdag" "donderdag" "vrijdag" "zaterdag"]
+           :days-short  ["zo" "ma" "di" "wo" "do" "vr" "za"]
+           :months      ["januari" "februari" "maart" "april" "mei" "juni" "juli" "augustus" "september" "oktober" "november" "december"]
+           :months-short ["jan" "feb" "maa" "apr" "mei" "jun" "jul" "aug" "sep" "okt" "nov" "dec"]
            :first-day 1}})
 
 (defn separator-matcher [fmt]
