@@ -226,12 +226,13 @@ The date is stored in the document using the following format:
 
 The datepicker can also take an optional `:auto-close?` key to indicate that it should be closed when the day is clicked. This defaults to `false`.
 
-Datepicker takes an optional `:lang` key which you can use to set the locale of the datepicker. There are currently English, Russian, French, Spanish, Portuguese, Finnish and Dutch built in translations. To use a built-in language pass in `:lang` with a keyword as in the following table:
+Datepicker takes an optional `:lang` key which you can use to set the locale of the datepicker. There are currently English, Russian, German, French, Spanish, Portuguese, Finnish and Dutch built in translations. To use a built-in language pass in `:lang` with a keyword as in the following table:
 
 | Language | Keyword |
 |----------|---------|
 | English | `:en-US` (default) |
 | Russian | `:ru-RU` |
+| German  | `:de-DE` |
 | French  | `:fr-FR` |
 | Spanish | `:es-ES` |
 | Portuguese | `:pt-PT` |
