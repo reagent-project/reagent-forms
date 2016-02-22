@@ -239,8 +239,40 @@ The date is stored in the document using the following format:
 {:year 2014 :month 11 :day 24}
 ```
 
-The date picker can also take an optional `:auto-close?` key to indicate that it should be closed when the day is clicked. This defaults to `false`.
+The datepicker can also take an optional `:auto-close?` key to indicate that it should be closed when the day is clicked. This defaults to `false`.
 
+Datepicker takes an optional `:lang` key which you can use to set the locale of the datepicker. There are currently English, Russian, German, French, Spanish, Portuguese, Finnish and Dutch built in translations. To use a built-in language pass in `:lang` with a keyword as in the following table:
+
+| Language | Keyword |
+|----------|---------|
+| English | `:en-US` (default) |
+| Russian | `:ru-RU` |
+| German  | `:de-DE` |
+| French  | `:fr-FR` |
+| Spanish | `:es-ES` |
+| Portuguese | `:pt-PT` |
+| Finnish | `:fi-FI` |
+| Dutch   | `:nl-NL` |
+
+Example of using a built in language locale:
+
+```Clojure
+{:field :datepicker :id :date :date-format "yyyy/mm/dd" :inline true :lang :ru-RU}
+```
+
+You can also provide a custom locale hash-map to the datepicker. `:first-day` marks the first day of the week starting from Sunday as 0. All of the keys must be specified.
+
+Example of using a custom locale hash-map: 
+
+```clojure
+{:field :datepicker :id :date :date-format "yyyy/mm/dd" :inline true :lang
+ {:days        ["First" "Second" "Third" "Fourth" "Fifth" "Sixth" "Seventh"]
+  :days-short  ["1st" "2nd" "3rd" "4th" "5th" "6th" "7th"]
+  :months      ["Month-one" "Month-two" "Month-three" "Month-four" "Month-five" "Month-six"
+                "Month-seven" "Month-eight" "Month-nine" "Month-ten" "Month-eleven" "Month-twelve"]
+  :months-short ["M1" "M2" "M3" "M4" "M5" "M6" "M7" "M8" "M9" "M10" "M12"]
+  :first-day 0}}
+```
 
 The datepicker requires additional CSS in order to be rendered correctly. The default CSS is provided
 in `reagent-forms.css` in the resource path. Simply make sure that it's included on the page.
