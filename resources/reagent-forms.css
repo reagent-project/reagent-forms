@@ -61,7 +61,7 @@ li.highlighted
   border: 1px solid #ccc; // IE8 fallback
   border: 1px solid rgba(0,0,0,.15);
   background-clip: padding-box;
-  
+
 }
 .datepicker:before {
   content: '';
@@ -104,15 +104,14 @@ li.highlighted
     border-radius: 4px;
 }
 .datepicker td span {
-    display: block;
     line-height: 54px;
-    float: left;
     margin: 2px;
     cursor: pointer;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
 }
+
 .datepicker td,
 .datepicker th {
   text-align: center;
@@ -174,16 +173,6 @@ li.highlighted
 .datepicker td.active.active,
 .datepicker td.active:hover.active {
   background-color: #003399 \9;
-}
-
-.datepicker td span {
-  display: block;
-  float: left;
-  margin: 2px;
-  cursor: pointer;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
 }
 
 .datepicker td:hover, td span:hover {
