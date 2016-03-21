@@ -391,4 +391,4 @@
                      (if (fn? field) [field] field))
                    node))
                form)]
-    (fn [] form)))
+    form))
