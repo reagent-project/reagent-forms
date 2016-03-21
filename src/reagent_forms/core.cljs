@@ -198,7 +198,7 @@
                :default-checked (= value (get name))
                :on-change #(save! name value)}
               attrs)]
-       body)))
+      body)))
 
 (defmethod init-field :typeahead
   [[type {:keys [id data-source input-class list-class item-class highlight-class input-placeholder result-fn choice-fn clear-on-focus?]
@@ -249,7 +249,7 @@
                                                        (reset! selected-index 0))
                                                 "default"))}]
 
-                     [:ul {:style {:display (if (or (empty? @selections) @typeahead-hidden?) :none :block) }
+                     [:ul {:style {:display (if (or (empty? @selections) @typeahead-hidden?) :none :block)}
                            :class list-class
                            :on-mouse-enter #(reset! mouse-on-list? true)
                            :on-mouse-leave #(reset! mouse-on-list? false)}
