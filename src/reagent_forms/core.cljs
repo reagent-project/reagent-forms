@@ -85,8 +85,10 @@
 
 (defmethod bind :checkbox
   [{:keys [id]} {:keys [get save!]}]
-  {:default-checked (get id)
-   :on-change #(->> id get not (save! id))})
+  (merge {:default-checked (get id)
+          :on-change       #(->> id get not (save! id))}
+         (when (get id)
+           {:checked "checked"})))
 
 (defmethod bind :default [_ _])
 
