@@ -173,18 +173,19 @@
        placeholder)]))
 
 (defmethod init-field :alert
-  [[type {:keys [id event touch-event] :as attrs} & body] {:keys [doc get save!] :as opts}]
+  [[type {:keys [id event touch-event closeable?] :or {closeable? true} :as attrs} & body] {:keys [doc get save!] :as opts}]
   (render-element attrs doc
     (if event
       (when (event (get id))
         (into [type (dissoc attrs event)] body))
       (if-let [message (not-empty (get id))]
         [type attrs
-         [:button.close
-           {:type                      "button"
-            :aria-hidden               true
-            (or touch-event :on-click) #(save! id nil)}
-           "X"]
+         (when closeable?
+           [:button.close
+            {:type                      "button"
+             :aria-hidden               true
+             (or touch-event :on-click) #(save! id nil)}
+            "X"])
          message]))))
 
 (defmethod init-field :radio
