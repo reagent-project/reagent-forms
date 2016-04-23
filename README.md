@@ -205,6 +205,8 @@ Labels can be associated with a key in the document using the `:id` attribute an
 
 Alerts are bound to an id of a field that triggers the alert and can have an optional `:event` key. The event key should point to a function that returns a boolean value.
 
+An optional `:closeable? true/false` can be provided to control if a close button should be rendered (defaults to true).
+
 When an event is supplied then the body of the alert is rendered whenever the event returns true:
 
 ```clojure
@@ -213,8 +215,6 @@ When an event is supplied then the body of the alert is rendered whenever the ev
 ```
 
 When no event is supplied, then the alert is shown whenever the value at the id is not empty and displays the value:
-
-An optional `:closeable? true/false` can be provided to control if a close button should be rendered (defaults to true).
 
 ```clojure
 (def doc (atom {}))
@@ -289,6 +289,8 @@ The File can be read using:
 The container element can be used to group different element.
 The container can be used to set the visibility of multiple elements.
 
+`:valid?` key accepts a function which takes the current state of the document as the sole argument. This function returns a class to be concatenated to the class list of the element.
+
 ```clojure
 [:div.form-group
  {:field :container
@@ -297,7 +299,6 @@ The container can be used to set the visibility of multiple elements.
  [:input {:field :text :id :last-name}]]
 ```
 
-`:valid?` key accepts a function which takes the current state of the document as a the sole argument. This function returns a class to be concatenated to the class list of the element.
 
 ### Setting component visibility
 
