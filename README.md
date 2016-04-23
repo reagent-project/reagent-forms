@@ -214,6 +214,8 @@ When an event is supplied then the body of the alert is rendered whenever the ev
 
 When no event is supplied, then the alert is shown whenever the value at the id is not empty and displays the value:
 
+An optional `:closeable? true/false` can be provided to control if a close button should be rendered (defaults to true).
+
 ```clojure
 (def doc (atom {}))
 
@@ -294,6 +296,8 @@ The container can be used to set the visibility of multiple elements.
  [:input {:field :text :id :first-name}]
  [:input {:field :text :id :last-name}]]
 ```
+
+`:valid?` key accepts a function which takes the current state of the document as a the sole argument. This function returns a class to be concatenated to the class list of the element.
 
 ### Setting component visibility
 
