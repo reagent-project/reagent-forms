@@ -10,3 +10,5 @@ pom.xml.asc
 .lein-plugins/
 .lein-failures
 /resources/public/js/
+/forms-example/resources/public/js/
+/forms-example/target/

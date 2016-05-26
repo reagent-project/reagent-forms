@@ -138,11 +138,12 @@
              {:class (when-let [doc-date (get)]
                        (when (= doc-date date) "active"))
               :on-click #(do
-                          (swap! current-date assoc-in [2] day)
-                          (if (= (get) date)
-                            (save! nil)
-                            (save! date))
-                          (when auto-close? (reset! expanded? false)))}
+                           (.preventDefault %)
+                           (swap! current-date assoc-in [2] day)
+                           (if (= (get) date)
+                             (save! nil)
+                             (save! date))
+                           (when auto-close? (reset! expanded? false)))}
              day])
           :else
           [:td.day.new
@@ -167,19 +168,24 @@
       [:table.table-condensed
        [:thead
         [:tr
-         [:th.prev {:on-click #(swap! start-year - 10)} "‹"]
+         [:th.prev {:on-click #(do
+                                 (.preventDefault %)
+                                 (swap! start-year - 10))} "‹"]
          [:th.switch
           {:col-span 2}
           (str @start-year " - " (+ @start-year 10))]
-         [:th.next {:on-click #(swap! start-year + 10)} "›"]]]
+         [:th.next {:on-click #(do
+                                 (.preventDefault %)
+                                 (swap! start-year + 10))} "›"]]]
        (into [:tbody]
              (for [row (->> (range @start-year (+ @start-year 12)) (partition 4))]
                (into [:tr]
                      (for [year row]
                        [:td.year
                         {:on-click #(do
-                                     (swap! date assoc-in [0] year)
-                                     (reset! view-selector :month))
+                                      (.preventDefault %)
+                                      (swap! date assoc-in [0] year)
+                                      (reset! view-selector :month))
                          :class (when (= year (first @date)) "active")}
                         year]))))])))
 
@@ -189,10 +195,16 @@
       [:table.table-condensed
        [:thead
         [:tr
-         [:th.prev {:on-click #(swap! year dec)} "‹"]
+         [:th.prev {:on-click #(do
+                                 (.preventDefault %)
+                                 (swap! year dec))} "‹"]
          [:th.switch
-          {:col-span 2 :on-click #(reset! view-selector :year)} @year]
-         [:th.next {:on-click #(swap! year inc)} "›"]]]
+          {:col-span 2 :on-click #(do
+                                    (.preventDefault %)
+                                    (reset! view-selector :year))} @year]
+         [:th.next {:on-click #(do
+                                 (.preventDefault %)
+                                 (swap! year inc))} "›"]]]
        (into
          [:tbody]
          (for [row (->> months-short
@@ -206,8 +218,9 @@
                        (when (and (= @year cur-year) (= idx cur-month)) "active"))
                      :on-click
                      #(do
-                       (swap! date (fn [[_ _ day]] [@year idx day]))
-                       (reset! view-selector :day))}
+                        (.preventDefault %)
+                        (swap! date (fn [[_ _ day]] [@year idx day]))
+                        (reset! view-selector :day))}
                     month-name]))))])))
 
 (defn day-picker [date get save! view-selector expanded? auto-close? {:keys [months days-short first-day]}]
@@ -218,12 +231,18 @@
     [:table.table-condensed
      [:thead
       [:tr
-       [:th.prev {:on-click #(swap! date last-date)} "‹"]
+       [:th.prev {:on-click #(do
+                               (.preventDefault %)
+                               (swap! date last-date))} "‹"]
        [:th.switch
         {:col-span 5
-         :on-click #(reset! view-selector :month)}
+         :on-click #(do
+                      (.preventDefault %)
+                      (reset! view-selector :month))}
         (str (nth months (second @date)) " " (first @date))]
-       [:th.next {:on-click #(swap! date next-date)} "›"]]
+       [:th.next {:on-click #(do
+                               (.preventDefault %)
+                               (swap! date next-date))} "›"]]
       (into
         [:tr]
         (map-indexed (fn [i dow]

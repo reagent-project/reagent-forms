@@ -43,7 +43,9 @@
     [:div.col-md-2 [:label "Age"]]
     [:div.col-md-5
      [:div
-      {:field :datepicker :id :age :date-format "yyyy/mm/dd" :inline true}]]]
+      [:label
+       [:input
+        {:field :datepicker :id :age :date-format "yyyy/mm/dd" :inline true}]]]]]
 
    (input "email" :email :person.email)
    (row
