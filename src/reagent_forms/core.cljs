@@ -150,11 +150,15 @@
           (merge
            {:read-only true
             :type :text
-            :on-click #(swap! expanded? not)
+            :on-click #(do
+                         (.preventDefault %)
+                         (swap! expanded? not))
             :value (when-let [date (get id)] (format-date date fmt))}
            attrs)]
          [:span.input-group-addon
-          {:on-click #(swap! expanded? not)}
+          {:on-click #(do
+                        (.preventDefault %)
+                        (swap! expanded? not))}
           [:i.glyphicon.glyphicon-calendar]]]
        [datepicker year month day expanded? auto-close? #(get id) #(save! id %) inline lang]])))
 
