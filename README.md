@@ -264,7 +264,7 @@ Example of using a built in language locale:
 
 You can also provide a custom locale hash-map to the datepicker. `:first-day` marks the first day of the week starting from Sunday as 0. All of the keys must be specified.
 
-Example of using a custom locale hash-map: 
+Example of using a custom locale hash-map:
 
 ```clojure
 {:field :datepicker :id :date :date-format "yyyy/mm/dd" :inline true :lang
@@ -434,12 +434,6 @@ Adapters can be provided to fields so as to create custom storage formats for fi
 Adapters may be passed nulls so they must be able to handle those.
 
 ## Mobile Gotchas
-
-React requires additional initialization in order to handle touch events:
-
-```clojure
-(.initializeTouchEvents js/React true)
-```
 
 Safari on iOS will have a 300ms delay for `:on-click` events, it's possible to set a custom trigger event using the `:touch-event` key. See [here](http://facebook.github.io/react/docs/events.html) for the list of events available in React. For example, if we wanted to use `:on-touch-start` instead of `:on-click` to trigger the event then we could do the following:
 
