@@ -147,7 +147,7 @@ The `:list` field is used for creating HTML `select` elements containing `option
                        (cond
                         (< i 29) true
                         (< i 31) (not= month :February)
-                        (= i 31) (some #{month} [:January :March :May :July :July :October :December])
+                        (= i 31) (some #{month} [:January :March :May :July :August :October :December])
                         :else false))}
           i])]
 [:select {:field :list :id :dob.month}
