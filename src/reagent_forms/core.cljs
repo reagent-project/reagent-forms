@@ -85,16 +85,16 @@
 
 (defmethod bind :checkbox
   [{:keys [id]} {:keys [get save!]}]
-  (merge {:default-checked (get id)
-          :on-change       #(->> id get not (save! id))}
-         (when (get id)
-           {:checked "checked"})))
+  {:checked   (boolean (get id))
+   :on-change #(->> id get not (save! id))})
 
 (defmethod bind :default [_ _])
 
 (defn- set-attrs
   [[type attrs & body] opts & [default-attrs]]
-  (into [type (merge default-attrs (bind attrs opts) attrs)] body))
+  (into
+    [type (merge default-attrs (bind attrs opts) (dissoc attrs :checked :default-checked))]
+    body))
 
 ;;initialize the field by binding it to the document and setting default options
 (defmulti init-field
@@ -167,7 +167,7 @@
   [[_ {:keys [id field checked default-checked] :as attrs} :as component] {:keys [doc get save!] :as opts}]
   (when (or checked default-checked)
     (save! id true))
-  (render-element attrs doc
+  (render-element (dissoc attrs :checked :default-checked) doc
       (set-attrs component opts {:type field})))
 
 (defmethod init-field :label
@@ -201,10 +201,11 @@
   (render-element attrs doc
     (into
       [type
-       (merge {:type :radio
-               :default-checked (= value (get name))
-               :on-change #(save! name value)}
-              attrs)]
+       (merge
+         (dissoc attrs :value :default-checked)
+         {:type :radio
+          :checked (= value (get name))
+          :on-change #(save! name value)})]
        body)))
 
 (defmethod init-field :typeahead
