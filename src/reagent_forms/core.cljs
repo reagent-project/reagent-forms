@@ -47,6 +47,15 @@
             (wrap-save-fn (:save! opts) out-fn)
             (:save! opts))})
 
+(defn clean-attrs [attrs]
+  (dissoc attrs
+          :date-format
+          :fmt
+          :event
+          :field
+          :preamble
+          :visible?))
+
 ;;coerce the input to the appropriate type
 (defmulti format-type
   (fn [field-type _]
@@ -93,7 +102,11 @@
 (defn- set-attrs
   [[type attrs & body] opts & [default-attrs]]
   (into
-    [type (merge default-attrs (bind attrs opts) (dissoc attrs :checked :default-checked))]
+    [type (clean-attrs
+            (merge
+              default-attrs
+              (bind attrs opts)
+              (dissoc attrs :checked :default-checked)))]
     body))
 
 ;;initialize the field by binding it to the document and setting default options
@@ -107,9 +120,10 @@
   [[type {:keys [valid?] :as attrs} & body] {:keys [doc]}]
   (render-element attrs doc
     (into [type
-           (if-let [valid-class (when valid? (valid? (deref doc)))]
+           (clean-attrs
+             (if-let [valid-class (when valid? (valid? (deref doc)))]
              (update-in attrs [:class] #(if (not (empty? %)) (str % " " valid-class) valid-class))
-             attrs)]
+             attrs))]
           body)))
 
 (defmethod init-field :input-field
@@ -154,7 +168,7 @@
                          (.preventDefault %)
                          (swap! expanded? not))
             :value (when-let [date (get id)] (format-date date fmt))}
-           attrs)]
+           (clean-attrs attrs))]
          [:span.input-group-addon
           {:on-click #(do
                         (.preventDefault %)
@@ -185,7 +199,7 @@
       (when (event (get id))
         (into [type (dissoc attrs event)] body))
       (if-let [message (not-empty (get id))]
-        [type attrs
+        [type (clean-attrs attrs)
          (when closeable?
            [:button.close
             {:type                      "button"
@@ -202,7 +216,7 @@
     (into
       [type
        (merge
-         (dissoc attrs :value :default-checked)
+         (dissoc (clean-attrs attrs) :value :default-checked)
          {:type :radio
           :checked (= value (get name))
           :on-change #(save! name value)})]
@@ -281,7 +295,7 @@
   (render-element attrs doc
     [type (merge {:type :file
                   :on-change #(save! id (-> % .-target .-files array-seq first))}
-                 attrs)]))
+                 (clean-attrs attrs))]))
 
 (defmethod init-field :files
   [[type {:keys [id] :as attrs}] {:keys [doc save!]}]
@@ -289,7 +303,7 @@
     [type (merge {:type :file
                   :multiple true
                   :on-change #(save! id (-> % .-target .-files))}
-                 attrs)]))
+                 (clean-attrs attrs))]))
 
 (defn- group-item [[type {:keys [key touch-event] :as attrs} & body] {:keys [save! multi-select]} selections field id]
   (letfn [(handle-click! []
@@ -303,7 +317,9 @@
 
     (fn []
       [type (merge {:class (if (get @selections key) "active")
-                    (or touch-event :on-click) handle-click!} attrs) body])))
+                    (or touch-event :on-click) handle-click!}
+                   (clean-attrs attrs))
+       body])))
 
 (defn- mk-selections [id selectors {:keys [get multi-select]}]
   (let [value (get id)]
@@ -368,7 +384,8 @@
     (save! id @selection)
     (render-element attrs doc
       [type
-       (merge attrs
+       (merge
+         (clean-attrs attrs)
               {:default-value (default-selection options @selection)
                :on-change #(save! id (clojure.core/get options-lookup (value-of %)))})
        (doall
