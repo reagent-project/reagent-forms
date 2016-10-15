@@ -52,9 +52,11 @@
           :date-format
           :fmt
           :event
+          :inline
           :field
           :preamble
-          :visible?))
+          :visible?
+          :auto-close?))
 
 ;;coerce the input to the appropriate type
 (defmulti format-type
