@@ -169,7 +169,9 @@
             :on-click #(do
                          (.preventDefault %)
                          (swap! expanded? not))
-            :value (when-let [date (get id)] (format-date date fmt))}
+            :value (if-let [date (get id)]
+                     (format-date date fmt)
+                     "")}
            (clean-attrs attrs))]
          [:span.input-group-addon
           {:on-click #(do
