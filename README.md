@@ -51,6 +51,29 @@ The typeahead field uses a `:data-source` key bound to a function that takes the
 
 The typeahead field supports both mouse and keyboard selection.
 
+##### Different label and value
+
+You can make the input's value be different then the value stored in the document. You need to specify `in-fn`, `out-fn` and `result-fn`. The `:data-source` needs to return a vector `[name id]`.
+
+```clojure
+(defn people-source [people]
+  (fn [text]
+    (->> people
+         (filter #(-> (:name %)
+                      (.toLowerCase)
+                      (.indexOf text)
+                      (> -1)))
+         (mapv #(vector (:name %) (:id %))))))
+
+[:div {:field :typeahead,
+       :data-source (people-source people)
+       :in-fn (fn [id]
+                [(:name (first (filter #(= id (:id %)) people))) id])
+       :out-fn (fn [[name id]] id)
+       :result-fn (fn [[name id]] name)
+       :id :author.id}]]]
+```
+
 
 #### :checkbox
 
