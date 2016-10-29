@@ -270,7 +270,9 @@
                                                        (save! id (value-of %))
                                                        (swap! selected-index inc)))
                                                 9  (choose-selected)
-                                                13 (choose-selected)
+                                                13 (do
+                                                     (.preventDefault %)
+                                                     (choose-selected))
                                                 27 (do (reset! typeahead-hidden? true)
                                                        (reset! selected-index 0))
                                                 "default"))}]
