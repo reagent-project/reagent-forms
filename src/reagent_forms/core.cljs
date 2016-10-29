@@ -288,6 +288,7 @@
                                 :on-mouse-over #(do
                                                   (reset! selected-index (js/parseInt (.getAttribute (.-target %) "tabIndex"))))
                                 :on-click      #(do
+                                                  (.preventDefault %)
                                                   (reset! typeahead-hidden? true)
                                                   (save! id result)
                                                   (choice-fn result))}
