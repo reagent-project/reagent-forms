@@ -147,7 +147,7 @@
                                (format-value fmt)
                                (format-type :numeric)
                                (save! id)))}
-             attrs)])))
+             (clean-attrs attrs))])))
 
 (defmethod init-field :datepicker
   [[_ {:keys [id date-format inline auto-close? lang] :or {lang :en-US} :as attrs}] {:keys [doc get save!]}]
