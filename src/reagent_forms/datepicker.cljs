@@ -1,7 +1,7 @@
 (ns reagent-forms.datepicker
    (:require
    [clojure.string :as s]
-   [reagent.core :as reagent :refer [atom]]))
+   [reagent.core :refer [atom]]))
 
 (def dates
   {:en-US {:days        ["Sunday" "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday"]

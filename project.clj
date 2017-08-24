@@ -1,4 +1,4 @@
-(defproject reagent-forms "0.5.29"
+(defproject reagent-forms "0.5.30"
   :description "data binding library for Reagent"
   :url "https://github.com/yogthos/reagent-forms"
   :license {:name "Eclipse Public License"
@@ -8,11 +8,12 @@
   :plugins [[codox "0.6.4"]]
   :profiles {:dev
              {:dependencies [[org.clojure/clojurescript "1.9.908"]
+                             [json-html "0.4.4"]
                              [com.cemerick/piggieback "0.2.2"]
                              [figwheel-sidecar "0.5.13"]]
               :plugins      [[lein-cljsbuild "1.0.3"]
                              [lein-figwheel "0.5.13"]]
-              :source-paths ["dev"]
+              :source-paths ["src" "dev"]
               :resource-paths ["dev"]
               :figwheel
               {:http-server-root "public"

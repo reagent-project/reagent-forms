@@ -5,7 +5,7 @@
    [clojure.string :refer [split trim]]
    [goog.string :as gstring]
    [goog.string.format]
-   [reagent.core :as reagent :refer [atom]]
+   [reagent.core :refer [atom cursor]]
    [reagent-forms.datepicker
     :refer [parse-format format-date datepicker]]))
 
@@ -20,15 +20,20 @@
         (let [segments (split (subs (str id) 1 ) #"\.")]
           (map keyword segments))))))
 
-(defn set-doc-value [doc id value events]
+(def ^:private cursor-for-id
+  (memoize
+    (fn [doc id]
+      (cursor doc (id->path id)))))
+
+(defn run-events [doc id value events]
   (let [path (id->path id)]
-    (reduce #(or (%2 path value %1) %1)
-            (assoc-in doc path value)
-            events)))
+    (reduce #(or (%2 path value %1) %1) doc events)))
 
 (defn- mk-save-fn [doc events]
   (fn [id value]
-    (swap! doc set-doc-value id value events)))
+    (reset! (cursor-for-id doc id) value)
+    (when-not (empty? events)
+      (swap! doc run-events id value events))))
 
 (defn wrap-get-fn [get wrapper]
   (fn [id]
@@ -89,7 +94,7 @@
       :input-field field)))
 
 (defmethod bind :input-field
-  [{:keys [field id fmt]} {:keys [get save! doc]}]
+  [{:keys [field id fmt]} {:keys [get save!]}]
   {:value (let [value (or (get id) "")]
             (format-value fmt value))
    :on-change #(save! id (->> % (value-of) (format-type field)))})
@@ -413,7 +418,7 @@
    events - any events that should be triggered when the document state changes"
   [form doc & events]
   (let [opts {:doc doc
-              :get #(get-in @doc (id->path %))
+              :get #(deref (cursor-for-id doc %))
               :save! (mk-save-fn doc events)}
         form (postwalk
                (fn [node]
