@@ -10,7 +10,25 @@
     :refer [parse-format format-date datepicker]]))
 
 (defn value-of [element]
- (-> element .-target .-value))
+  (-> element .-target .-value))
+
+(defn- scroll-to [element idx]
+  (let [list-elem (-> element
+                      .-target
+                      .-parentNode
+                      (.getElementsByTagName "ul")
+                      (.item 0))
+        idx (if (< idx 0) 0 idx)
+        item-elem (-> list-elem
+                      .-children
+                      (.item idx))
+        [item-height offset-top] (if item-elem
+                                   [(.-scrollHeight item-elem)
+                                    (.-offsetTop item-elem)]
+                                   [0 0])]
+    (set! (.-scrollTop list-elem)
+          (- offset-top
+             (* 2 item-height)))))
 
 (def ^:private id->path
   (memoize
@@ -232,7 +250,7 @@
        body)))
 
 (defmethod init-field :typeahead
-  [[type {:keys [id data-source input-class list-class item-class highlight-class input-placeholder result-fn choice-fn clear-on-focus?]
+  [[type {:keys [id data-source input-class list-class item-class highlight-class input-placeholder result-fn choice-fn clear-on-focus? selections get-index]
           :as attrs
           :or {result-fn identity
                choice-fn identity
@@ -240,7 +258,8 @@
   (let [typeahead-hidden? (atom true)
         mouse-on-list? (atom false)
         selected-index (atom -1)
-        selections (atom [])
+        selections (or selections (atom []))
+        get-index (or get-index (constantly -1))
         choose-selected #(when (and (not-empty @selections) (> @selected-index -1))
                            (let [choice (nth @selections @selected-index)]
                              (save! id choice)
@@ -262,24 +281,36 @@
                                               (reset! selections (data-source (.toLowerCase value)))
                                               (save! id (value-of %))
                                               (reset! typeahead-hidden? false)
-                                              (reset! selected-index -1))
+                                              (reset! selected-index (if (= 1 (count @selections)) 0 -1)))
                               :on-key-down #(do
                                               (case (.-which %)
                                                 38 (do
                                                      (.preventDefault %)
-                                                     (when-not (= @selected-index 0)
-                                                       (swap! selected-index dec)))
+                                                     (when-not (or @typeahead-hidden? (<= @selected-index 0))
+                                                       (swap! selected-index dec)
+                                                       (scroll-to % @selected-index)))
                                                 40 (do
                                                      (.preventDefault %)
-                                                     (when-not (= @selected-index (dec (count @selections)))
-                                                       (save! id (value-of %))
-                                                       (swap! selected-index inc)))
-                                                9  (choose-selected)
+                                                     (if @typeahead-hidden?
+                                                       (do
+
+                                                         (reset! selections (data-source :all))
+                                                         (reset! selected-index (get-index (-> %
+                                                                                               value-of
+                                                                                               trim)
+                                                                                           @selections))
+                                                         (reset! typeahead-hidden? false)
+                                                         (scroll-to % @selected-index))
+                                                       (when-not (= @selected-index (dec (count @selections)))
+                                                         (save! id (value-of %))
+                                                         (swap! selected-index inc)
+                                                         (scroll-to % @selected-index))))
+                                                9 (choose-selected)
                                                 13 (do
                                                      (.preventDefault %)
                                                      (choose-selected))
                                                 27 (do (reset! typeahead-hidden? true)
-                                                       (reset! selected-index 0))
+                                                       (reset! selected-index -1))
                                                 "default"))}]
 
                      [:ul {:style {:display (if (or (empty? @selections) @typeahead-hidden?) :none :block) }
