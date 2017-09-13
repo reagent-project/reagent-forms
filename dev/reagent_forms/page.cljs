@@ -24,7 +24,150 @@
     #(-> % (.toLowerCase %) (.indexOf text) (> -1))
     ["Alice" "Alan" "Bob" "Beth" "Jim" "Jane" "Kim" "Rob" "Zoe"]))
 
-(def form-template
+(def animals
+  [{:Animal {:Name "Lizard"
+             :Colour "Green"
+             :Skin   "Leathery"
+             :Weight 100
+             :Age 10
+             :Hostile false}}
+   {:Animal {:Name "Lion"
+             :Colour "Gold"
+             :Skin   "Furry"
+             :Weight 190000
+             :Age 4
+             :Hostile true}}
+   {:Animal {:Name "Giraffe"
+             :Colour "Green"
+             :Skin   "Hairy"
+             :Weight 1200000
+             :Age 8
+             :Hostile false}}
+   {:Animal {:Name "Cat"
+             :Colour "Black"
+             :Skin   "Furry"
+             :Weight 5500
+             :Age 6
+             :Hostile false}}
+   {:Animal {:Name "Capybara"
+             :Colour "Brown"
+             :Skin   "Hairy"
+             :Weight 45000
+             :Age 12
+             :Hostile false}}
+   {:Animal {:Name "Bear"
+             :Colour "Brown"
+             :Skin   "Furry"
+             :Weight 600000
+             :Age 10
+             :Hostile true}}
+   {:Animal {:Name "Rabbit"
+             :Colour "White"
+             :Skin   "Furry"
+             :Weight 1000
+             :Age 6
+             :Hostile false}}
+   {:Animal {:Name "Fish"
+             :Colour "Gold"
+             :Skin   "Scaly"
+             :Weight 50
+             :Age 5
+             :Hostile false}}
+   {:Animal {:Name "Hippo"
+             :Colour "Grey"
+             :Skin   "Leathery"
+             :Weight 1800000
+             :Age 10
+             :Hostile false}}
+   {:Animal {:Name "Zebra"
+             :Colour "Black/White"
+             :Skin   "Hairy"
+             :Weight 200000
+             :Age 9
+             :Hostile false}}
+   {:Animal {:Name "Squirrel"
+             :Colour "Grey"
+             :Skin   "Furry"
+             :Weight 300
+             :Age 1
+             :Hostile false}}
+   {:Animal {:Name "Crocodile"
+             :Colour "Green"
+             :Skin   "Leathery"
+             :Weight 500000
+             :Age 10
+             :Hostile true}}])
+
+(defn- animal-text
+  "Return the display text for an animal"
+  [animal]
+  (str (:Name animal) " [" (:Colour animal) " " (:Skin animal) "]"))
+
+(defn- animal-match
+  "Return true if the given text is found in one of
+  the Name, Skin or Colour fields. False otherwise"
+  [animal text]
+  (let [fields [:Name :Colour :Skin]
+        text (.toLowerCase text)]
+    (reduce (fn [_ field]
+              (if (-> animal
+                      field
+                      .toLowerCase
+                      (.indexOf text)
+                      (> -1))
+                (reduced true)
+                false))
+            false
+            fields)))
+
+(defn- animal-list
+  "Generate the list of matching instruments for the given input list
+  and match text.
+  Returns a vector of vectors for a reagent-forms data-source."
+  [animals text]
+  (->> animals
+       (filter #(-> %
+                    :Animal
+                    (animal-match text)))
+       (mapv #(vector (animal-text (:Animal %)) (:Animal %)))))
+
+(defn- get-item-index
+  "Return the index of the specified item within the current selections.
+  The selections is the vector returned by animal-source. Item is whatever
+  the the document id is, or the in-fn returns, if there is one."
+  [item selections]
+  (first (keep-indexed (fn [idx animal]
+                         (when (animal-match
+                                 (second animal)
+                                 item)
+                           idx))
+                       selections)))
+
+(defn- animal-source
+  [doc text]
+  (cond
+    (= text :all)
+    (animal-list animals "")
+
+    :else
+    (animal-list animals text)))
+
+(defn- animal-out-fn
+  "The reagent-forms :out-fn for the animal chooser. We use the out-fn to
+  store the animal object in the document and return just the name for display
+  in the component."
+  [doc val]
+  (let [[animal-display animal] val] ; may be
+    (if (:Name animal)
+      (do
+        (swap! doc #(assoc % :animal animal))
+        (:Name animal))
+      (do
+        (swap! doc #(assoc % :animal nil))
+        val))))
+
+(defn form-template
+  [doc]
   [:div
    (input "first name" :text :person.first-name)
    [:div.row
@@ -104,6 +247,24 @@
      "Option two can be something else and selecting it will deselect option one"
      :foo :b)
 
+   [:hr]
+
+   (row "Big typeahead example (down arrow shows list)"
+        [:div
+         {:field             :typeahead
+          :id                [:animal-text]
+          :input-placeholder "Animals"
+          :data-source       (fn [text] (animal-source doc text))
+          :result-fn         (fn [[animal-display animal]] animal-display)
+          :out-fn            (fn [val] (animal-out-fn doc val))
+          :get-index         (fn [item selections] (get-item-index item selections))
+          :clear-on-focus?   false
+          :input-class       "form-control"
+          :list-class        "typeahead-list"
+          :item-class        "typeahead-item"
+          :highlight-class   "highlighted"}
+          ])
+
    [:h3 "multi-select buttons"]
    [:div.btn-group {:field :multi-select :id :every.position}
     [:button.btn.btn-default {:key :left} "Left"]
@@ -141,13 +302,15 @@
                      :pick-one       :bar
                      :unique         {:position :middle}
                      :pick-a-few     [:bar :baz]
-                     :many           {:options :bar}})]
+                     :many           {:options :bar}
+                     :animal-text    ""
+                     :animal         nil})]
     (fn []
       [:div
        [:div.page-header [:h1 "Sample Form"]]
 
        [forms/bind-fields
-        form-template
+        (form-template doc)
         doc
         (fn [[id] value {:keys [weight-lb weight-kg] :as document}]
           (cond

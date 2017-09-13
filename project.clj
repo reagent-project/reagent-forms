@@ -31,7 +31,7 @@
                                :figwheel     {:on-jsload "reagent-forms.page/mount-root"}
                                :compiler
                                              {:main          "reagent-forms.app"
-                                              :asset-path    "/js/out"
+                                              :asset-path    "js/out"
                                               :output-to     "dev/public/js/app.js"
                                               :output-dir    "dev/public/js/out"
                                               :source-map    true
