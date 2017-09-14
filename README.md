@@ -12,6 +12,10 @@ The library uses a Reagent atom as the document store. The components are bound 
 
 The `:id` can be a keyword, e.g: `{:id :foo}`, or a keywordized path `{:id :foo.bar}` that will map to `{:foo {:bar "value"}}`. Alternatively, you can specify a vector path explicitly `[:foo 0 :bar]`.
 
+By default the component value is that of the document field, however all components support an `:in-fn` and `:out-fn` function attributes.
+`:in-fn` accepts the current document value and returns what is to be displayed in the component. `:out-fn` accepts the component value
+and returns what is to be stored in the document.
+
 The following types of fields are supported out of the box:
 
 #### :input
@@ -51,9 +55,10 @@ The typeahead field uses a `:data-source` key bound to a function that takes the
 
 The typeahead field supports both mouse and keyboard selection.
 
-##### Different label and value
+##### Different display and value
 
-You can make the input's value be different then the value stored in the document. You need to specify `in-fn`, `out-fn` and `result-fn`. The `:data-source` needs to return a vector `[name id]`.
+You can make the input's displayed value be different to the value stored in the document. You need to specify `:out-fn`, a `:result-fn` and
+optionally `:in-fn`. The `:data-source` needs to return a vector `[display-value stored-value]`.
 
 ```clojure
 (defn people-source [people]
@@ -63,17 +68,31 @@ You can make the input's value be different then the value stored in the documen
                       (.toLowerCase)
                       (.indexOf text)
                       (> -1)))
-         (mapv #(vector (:name %) (:id %))))))
+         (mapv #(vector (:name %) (:num %))))))
 
-[:div {:field :typeahead,
+[:div {:field :typeahead
        :data-source (people-source people)
-       :in-fn (fn [id]
-                [(:name (first (filter #(= id (:id %)) people))) id])
-       :out-fn (fn [[name id]] id)
-       :result-fn (fn [[name id]] name)
-       :id :author.id}]]]
+       :in-fn (fn [num]
+                [(:name (first (filter #(= num (:num %)) people))) num])
+       :out-fn (fn [[name num]] num)
+       :result-fn (fn [[name num]] name)
+       :id :author.num}]]]
 ```
 
+##### Pop down the list
+
+If `:data-source` responds with the full option list when passed the keyword `:all` then the down-arrow key will show the list.
+
+##### Selection list from Ajax
+
+The `:selections` attribute can be specified to pass an atom used to hold the selections. This gives the option to fetch the
+list using typeahead text - if an ajax response handler sets the atom the list will pop down.
+
+##### Display selection on pop-down
+
+If supplied, the `:get-index` function will ensure the selected item is highlighted when the list is popped down.
+
+A full example is available in the source code for the demonstration page.
 
 #### :checkbox
 
