@@ -1,4 +1,4 @@
-(defproject reagent-forms "0.5.30"
+(defproject reagent-forms "0.5.31-SNAPSHOT"
   :description "data binding library for Reagent"
   :url "https://github.com/yogthos/reagent-forms"
   :license {:name "Eclipse Public License"
@@ -31,7 +31,7 @@
                                :figwheel     {:on-jsload "reagent-forms.page/mount-root"}
                                :compiler
                                              {:main          "reagent-forms.app"
-                                              :asset-path    "/js/out"
+                                              :asset-path    "js/out"
                                               :output-to     "dev/public/js/app.js"
                                               :output-dir    "dev/public/js/out"
                                               :source-map    true

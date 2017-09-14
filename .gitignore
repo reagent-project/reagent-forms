@@ -12,3 +12,5 @@ pom.xml.asc
 /resources/public/js/
 /forms-example/resources/public/js/
 /forms-example/target/
+*.iml
+.idea
