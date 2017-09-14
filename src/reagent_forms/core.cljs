@@ -214,7 +214,7 @@
 (defmethod init-field :label
   [[type {:keys [id preamble postamble placeholder] :as attrs}] {:keys [doc get]}]
   (render-element attrs doc
-    [type attrs preamble
+    [type (clean-attrs attrs) preamble
      (if-let [value (get id)]
        (str value postamble)
        placeholder)]))
@@ -224,7 +224,7 @@
   (render-element attrs doc
     (if event
       (when (event (get id))
-        (into [type (dissoc attrs event)] body))
+        (into [type (clean-attrs attrs)] body))
       (if-let [message (not-empty (get id))]
         [type (clean-attrs attrs)
          (when closeable?
@@ -388,7 +388,7 @@
     (fn []
       (when-not (get id)
         (swap! selections #(into {} (map (fn [[k]] [k false]) %))))
-      (into [type attrs]
+      (into [type (clean-attrs attrs)]
             (->> selectors
                   (filter
                    #(if-let [visible? (:visible? %)]
