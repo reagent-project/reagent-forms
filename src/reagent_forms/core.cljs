@@ -268,6 +268,7 @@
     (render-element attrs doc
                     [type
                      [:input {:type        :text
+                              :disabled    (:disabled attrs)
                               :placeholder input-placeholder
                               :class       input-class
                               :value       (let [v (get id)]
