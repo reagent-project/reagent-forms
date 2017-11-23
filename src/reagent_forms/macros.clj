@@ -2,7 +2,10 @@
 
 (defmacro render-element [attrs doc & body]
   `(fn []
-     (if-let [visible# (:visible? ~attrs)]
-       (when (visible# (deref ~doc))
-         ~@body)
-       ~@body)))
+     (let [body# (if (:disabled ~attrs)
+                   (update-in ~@body [1 :disabled] #(if (fn? %) (%) %))
+                   ~@body)]
+       (if-let [visible# (:visible? ~attrs)]
+         (when (visible# (deref ~doc))
+           body#)
+         body#))))
