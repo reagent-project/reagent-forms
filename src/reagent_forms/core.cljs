@@ -173,7 +173,7 @@
              (clean-attrs attrs))])))
 
 (defmethod init-field :datepicker
-  [[_ {:keys [id date-format inline auto-close? lang] :or {lang :en-US} :as attrs}] {:keys [doc get save!]}]
+  [[_ {:keys [id date-format inline auto-close? disabled lang] :or {lang :en-US} :as attrs}] {:keys [doc get save!]}]
   (let [fmt (parse-format date-format)
         selected-date (get id)
         selected-month (if (pos? (:month selected-date)) (dec (:month selected-date)) (:month selected-date))
@@ -197,9 +197,10 @@
                      "")}
            (clean-attrs attrs))]
          [:span.input-group-addon
-          {:on-click #(do
+          {:on-click #(let [disabled? (if (fn? disabled) (disabled) disabled)]
                         (.preventDefault %)
-                        (swap! expanded? not))}
+                        (when-not disabled?
+                          (swap! expanded? not)))}
           [:i.glyphicon.glyphicon-calendar]]]
        [datepicker year month day expanded? auto-close? #(get id) #(save! id %) inline lang]])))
 
