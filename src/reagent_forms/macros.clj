@@ -2,8 +2,9 @@
 
 (defmacro render-element [attrs doc & body]
   `(fn []
-     (let [disabled-path# (if (= :typeahead (:field ~attrs))
-                           [1 1 :disabled]
+     (let [disabled-path# (case (:field ~attrs)
+                           :typeahead [1 1 :disabled]
+                           :datepicker [1 1 1 :disabled]
                            [1 :disabled])
            body# (if (:disabled ~attrs)
                    (update-in ~@body disabled-path# #(if (fn? %) (%) %))
