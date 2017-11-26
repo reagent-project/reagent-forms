@@ -2,7 +2,7 @@
   (:require-macros [reagent-forms.macros :refer [render-element]])
   (:require
    [clojure.walk :refer [postwalk]]
-   [clojure.string :refer [split trim]]
+   [clojure.string :refer [split trim join blank?]]
    [goog.string :as gstring]
    [goog.string.format]
    [reagent.core :refer [atom cursor]]
@@ -366,12 +366,10 @@
             active? (get @selections key)
             button-or-input? (let [t (subs (name type) 0 5)]
                                (or (= t "butto") (= t "input")))
-            class (str (when active?
-                         "active")
-                       (when (and active? disabled? (not button-or-input?))
-                         " ")
-                       (when (and disabled? (not button-or-input?))
-                         "disabled"))]
+            class (->> [(when active? "active")
+                        (when (and disabled? (not button-or-input?)) "disabled")]
+                       (remove blank?)
+                       (join " "))]
         [type
          (dissoc
            (merge {:class class
