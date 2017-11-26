@@ -363,9 +363,16 @@
                (save! id (when (get @selections key) key)))))]
 
     (fn []
-      (let [disabled? (if (fn? disabled) (disabled) disabled)]
+      (let [disabled? (if (fn? disabled) (disabled) disabled)
+            active? (get @selections key)
+            button-or-input? (or (= type :button) (= type :input))]
         [type
-         (merge {:class (if (get @selections key) "active")
+         (merge {:class (str (when active?
+                               "active")
+                             (when (and active? disabled? (not button-or-input?))
+                               " ")
+                             (when (and disabled? (not button-or-input?))
+                               "disabled"))
                  (or touch-event :on-click)
                  (when-not disabled? handle-click!)}
                 (clean-attrs attrs)
