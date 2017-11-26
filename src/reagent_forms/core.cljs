@@ -2,7 +2,7 @@
   (:require-macros [reagent-forms.macros :refer [render-element]])
   (:require
    [clojure.walk :refer [postwalk]]
-   [clojure.string :refer [split trim]]
+   [clojure.string :refer [split trim join blank?]]
    [goog.string :as gstring]
    [goog.string.format]
    [reagent.core :refer [atom cursor]]
@@ -350,7 +350,9 @@
                   :on-change #(save! id (-> % .-target .-files))}
                  (clean-attrs attrs))]))
 
-(defn- group-item [[type {:keys [key touch-event] :as attrs} & body] {:keys [save! multi-select]} selections field id]
+(defn- group-item
+  [[type {:keys [key touch-event disabled] :as attrs} & body]
+   {:keys [save! multi-select]} selections field id]
   (letfn [(handle-click! []
            (if multi-select
              (do
@@ -359,14 +361,26 @@
              (let [value (get @selections key)]
                (reset! selections {key (not value)})
                (save! id (when (get @selections key) key)))))]
-
     (fn []
-      [type (merge {:class (if (get @selections key) "active")
-                    (or touch-event :on-click) handle-click!}
-                   (clean-attrs attrs))
-       body])))
+      (let [disabled? (if (fn? disabled) (disabled) disabled)
+            active? (get @selections key)
+            button-or-input? (let [t (subs (name type) 0 5)]
+                               (or (= t "butto") (= t "input")))
+            class (->> [(when active? "active")
+                        (when (and disabled? (not button-or-input?)) "disabled")]
+                       (remove blank?)
+                       (join " "))]
+        [type
+         (dissoc
+           (merge {:class class
+                   (or touch-event :on-click)
+                   (when-not disabled? handle-click!)}
+                  (clean-attrs attrs)
+                  {:disabled disabled?})
+           (when-not button-or-input? :disabled))
+         body]))))
 
-(defn- mk-selections [id selectors {:keys [get multi-select]}]
+(defn- mk-selections [id selectors {:keys [get multi-select] :as ks}]
   (let [value (get id)]
     (reduce
      (fn [m [_ {:keys [key]}]]

@@ -1,14 +1,17 @@
-(ns reagent-forms.macros)
+(ns reagent-forms.macros
+ (:require [clojure.walk :refer [postwalk]]))
 
 (defmacro render-element [attrs doc & body]
   `(fn []
-     (let [disabled-path# (case (:field ~attrs)
-                           :typeahead [1 1 :disabled]
-                           :datepicker [1 1 1 :disabled]
-                           [1 :disabled])
-           body# (if (and (:disabled ~attrs)
-                          (get-in ~@body disabled-path#))
-                   (update-in ~@body disabled-path# #(if (fn? %) (%) %))
+     (let [update-disabled?# (not (some #{(:field ~attrs)}
+                                        [:multi-select :single-select]))
+           body# (postwalk
+                   (fn [c#]
+                     (if (and (map? c#)
+                              (not (nil? (:disabled c#)))
+                              update-disabled?#)
+                       (update c# :disabled #(if (fn? %) (%) %))
+                       c#))
                    ~@body)]
        (if-let [visible# (:visible? ~attrs)]
          (when (visible# (deref ~doc))
