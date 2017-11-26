@@ -361,22 +361,25 @@
              (let [value (get @selections key)]
                (reset! selections {key (not value)})
                (save! id (when (get @selections key) key)))))]
-
     (fn []
       (let [disabled? (if (fn? disabled) (disabled) disabled)
             active? (get @selections key)
-            button-or-input? (or (= type :button) (= type :input))]
+            button-or-input? (let [t (subs (name type) 0 5)]
+                               (or (= t "butto") (= t "input")))
+            class (str (when active?
+                         "active")
+                       (when (and active? disabled? (not button-or-input?))
+                         " ")
+                       (when (and disabled? (not button-or-input?))
+                         "disabled"))]
         [type
-         (merge {:class (str (when active?
-                               "active")
-                             (when (and active? disabled? (not button-or-input?))
-                               " ")
-                             (when (and disabled? (not button-or-input?))
-                               "disabled"))
-                 (or touch-event :on-click)
-                 (when-not disabled? handle-click!)}
-                (clean-attrs attrs)
-                {:disabled disabled?})
+         (dissoc
+           (merge {:class class
+                   (or touch-event :on-click)
+                   (when-not disabled? handle-click!)}
+                  (clean-attrs attrs)
+                  {:disabled disabled?})
+           (when-not button-or-input? :disabled))
          body]))))
 
 (defn- mk-selections [id selectors {:keys [get multi-select] :as ks}]
