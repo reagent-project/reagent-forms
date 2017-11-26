@@ -1,4 +1,4 @@
-(defproject reagent-forms "0.5.31"
+(defproject reagent-forms "0.5.32"
   :description "data binding library for Reagent"
   :url "https://github.com/yogthos/reagent-forms"
   :license {:name "Eclipse Public License"
