@@ -366,7 +366,8 @@
       (let [disabled? (if (fn? disabled) (disabled) disabled)]
         [type
          (merge {:class (if (get @selections key) "active")
-                 (or touch-event :on-click) handle-click!}
+                 (or touch-event :on-click)
+                 (when-not disabled? handle-click!)}
                 (clean-attrs attrs)
                 {:disabled disabled?})
          body]))))
