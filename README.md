@@ -382,7 +382,7 @@ Form elements can be bound to a nested structure by using the `.` as a path sepa
 
 **important note**
 
-The templates are eagerly evaluated, and you should always call the helper functions as in the example above instead of putting them in a vector. These will be replaced by Reagent components when the `bind-field` is called to compile the template.
+The templates are eagerly evaluated, and you should always call the helper functions as in the example above instead of putting them in a vector. These will be replaced by Reagent components when the `bind-fields` is called to compile the template.
 
 Once a form template is created it can be bound to a document using the `bind-fields` function:
 
