@@ -233,14 +233,14 @@ The multi-select field allows multiple values to be selected and set in the docu
 
 #### :label
 
-Labels can be associated with a key in the document using the `:id` attribute and will display the value at that key. The lables can have an optional `:preamble` and `:postamble` keys with the text that will be rendered before and after the value respectively. The `:placeholder` key can be used to provide text that will be displayed in absence of a value:
+Labels can be associated with a key in the document using the `:id` attribute and will display the value at that key. The lables can have an optional `:preamble` and `:postamble` keys with the text that will be rendered before and after the value respectively. The value can also be interpreted using a formatter function assigned to the `:fmt` key. The `:placeholder` key can be used to provide text that will be displayed in absence of a value:
 
 ```clojure
 [:label {:field :label :id :volume}]
 [:label {:field :label :preamble "the value is: " :id :volume}]
 [:label {:field :label :preamble "the value is: " :postamble "ml" :id :volume}]
 [:label {:field :label :preamble "the value is: " :postamble "ml" :placeholder "N/A" :id :volume}]
-
+[:label {:field :label :preamble "the value is: " :id :volume :fmt (fn [v] (if v (str v "ml") "unknown")}]
 ```
 
 #### :alert

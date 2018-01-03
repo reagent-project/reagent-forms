@@ -78,6 +78,7 @@
           :inline
           :field
           :preamble
+          :postamble
           :visible?
           :auto-close?))
 
@@ -213,12 +214,15 @@
       (set-attrs component opts {:type field})))
 
 (defmethod init-field :label
-  [[type {:keys [id preamble postamble placeholder] :as attrs}] {:keys [doc get]}]
+  [[type {:keys [id preamble postamble placeholder fmt] :as attrs}] {:keys [doc get]}]
   (render-element attrs doc
     [type (clean-attrs attrs) preamble
-     (if-let [value (get id)]
-       (str value postamble)
-       placeholder)]))
+     (let [value (get id)]
+       (if fmt
+         (fmt value)
+         (if value
+           (str value postamble)
+           placeholder)))]))
 
 (defmethod init-field :alert
   [[type {:keys [id event touch-event closeable?] :or {closeable? true} :as attrs} & body] {:keys [doc get save!] :as opts}]
