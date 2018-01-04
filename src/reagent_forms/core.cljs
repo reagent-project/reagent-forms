@@ -5,7 +5,7 @@
    [clojure.string :refer [split trim join blank?]]
    [goog.string :as gstring]
    [goog.string.format]
-   [reagent.core :refer [atom cursor]]
+   [reagent.core :as r :refer [atom cursor]]
    [reagent-forms.datepicker
     :refer [parse-format format-date datepicker]]))
 
@@ -182,28 +182,42 @@
         year (or (:year selected-date) (.getFullYear today))
         month (or selected-month (.getMonth today))
         day (or (:day selected-date) (.getDate today))
-        expanded? (atom false)]
-    (render-element attrs doc
-      [:div.datepicker-wrapper
-       [:div.input-group.date
-         [:input.form-control
-          (merge
-           {:read-only true
-            :type :text
-            :on-click #(do
-                         (.preventDefault %)
-                         (swap! expanded? not))
-            :value (if-let [date (get id)]
-                     (format-date date fmt)
-                     "")}
-           (clean-attrs attrs))]
-         [:span.input-group-addon
-          {:on-click #(let [disabled? (if (fn? disabled) (disabled) disabled)]
-                        (.preventDefault %)
-                        (when-not disabled?
-                          (swap! expanded? not)))}
-          [:i.glyphicon.glyphicon-calendar]]]
-       [datepicker year month day expanded? auto-close? #(get id) #(save! id %) inline lang]])))
+        expanded? (atom false)
+        mouse-on-list? (atom false)
+        dom-node (atom nil)]
+    (r/create-class
+      {:component-did-mount
+       (fn [this]
+         (->> this r/dom-node .-firstChild .-firstChild (reset! dom-node)))
+       :component-did-update
+       (fn [this]
+         (->> this r/dom-node .-firstChild .-firstChild (reset! dom-node)))
+       :render
+       (render-element attrs doc
+        [:div.datepicker-wrapper
+         [:div.input-group.date
+           [:input.form-control
+            (merge
+             {:read-only true
+              :on-blur #(when-not @mouse-on-list?
+                          (reset! expanded? false))
+              :type :text
+              :on-click (fn [e]
+                           (.preventDefault e)
+                           (when-not (if (fn? disabled) (disabled) disabled)
+                             (swap! expanded? not)))
+              :value (if-let [date (get id)]
+                       (format-date date fmt)
+                       "")}
+             (clean-attrs attrs))]
+           [:span.input-group-addon
+            {:on-click (fn [e]
+                          (.preventDefault e)
+                          (when-not (if (fn? disabled) (disabled) disabled)
+                            (swap! expanded? not)
+                            (.focus @dom-node)))}
+            [:i.glyphicon.glyphicon-calendar]]]
+         [datepicker year month day dom-node mouse-on-list? expanded? auto-close? #(get id) #(save! id %) inline lang]])})))
 
 
 (defmethod init-field :checkbox

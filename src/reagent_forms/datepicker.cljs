@@ -138,7 +138,6 @@
              {:class (when-let [doc-date (get)]
                        (when (= doc-date date) "active"))
               :on-click #(do
-                           (.preventDefault %)
                            (swap! current-date assoc-in [2] day)
                            (if (= (get) date)
                              (save! nil)
@@ -168,22 +167,17 @@
       [:table.table-condensed
        [:thead
         [:tr
-         [:th.prev {:on-click #(do
-                                 (.preventDefault %)
-                                 (swap! start-year - 10))} "‹"]
+         [:th.prev {:on-click #(swap! start-year - 10)} "‹"]
          [:th.switch
           {:col-span 2}
           (str @start-year " - " (+ @start-year 10))]
-         [:th.next {:on-click #(do
-                                 (.preventDefault %)
-                                 (swap! start-year + 10))} "›"]]]
+         [:th.next {:on-click #(swap! start-year + 10)} "›"]]]
        (into [:tbody]
              (for [row (->> (range @start-year (+ @start-year 12)) (partition 4))]
                (into [:tr]
                      (for [year row]
                        [:td.year
                         {:on-click #(do
-                                      (.preventDefault %)
                                       (swap! date assoc-in [0] year)
                                       (reset! view-selector :month))
                          :class (when (= year (first @date)) "active")}
@@ -195,16 +189,10 @@
       [:table.table-condensed
        [:thead
         [:tr
-         [:th.prev {:on-click #(do
-                                 (.preventDefault %)
-                                 (swap! year dec))} "‹"]
+         [:th.prev {:on-click #(swap! year dec)} "‹"]
          [:th.switch
-          {:col-span 2 :on-click #(do
-                                    (.preventDefault %)
-                                    (reset! view-selector :year))} @year]
-         [:th.next {:on-click #(do
-                                 (.preventDefault %)
-                                 (swap! year inc))} "›"]]]
+          {:col-span 2 :on-click #(reset! view-selector :year)} @year]
+         [:th.next {:on-click #(swap! year inc)} "›"]]]
        (into
          [:tbody]
          (for [row (->> months-short
@@ -218,7 +206,6 @@
                        (when (and (= @year cur-year) (= idx cur-month)) "active"))
                      :on-click
                      #(do
-                        (.preventDefault %)
                         (swap! date (fn [[_ _ day]] [@year idx day]))
                         (reset! view-selector :day))}
                     month-name]))))])))
@@ -231,18 +218,12 @@
     [:table.table-condensed
      [:thead
       [:tr
-       [:th.prev {:on-click #(do
-                               (.preventDefault %)
-                               (swap! date last-date))} "‹"]
+       [:th.prev {:on-click #(swap! date last-date)} "‹"]
        [:th.switch
         {:col-span 5
-         :on-click #(do
-                      (.preventDefault %)
-                      (reset! view-selector :month))}
+         :on-click #(reset! view-selector :month)}
         (str (nth months (second @date)) " " (first @date))]
-       [:th.next {:on-click #(do
-                               (.preventDefault %)
-                               (swap! date next-date))} "›"]]
+       [:th.next {:on-click #(swap! date next-date)} "›"]]
       (into
         [:tr]
         (map-indexed (fn [i dow]
@@ -251,7 +232,7 @@
      (into [:tbody]
            (gen-days date get save! expanded? auto-close? local-first-day))]))
 
-(defn datepicker [year month day expanded? auto-close? get save! inline lang]
+(defn datepicker [year month day dom-node mouse-on-list? expanded? auto-close? get save! inline lang]
   (let [date (atom [year month day])
         view-selector (atom :day)
         names (if (and (keyword? lang) (contains? dates lang))
@@ -260,7 +241,13 @@
                   lang
                   (:en-US dates)))]
     (fn []
-      [:div {:class (str "datepicker" (when-not @expanded? " dropdown-menu") (if inline " dp-inline" " dp-dropdown"))}
+      [:div {:class (str "datepicker" (when-not @expanded? " dropdown-menu") (if inline " dp-inline" " dp-dropdown"))
+             :on-mouse-enter #(reset! mouse-on-list? true)
+             :on-mouse-leave #(reset! mouse-on-list? false)
+             :on-click       (fn [e]
+                               (.preventDefault e)
+                               (reset! mouse-on-list? true)
+                               (.focus @dom-node))}
        (condp = @view-selector
          :day   [day-picker date get save! view-selector expanded? auto-close? names]
          :month [month-picker date view-selector names]
