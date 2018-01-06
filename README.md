@@ -285,6 +285,46 @@ The date is stored in the document using the following format:
 
 The datepicker can also take an optional `:auto-close?` key to indicate that it should be closed when the day is clicked. This defaults to `false`.
 
+
+The date format can be set using the `:date-format` key:
+
+```Clojure
+{:field :datepicker :id :date :date-format "yyyy/mm/dd"}
+```
+
+The `:date-format` can also point to a function that returns the formatted date:
+```Clojure
+{:field :datepicker
+ :id :date
+ :date-format (fn [{:keys [year month day]] (str year "/" month "/" day))}
+```
+
+The above is useful in conjunction with the `:save-fn` key that allows you to supply a custom function for saving the value.
+For example, if you wanted to use a JavaScript date object, you could do the following:
+
+```clojure
+[:div.input-group.date.datepicker.clickable
+ {:field       :datepicker
+  :id          :reminder
+  :date-format (fn [date]
+                 (str (.getDate date) "/"
+                      (inc (.getMonth date)) "/"
+                      (.getFullYear date)))
+  :save-fn     (fn [current-date {:keys [year month day]}]
+                 (if current-date
+                   (doto (js/Date.)
+                     (.setFullYear year)
+                     (.setMonth (dec month))
+                     (.setDate day)
+                     (.setHours (.getHours current-date))
+                     (.setMinutes (.getMinutes current-date)))
+                   (js/Date. year (dec month) day)))
+  :auto-close? true}]
+```
+
+Note that you need to return a new date object in updates for the component to repaint.
+
+
 Datepicker takes an optional `:lang` key which you can use to set the locale of the datepicker. There are currently English, Russian, German, French, Spanish, Portuguese, Finnish and Dutch built in translations. To use a built-in language pass in `:lang` with a keyword as in the following table:
 
 | Language | Keyword |
@@ -461,7 +501,7 @@ The following is an example of an event to calculate the value of the `:bmi` key
 Custom fields can be added by implementing the `reagent-forms.core/init-field` multimethod. The method must
 take two parameters, where the first parameter is the field component and the second is the options.
 
-By default the options will contain the `get` and the `save!` keys. The `get` key points to a function that accepts an id and returns the document value associated with it. The `save!` function accepts an id and a value that will be associated with it.
+By default the options will contain the `get` and the `save!`, and `update!` keys. The `get` key points to a function that accepts an id and returns the document value associated with it. The `save!` function accepts an id and a value that will be associated with it. The `update!` function accepts an id, a function that will handle the update, and the value. The function handling the update will receive the old and the new values.
 
 ## Using adapters
 
@@ -489,6 +529,6 @@ The [TapEventPlugin](https://github.com/zilverline/react-tap-event-plugin) for r
 
 ## License
 
-Copyright © 2014 Yogthos
+Copyright © 2018 Dmitri Sotnikov
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.

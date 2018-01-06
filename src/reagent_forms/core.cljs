@@ -47,6 +47,12 @@
   (let [path (id->path id)]
     (reduce #(or (%2 path value %1) %1) doc events)))
 
+(defn- mk-update-fn [doc events]
+  (fn [id update-fn value]
+    (let [result (swap! (cursor-for-id doc id) update-fn value)]
+      (when-not (empty? events)
+        (swap! doc run-events id result events)))))
+
 (defn- mk-save-fn [doc events]
   (fn [id value]
     (reset! (cursor-for-id doc id) value)
@@ -61,25 +67,33 @@
   (fn [id value]
     (save! id (wrapper value))))
 
-(defn wrap-fns [opts node]
-  {:doc (:doc opts)
+(defn wrap-update-fn [update! wrapper]
+  (fn [id update-fn value]
+    (update! id update-fn (wrapper value))))
+
+(defn wrap-fns [{:keys [doc get save! update!]} node]
+  {:doc doc
    :get (if-let [in-fn (:in-fn (second node))]
-          (wrap-get-fn (:get opts) in-fn)
-          (:get opts))
+          (wrap-get-fn get in-fn)
+          get)
    :save! (if-let [out-fn (:out-fn (second node))]
-            (wrap-save-fn (:save! opts) out-fn)
-            (:save! opts))})
+            (wrap-save-fn save! out-fn)
+            save!)
+   :update! (if-let [out-fn (:out-fn (second node))]
+              (wrap-update-fn update! out-fn)
+              update!)})
 
 (defn clean-attrs [attrs]
   (dissoc attrs
-          :date-format
           :fmt
           :event
-          :inline
           :field
+          :inline
+          :save-fn
           :preamble
           :postamble
           :visible?
+          :date-format
           :auto-close?))
 
 ;;coerce the input to the appropriate type
@@ -174,17 +188,22 @@
              (clean-attrs attrs))])))
 
 (defmethod init-field :datepicker
-  [[_ {:keys [id date-format inline auto-close? disabled lang] :or {lang :en-US} :as attrs}] {:keys [doc get save!]}]
-  (let [fmt (parse-format date-format)
+  [[_ {:keys [id date-format inline auto-close? disabled lang save-fn] :or {lang :en-US} :as attrs}] {:keys [doc get save! update!]}]
+  (let [fmt (if (fn? date-format)
+              date-format
+              #(format-date % (parse-format date-format)))
         selected-date (get id)
-        selected-month (if (pos? (:month selected-date)) (dec (:month selected-date)) (:month selected-date))
+        selected-month (if (pos? (:month selected-date))
+                         (dec (:month selected-date))
+                         (:month selected-date))
         today (js/Date.)
         year (or (:year selected-date) (.getFullYear today))
         month (or selected-month (.getMonth today))
         day (or (:day selected-date) (.getDate today))
         expanded? (atom false)
         mouse-on-list? (atom false)
-        dom-node (atom nil)]
+        dom-node (atom nil)
+        save-value (if save-fn #(update! id save-fn %) #(save! id %))]
     (r/create-class
       {:component-did-mount
        (fn [this]
@@ -207,7 +226,7 @@
                            (when-not (if (fn? disabled) (disabled) disabled)
                              (swap! expanded? not)))
               :value (if-let [date (get id)]
-                       (format-date date fmt)
+                       (fmt date)
                        "")}
              (clean-attrs attrs))]
            [:span.input-group-addon
@@ -217,7 +236,7 @@
                             (swap! expanded? not)
                             (.focus @dom-node)))}
             [:i.glyphicon.glyphicon-calendar]]]
-         [datepicker year month day dom-node mouse-on-list? expanded? auto-close? #(get id) #(save! id %) inline lang]])})))
+         [datepicker year month day dom-node mouse-on-list? expanded? auto-close? #(get id) save-value inline lang]])})))
 
 
 (defmethod init-field :checkbox
@@ -484,7 +503,8 @@
   [form doc & events]
   (let [opts {:doc doc
               :get #(deref (cursor-for-id doc %))
-              :save! (mk-save-fn doc events)}
+              :save! (mk-save-fn doc events)
+              :update! (mk-update-fn doc events)}
         form (postwalk
                (fn [node]
                  (if (field? node)
