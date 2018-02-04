@@ -1,5 +1,6 @@
 (ns reagent-forms.core-test
-  (:require [clojure.test :refer [deftest is are]]
+  (:require [clojure.test :refer [deftest is are testing]]
+            [reagent.core :as r]
             [reagent-forms.core :as core]))
 
 (deftest scroll-to-test
@@ -43,3 +44,21 @@
              (update-in doc path * 2))]
     (is (= (core/run-events state :kw 2 [f1 f2 f3])
            {:kw 8}))))
+
+(deftest mk-update-fn-test
+  (testing "Value is associated in the doc"
+    (let [state (r/atom {:kw 5})
+          f (core/mk-update-fn state [])
+          update-fn (fn [_ val] val)]
+     (f :kw update-fn 10)
+     (is (= @state {:kw 10}))))
+  (testing "Returned function runs all the events."
+    (let [state (r/atom {:kw 5})
+          f1 (fn [path value doc]
+               (update-in doc path * 2))
+          f2 (fn [path value doc]
+               (update-in doc path * 2))
+          f (core/mk-update-fn state [f1 f2])
+          update-fn (fn [_ val] val)]
+     (f :kw update-fn 10)
+     (is (= @state {:kw 40})))))
