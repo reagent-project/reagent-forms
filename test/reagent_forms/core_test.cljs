@@ -21,3 +21,9 @@
                   {:parentNode
                    {:getElementsByTagName ul}}})]
       (is (= 100 (core/scroll-to element 3)))))
+
+(deftest id->path-test
+  (are [input expected]
+       (= (core/id->path input) expected)
+    :a [:a]
+    :a.b.c [:a :b :c]))
