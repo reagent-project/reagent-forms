@@ -32,3 +32,14 @@
   (with-redefs [reagent.core/cursor (fn [doc id] [doc id])]
     (is (= (core/cursor-for-id :doc :a.b.c)
            [:doc [:a :b :c]]))))
+
+(deftest run-events-test
+  (let [state {}
+        f1 (fn [path value doc]
+             (assoc-in doc path value))
+        f2 (fn [path value doc]
+             (update-in doc path * 2))
+        f3 (fn [path value doc]
+             (update-in doc path * 2))]
+    (is (= (core/run-events state :kw 2 [f1 f2 f3])
+           {:kw 8}))))
