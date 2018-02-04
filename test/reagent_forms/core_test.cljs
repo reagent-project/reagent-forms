@@ -71,3 +71,30 @@
           f (core/mk-save-fn state [update&double update&double])]
      (f :kw 1)
      (is (= @state {:kw 4})))))
+
+(deftest wrap-fns-test
+  (testing "Functions map is properly formed."
+    (let [fns {:doc :doc-fn
+               :get :get-fn
+               :save! :save-fn
+               :update! :update-fn}]
+      (is (= (core/wrap-fns fns nil)
+             {:doc :doc-fn
+              :get :get-fn
+              :save! :save-fn
+              :update! :update-fn}))))
+  (testing "Functions are being wrapped."
+    (with-redefs [core/wrap-get-fn (fn [get-fn in-fn] [get-fn in-fn])
+                  core/wrap-save-fn (fn [save-fn out-fn] [save-fn out-fn])
+                  core/wrap-update-fn (fn [update-fn out-fn] [update-fn out-fn])]
+      (let [fns {:doc :doc-fn
+                 :get :get-fn
+                 :save! :save-fn
+                 :update! :update-fn}
+            node [:div {:in-fn :in-fn
+                        :out-fn :out-fn}]]
+        (is (= (core/wrap-fns fns node)
+               {:doc :doc-fn
+                :get [:get-fn :in-fn]
+                :save! [:save-fn :out-fn]
+                :update! [:update-fn :out-fn]}))))))
