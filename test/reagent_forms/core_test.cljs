@@ -1,3 +1,3 @@
 (ns reagent-forms.core-test
-  (:require [clojure.test :refer :all]
-            [reagent-forms.core :refer :all]))
+  (:require [clojure.test :refer [deftest is are]]
+            [reagent-forms.core :as core]))
