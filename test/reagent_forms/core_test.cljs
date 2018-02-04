@@ -8,8 +8,7 @@
   (update-in doc path * 2))
 
 (deftest scroll-to-test
-  (let [f #'core/scroll-to
-        item-elem {:scrollHeight 100
+  (let [item-elem {:scrollHeight 100
                    :offsetTop 300}
         list-elem (fn [i]
                     (is (= i 0))
