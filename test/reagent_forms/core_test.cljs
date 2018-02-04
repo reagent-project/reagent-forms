@@ -27,3 +27,8 @@
        (= (core/id->path input) expected)
     :a [:a]
     :a.b.c [:a :b :c]))
+
+(deftest cursor-for-id-test
+  (with-redefs [reagent.core/cursor (fn [doc id] [doc id])]
+    (is (= (core/cursor-for-id :doc :a.b.c)
+           [:doc [:a :b :c]]))))
