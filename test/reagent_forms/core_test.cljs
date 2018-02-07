@@ -146,3 +146,36 @@
     {:checked false}
 
     {:field :some-field} nil))
+
+(deftest set-attrs-test
+  (let [div [:div {:checked true
+                   :default-checked true
+                   :fmt :fmt
+                   :event :event
+                   :field :field
+                   :inline :inline
+                   :save-fn :save-fn
+                   :preamble :preamble
+                   :postamble :postamble
+                   :visible? :visible?
+                   :date-format :date-format
+                   :auto-close? :auto-close?
+                   :random-attr :random-attr}
+             "body"]]
+    (testing "Attrs are cleaned."
+      (is (= (core/set-attrs div {})
+             [:div {:random-attr :random-attr} "body"])))
+    (testing "Opts are binded."
+      (with-redefs [core/bind (fn [attrs opts]
+                                (is (= attrs (second div)))
+                                opts)]
+        (is (= (core/set-attrs div {:get :get :save! :save})
+               [:div {:random-attr :random-attr
+                      :get :get
+                      :save! :save}
+                "body"]))))
+    (testing "Default attributes are applied."
+      (is (= (core/set-attrs div {} {:default-attr :default-attr})
+             [:div {:random-attr :random-attr
+                    :default-attr :default-attr}
+              "body"])))))
