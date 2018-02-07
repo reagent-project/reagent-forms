@@ -179,3 +179,159 @@
              [:div {:random-attr :random-attr
                     :default-attr :default-attr}
               "body"])))))
+
+(deftest init-field-test
+  (let [dissoc-fns (fn [[type attrs & body]]
+                     (into [type (dissoc attrs :on-change
+                                         :on-blur
+                                         :on-focus
+                                         :on-blur
+                                         :on-change
+                                         :on-key-down
+                                         :on-mouse-enter
+                                         :on-mouse-leave)]
+                           body))]
+
+    ; typeahead
+    (let [state {:ta "a"}
+          [_ input ul]
+          ((core/init-field [:div {:field :typeahead
+                                   :id :ta
+                                   :input-placeholder "pick a friend"
+                                   :data-source (fn [])
+                                   :input-class "form-control"
+                                   :list-class "typeahead-list"
+                                   :item-class "typeahead-item"
+                                   :highlight-class "highlighted"}]
+                            {:doc (atom state)
+                             :get (fn [kw] (when kw (kw state)))
+                             :save! (fn [& _])
+                             :update! (fn [& _])}))]
+      (is (= (dissoc-fns input)
+             [:input {:placeholder "pick a friend"
+                      :disabled nil
+                      :value "a"
+                      :type :text
+                      :class "form-control"}]))
+      (is (= (dissoc-fns ul)
+             [:ul {:style {:display :none}
+                   :class "typeahead-list"}
+              []])))
+
+    ; single-select
+    (let [state {}
+          [_ component]
+          ((core/init-field [:div.btn-group {:field :single-select :id :selected}
+                             [:button.btn.btn-default {:key :left} "Left"]
+                             [:button.btn.btn-default {:key :middle} "Middle"]
+                             [:button.btn.btn-default {:key :right} "Right"]]
+                            {:doc (atom state)
+                             :get (fn [kw] (when kw (kw state)))
+                             :save! (fn [& _])
+                             :update! (fn [& _])}))]
+      (is (= component
+             [:div.btn-group {:field :single-select
+                              :id :selected}
+              [:button.btn.btn-default {:key :left} "Left"]
+              [:button.btn.btn-default {:key :middle} "Middle"]
+              [:button.btn.btn-default {:key :right} "Right"]])))
+
+    (are [state input expected]
+         (let [comp ((core/init-field input {:doc (atom state)
+                                             :get (fn [kw] (when kw (kw state)))
+                                             :save! (fn [& _])
+                                             :update! (fn [[& _]])}))]
+           (is (= (dissoc-fns comp) expected)))
+      ; container
+      {}
+      [:div {:field :container
+             :valid? :invalid}
+       "body"]
+      [:div {:valid? :invalid}
+       "body"]
+
+      {:id "some-text"}
+      [:div {:field :container
+             :valid? :id}
+       "body"]
+      [:div {:valid? :id
+             :class "some-text"}
+       "body"]
+
+      ; text
+      {}
+      [:input {:field :text}]
+      [:input {:type :text :value ""}]
+
+      {}
+      [:input {:field :text :disabled (fn [] false)}]
+      [:input {:type :text :value "" :disabled false}]
+
+      {:id "some-text"}
+      [:input {:field :text
+               :id :id}]
+      [:input {:type :text
+               :value "some-text"
+               :id :id}]
+
+      ; numeric
+      {}
+      [:input {:field :numeric}]
+      [:input {:type :text :value nil}]
+
+      ; checkbox
+      {}
+      [:input {:field :checkbox :id :non-existent}]
+      [:input {:type :checkbox :id :non-existent :checked false}]
+
+      {:id "yep"}
+      [:input {:field :checkbox :id :id}]
+      [:input {:type :checkbox :id :id :checked true}]
+
+      ; range
+      {:id 12}
+      [:input {:field :range :min 10 :max 100 :id :id}]
+      [:input {:type :range
+               :value 12
+               :min 10
+               :max 100
+               :id :id}]
+
+      ; radio
+      {}
+      [:input {:field :radio :value :b :name :radio}]
+      [:input {:name :radio :type :radio :checked false}]
+
+      {:id :a}
+      [:input {:field :radio :value :a :name :id}]
+      [:input {:name :id :type :radio :checked true}]
+
+      ; file
+      {}
+      [:input {:field :file :type :file}]
+      [:input {:type :file}]
+
+      {}
+      [:input {:field :file :multiple true}]
+      [:input {:type :file :multiple true}]
+
+      ; list
+      {}
+      [:select {:field :list :id :many-options}
+       [:option {:key :foo} "foo"]
+       [:option {:key :bar} "bar"]
+       [:option {:key :baz} "baz"]]
+      [:select {:id :many-options :default-value "foo"}
+       [[:option {:key :foo} "foo"]
+        [:option {:key :bar} "bar"]
+        [:option {:key :baz} "baz"]]]
+
+      {:many-options :bar}
+      [:select {:field :list :id :many-options}
+       [:option {:key :foo} "foo"]
+       [:option {:key :bar} "bar"]
+       [:option {:key :baz} "baz"]]
+      [:select {:id :many-options :default-value "bar"}
+       [[:option {:key :foo} "foo"]
+        [:option {:key :bar} "bar"]
+        [:option {:key :baz} "baz"]]])))
