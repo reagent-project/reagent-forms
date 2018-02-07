@@ -24,7 +24,7 @@
                  {:target
                   {:parentNode
                    {:getElementsByTagName ul}}})]
-      (is (= 100 (core/scroll-to element 3)))))
+    (is (= 100 (core/scroll-to element 3)))))
 
 (deftest id->path-test
   (are [input expected]
@@ -49,27 +49,27 @@
     (let [state (r/atom {:kw 5})
           f (core/mk-update-fn state [])
           update-fn (fn [_ val] val)]
-     (f :kw update-fn :val)
-     (is (= @state {:kw :val}))))
+      (f :kw update-fn :val)
+      (is (= @state {:kw :val}))))
   (testing "Returned function runs all the events."
     (let [state (r/atom {:kw 5})
           f (core/mk-update-fn state [update&double update&double])
           update-fn (fn [_ val] val)]
-     (f :kw update-fn 10)
-     (is (= @state {:kw 40})))))
+      (f :kw update-fn 10)
+      (is (= @state {:kw 40})))))
 
 (deftest mk-save-fn-test
   (testing "Value is associated in the doc."
     (let [state (r/atom {})
           f (core/mk-save-fn state [])]
-     (f :kw :val)
-     (is (= @state
-            {:kw :val}))))
+      (f :kw :val)
+      (is (= @state
+             {:kw :val}))))
   (testing "Returned function runs all the events."
     (let [state (r/atom {})
           f (core/mk-save-fn state [update&double update&double])]
-     (f :kw 1)
-     (is (= @state {:kw 4})))))
+      (f :kw 1)
+      (is (= @state {:kw 4})))))
 
 (deftest wrap-fns-test
   (testing "Functions map is properly formed."
@@ -93,8 +93,8 @@
       (with-redefs [core/wrap-get-fn mock-wrap-fn
                     core/wrap-save-fn mock-wrap-fn
                     core/wrap-update-fn mock-wrap-fn]
-          (is (= (core/wrap-fns fns node)
-                 {:doc :doc-fn
-                  :get [:get-fn :in-fn]
-                  :save! [:save-fn :out-fn]
-                  :update! [:update-fn :out-fn]}))))))
+        (is (= (core/wrap-fns fns node)
+               {:doc :doc-fn
+                :get [:get-fn :in-fn]
+                :save! [:save-fn :out-fn]
+                :update! [:update-fn :out-fn]}))))))
