@@ -99,16 +99,14 @@
 ;;coerce the input to the appropriate type
 (defmulti format-type
   (fn [field-type _]
-    (if (some #{field-type} [:range :numeric])
+    (if (#{:range :numeric} field-type)
       :numeric
       field-type)))
 
-(defn valid-number-ending? [n]
-  (or (and (not= "." (last (butlast n))) (= "." (last n)))
-      (= "0" (last n))))
-
 (defn format-value [fmt value]
-  (if (and (not (js/isNaN (js/parseFloat value))) fmt) (gstring/format fmt value) value))
+  (if (and (not (js/isNaN (js/parseFloat value))) fmt)
+    (gstring/format fmt value)
+    value))
 
 (defmethod format-type :numeric
   [_ n]
@@ -123,7 +121,7 @@
 ;;bind the field to the document based on its type
 (defmulti bind
   (fn [{:keys [field]} _]
-    (if (some #{field} [:text :numeric :password :email :tel :range :textarea])
+    (if (#{:text :numeric :password :email :tel :range :textarea} field)
       :input-field field)))
 
 (defmethod bind :input-field
@@ -153,7 +151,7 @@
 (defmulti init-field
   (fn [[_ {:keys [field]}] _]
     (let [field (keyword field)]
-      (if (some #{field} [:range :text :password :email :tel :textarea])
+      (if (#{:range :text :password :email :tel :textarea} field)
         :input-field field))))
 
 (defmethod init-field :container
