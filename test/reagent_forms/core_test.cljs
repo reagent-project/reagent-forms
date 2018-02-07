@@ -104,3 +104,22 @@
        (= (core/format-value format input) expected)
     "%.2f" "0.123123" "0.12"
     "%d" "3.123123" "3"))
+
+(deftest format-type-test
+  (are [field-type input expected]
+       (= (core/format-type field-type input) expected)
+    :numeric nil nil
+    :numeric "xyz" nil
+    :numeric "12" 12
+    :numeric "12xyz" 12
+    :numeric "0.123" 0.123
+
+    :range nil nil
+    :range "xyz" nil
+    :range "12" 12
+    :range "12xyz" 12
+    :range "0.123" 0.123
+
+    :other-type nil nil
+    :other-type "xyz" "xyz"
+    :other-type "12" "12"))
