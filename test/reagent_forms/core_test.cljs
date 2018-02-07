@@ -98,3 +98,9 @@
                 :get [:get-fn :in-fn]
                 :save! [:save-fn :out-fn]
                 :update! [:update-fn :out-fn]}))))))
+
+(deftest format-value-test
+  (are [format input expected]
+       (= (core/format-value format input) expected)
+    "%.2f" "0.123123" "0.12"
+    "%d" "3.123123" "3"))
