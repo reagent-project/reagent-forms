@@ -335,3 +335,13 @@
        [[:option {:key :foo} "foo"]
         [:option {:key :bar} "bar"]
         [:option {:key :baz} "baz"]]])))
+
+(deftest bind-fields-test
+  (with-redefs [core/wrap-fns (fn [_ node] node)
+                core/init-field (fn [node _] node)]
+    (let [component [:div
+                     [:input {:field :text :id :a}]
+                     [:input {:field :numeric}]
+                     [:input {:field :range}]]
+          result ((core/bind-fields component nil))]
+      (is (= result component)))))
