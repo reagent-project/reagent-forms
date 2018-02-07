@@ -123,3 +123,26 @@
     :other-type nil nil
     :other-type "xyz" "xyz"
     :other-type "12" "12"))
+
+(deftest bind-test
+  (are [field expected]
+       (= (dissoc
+           (core/bind field
+                      {:get identity})
+           :on-change)
+          expected)
+
+    {:field :input-field
+     :id "12.12312312"
+     :fmt "%.2f"}
+    {:value "12.12"}
+
+    {:field :checkbox
+     :id :id}
+    {:checked true}
+
+    {:field :checkbox
+     :id false}
+    {:checked false}
+
+    {:field :some-field} nil))
