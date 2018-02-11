@@ -527,6 +527,15 @@ Note that you will also have to set the style of `cursor: pointer` for any eleme
 
 The [TapEventPlugin](https://github.com/zilverline/react-tap-event-plugin) for react is another option for creating responsive events, until the functionality becomes available in React itself.
 
+## Testing
+This project uses [`Doo`](https://github.com/bensu/doo) for running the tests.
+You must install one of the Doo-supported environments, refer to [the docs](https://github.com/bensu/doo#setting-up-environments) for details.
+To run the tests, for example using Phantom, do:
+
+```
+lein doo phantom test
+```
+
 ## License
 
 Copyright © 2018 Dmitri Sotnikov
