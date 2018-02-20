@@ -493,22 +493,31 @@
        (map? (second node))
        (contains? (second node) :field)))
 
-(defn bind-fields
-  "creates data bindings between the form fields and the supplied atom
-   form - the form template with the fields
-   doc - the document that the fields will be bound to
-   events - any events that should be triggered when the document state changes"
+(defn make-form
+  [form opts wrap-fns?]
+  (postwalk
+    (fn [node]
+      (if (field? node)
+        (let [opts (if wrap-fns? (wrap-fns opts node) opts)
+              field (init-field node opts)]
+          (if (fn? field) [field] field))
+        node))
+    form))
+
+(defmulti bind-fields
+  (fn [_ doc & _]
+    (type doc)))
+
+(defmethod bind-fields PersistentArrayMap
+  [form doc]
+  (let [form (make-form form (assoc doc :doc (:get doc)) false)]
+    (fn [] form)))
+
+(defmethod bind-fields :default
   [form doc & events]
   (let [opts {:doc doc
               :get #(deref (cursor-for-id doc %))
               :save! (mk-save-fn doc events)
               :update! (mk-update-fn doc events)}
-        form (postwalk
-               (fn [node]
-                 (if (field? node)
-                   (let [opts (wrap-fns opts node)
-                         field (init-field node opts)]
-                     (if (fn? field) [field] field))
-                   node))
-               form)]
+        form (make-form form opts true)]
     (fn [] form)))
