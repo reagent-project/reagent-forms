@@ -510,7 +510,7 @@
 
 (defmethod bind-fields PersistentArrayMap
   [form doc]
-  (let [form (make-form form doc false)]
+  (let [form (make-form form (assoc doc :doc (:get doc)) false)]
     (fn [] form)))
 
 (defmethod bind-fields :default
