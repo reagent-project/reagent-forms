@@ -496,6 +496,57 @@ The following is an example of an event to calculate the value of the `:bmi` key
       (assoc-in doc [:bmi] (/ weight (* height height)))))]
 ```
 
+## Using with re-frame
+You can provide a custom map of event functions to `bind-fields` to use reagent-forms with a library like `re-frame`. In that case, reagent-forms will not hold any internal state and functions provided by you will be used to get, save and update the field's value. Here's an example:
+
+```clojure
+(ns foo.bar
+  (:require [re-frame.core :as re-frame]
+            [reagent-forms.core :refer [bind-fields]]))
+
+; Functions that will be called by each individual form field with an id and a value
+(def event-fns
+  {:get (fn [id] (deref @(re-frame/subscribe [id])))
+   :save! (fn [id val] (re-frame/dispatch [id val]))
+   :update! (fn [id val] (re-frame/dispatch [id val]))})
+
+; standard re-frame subscriptions
+(re-frame/reg-sub
+ :foo-input
+ (fn [db]
+   (:foo-input db)))
+
+(re-frame/reg-event-db
+  :foo-input
+  (fn [db [_ v]]
+    (assoc db :foo-input v)))
+
+; bind-fields called with a form and a map of custom events
+(defn foo
+  []
+  [bind-fields
+   [:input {:field :text
+            :id :foo-input}]
+   event-fns])
+```
+
+Similarly, when you want to set element's visibility, you'll provide a subscription key that will be passed to your `:get` function:
+
+```clojure
+(re-frame/reg-sub
+ :foo-input-visible?
+ (fn [db]
+   (:foo-input-visible? db)))  
+
+(defn foo
+  []
+  [bind-fields
+   [:input {:field :text
+            :id :foo-input
+            :visible? :foo-input-visible?}]
+   event-fns])
+```
+
 ## Adding custom fields
 
 Custom fields can be added by implementing the `reagent-forms.core/init-field` multimethod. The method must

@@ -505,6 +505,11 @@
     form))
 
 (defmulti bind-fields
+  "Creates data bindings between the form fields and the supplied atom or calls
+   the supplied functions (when `doc` is a map) on events triggered by fields.
+   form - the form template with the fields
+   doc - the document that the fields will be bound to
+   events - any events that should be triggered when the document state changes"
   (fn [_ doc & _]
     (type doc)))
 
