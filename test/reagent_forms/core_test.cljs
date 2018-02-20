@@ -344,4 +344,22 @@
                      [:input {:field :numeric}]
                      [:input {:field :range}]]
           result ((core/bind-fields component nil))]
-      (is (= result component)))))
+      (is (= result component))))
+
+  (testing ":doc is associated with :get when map is passed."
+    (with-redefs [core/init-field
+                  (fn [node opts]
+                    (is (= opts
+                           {:doc :get
+                            :get :get
+                            :save! :save!
+                            :udpate! :update!}))
+                    node)]
+      (let [component [:div
+                       [:input {:field :text :id :a}]
+                       [:input {:field :numeric}]
+                       [:input {:field :range}]]
+            result ((core/bind-fields component {:get :get
+                                                 :save! :save!
+                                                 :udpate! :update!}))]
+        (is (= result component))))))
