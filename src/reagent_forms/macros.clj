@@ -14,6 +14,8 @@
                        c#))
                    ~@body)]
        (if-let [visible# (:visible? ~attrs)]
-         (when (visible# (deref ~doc))
-           body#)
+         (let [pred# (if (fn? visible#)
+                       (visible# (deref ~doc))
+                       (~doc visible#))]
+          (when pred# body#))
          body#))))
