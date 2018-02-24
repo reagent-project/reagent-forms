@@ -158,7 +158,7 @@ The file field binds the `File` object of an `<input type="file"/>`.
 Same as file, except it works with `<input type="file" multiple/>` and binds the entire `FileList` object.
 
 ```clojure
-[:input {:field :file :type :file :multiple true}]
+[:input {:field :files :type :file :multiple true}]
 ```
 
 ### Lists
