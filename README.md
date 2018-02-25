@@ -506,7 +506,7 @@ You can provide a custom map of event functions to `bind-fields` to use reagent-
 
 ; Functions that will be called by each individual form field with an id and a value
 (def event-fns
-  {:get (fn [id] (deref @(re-frame/subscribe [id])))
+  {:get (fn [id] @(re-frame/subscribe [id]))
    :save! (fn [id val] (re-frame/dispatch [id val]))
    :update! (fn [id val] (re-frame/dispatch [id val]))})
 
