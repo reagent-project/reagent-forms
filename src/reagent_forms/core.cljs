@@ -88,6 +88,8 @@
           :fmt
           :event
           :field
+          :in-fn
+          :out-fn
           :inline
           :save-fn
           :preamble
