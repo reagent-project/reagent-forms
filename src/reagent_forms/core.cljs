@@ -496,11 +496,11 @@
        (contains? (second node) :field)))
 
 (defn make-form
-  [form opts wrap-fns?]
+  [form opts]
   (postwalk
     (fn [node]
       (if (field? node)
-        (let [opts (if wrap-fns? (wrap-fns opts node) opts)
+        (let [opts (wrap-fns opts node)
               field (init-field node opts)]
           (if (fn? field) [field] field))
         node))
@@ -517,7 +517,7 @@
 
 (defmethod bind-fields PersistentArrayMap
   [form doc]
-  (let [form (make-form form (assoc doc :doc (:get doc)) false)]
+  (let [form (make-form form (assoc doc :doc (:get doc)))]
     (fn [] form)))
 
 (defmethod bind-fields :default
@@ -526,5 +526,5 @@
               :get #(deref (cursor-for-id doc %))
               :save! (mk-save-fn doc events)
               :update! (mk-update-fn doc events)}
-        form (make-form form opts true)]
+        form (make-form form opts)]
     (fn [] form)))

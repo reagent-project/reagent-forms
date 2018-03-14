@@ -353,7 +353,7 @@
                            {:doc :get
                             :get :get
                             :save! :save!
-                            :udpate! :update!}))
+                            :update! :update!}))
                     node)]
       (let [component [:div
                        [:input {:field :text :id :a}]
@@ -361,5 +361,5 @@
                        [:input {:field :range}]]
             result ((core/bind-fields component {:get :get
                                                  :save! :save!
-                                                 :udpate! :update!}))]
+                                                 :update! :update!}))]
         (is (= result component))))))
