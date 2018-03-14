@@ -161,7 +161,7 @@
   (render-element attrs doc
     (into [type
            (clean-attrs
-             (if-let [valid-class (when valid? (valid? (deref doc)))]
+             (if-let [valid-class (when valid? (if (fn? valid?) (valid? @doc) (doc valid?)))]
              (update-in attrs [:class] #(if (not (empty? %)) (str % " " valid-class) valid-class))
              attrs))]
           body)))
@@ -486,8 +486,8 @@
                :on-change #(save! id (clojure.core/get options-lookup (value-of %)))})
        (doall
          (filter
-           #(if-let [visible? (:visible? (second %))]
-             (visible? @doc) true)
+           #(if-let [visible (:visible? (second %))]
+             (if (fn? visible) (visible @doc) (doc visible)) true)
            options))])))
 
 (defn- field? [node]
