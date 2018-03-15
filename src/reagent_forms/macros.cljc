@@ -14,8 +14,6 @@
                        c#))
                    ~@body)]
        (if-let [visible# (:visible? ~attrs)]
-         (let [pred# (if (fn? visible#)
-                       (visible# (deref ~doc))
-                       (~doc visible#))]
+         (let [pred# (reagent-forms.core/call-attr ~doc visible#)]
           (when pred# body#))
          body#))))

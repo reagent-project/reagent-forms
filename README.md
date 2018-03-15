@@ -508,13 +508,19 @@ You can provide a custom map of event functions to `bind-fields` to use reagent-
 (def event-fns
   {:get (fn [id] @(re-frame/subscribe [id]))
    :save! (fn [id val] (re-frame/dispatch [id val]))
-   :update! (fn [id val] (re-frame/dispatch [id val]))})
+   :update! (fn [id val] (re-frame/dispatch [id val]))
+   :doc (fn [] @(re-frame/subscribe [:doc]))})
 
 ; standard re-frame subscriptions
 (re-frame/reg-sub
  :foo-input
  (fn [db]
    (:foo-input db)))
+
+(re-frame/reg-sub
+ :doc
+ (fn [db]
+   db))
 
 (re-frame/reg-event-db
   :foo-input
@@ -536,7 +542,7 @@ Similarly, when you want to set element's visibility, you'll provide a subscript
 (re-frame/reg-sub
  :foo-input-visible?
  (fn [db]
-   (:foo-input-visible? db)))  
+   (:foo-input-visible? db)))
 
 (defn foo
   []

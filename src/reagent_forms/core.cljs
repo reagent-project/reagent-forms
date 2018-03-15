@@ -83,6 +83,11 @@
               (wrap-update-fn update! out-fn)
               update!)})
 
+(defn call-attr
+  [doc attr]
+  (let [doc (if (fn? doc) (doc) @doc)]
+    (if (fn? attr) (attr doc) (get-in doc attr))))
+
 (defn clean-attrs [attrs]
   (dissoc attrs
           :fmt
@@ -161,7 +166,8 @@
   (render-element attrs doc
     (into [type
            (clean-attrs
-             (if-let [valid-class (when valid? (if (fn? valid?) (valid? @doc) (doc valid?)))]
+             ;;TODO should happen as part of the render-element macro
+             (if-let [valid-class (when valid? (call-attr doc valid?))]
              (update-in attrs [:class] #(if (not (empty? %)) (str % " " valid-class) valid-class))
              attrs))]
           body)))
@@ -471,7 +477,7 @@
        (last)))
 
 (defmethod init-field :list
-  [[type {:keys [field id] :as attrs} & options] {:keys [doc get save!]}]
+  [[type {:keys [id] :as attrs} & options] {:keys [doc get save!]}]
   (let [options (extract-selectors options)
         options-lookup (map-options options)
         selection (atom (or
@@ -487,7 +493,7 @@
        (doall
          (filter
            #(if-let [visible (:visible? (second %))]
-             (if (fn? visible) (visible @doc) (doc visible)) true)
+             (call-attr doc visible) true)
            options))])))
 
 (defn- field? [node]
@@ -516,8 +522,8 @@
     (type doc)))
 
 (defmethod bind-fields PersistentArrayMap
-  [form doc]
-  (let [form (make-form form (assoc doc :doc (:get doc)))]
+  [form opts]
+  (let [form (make-form form opts)]
     (fn [] form)))
 
 (defmethod bind-fields :default
