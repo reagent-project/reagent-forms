@@ -527,7 +527,8 @@ The following is an example of an event to calculate the value of the `:bmi` key
 ```
 
 ## Using with re-frame
-You can provide a custom map of event functions to `bind-fields` to use reagent-forms with a library like `re-frame`. In that case, reagent-forms will not hold any internal state and functions provided by you will be used to get, save and update the field's value. Here's an example:
+
+You can provide a custom map of event functions to `bind-fields` to use reagent-forms with a library like `re-frame`. In that case, reagent-forms will not hold any internal state and functions provided by you will be used to get, save, and update the field's value. Here's an example:
 
 ```clojure
 (ns foo.bar
