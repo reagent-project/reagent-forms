@@ -581,21 +581,48 @@ You can provide a custom map of event functions to `bind-fields` to use reagent-
    events]])
 ```
 
-Similarly, when you want to set element's visibility, you'll provide a subscription key that will be passed to your `:get` function:
+Element visibility can be set by either providing the id in a document that will be
+treated as a truthy value, or a function:
 
 ```clojure
-(re-frame/reg-sub
- :foo-input-visible?
- (fn [db]
-   (:foo-input-visible? db)))
+(re-frame/reg-event-db
+ :toggle-foo
+ (fn [db _]
+   (update-in db [:doc :foo] not)))
 
-(defn foo
+(re-frame/reg-sub
+ :bar-visible?
+ (fn [db _]
+   (:bar db)))
+
+(re-frame/reg-event-db
+ :toggle-bar
+ (fn [db _]
+   (update db :bar not)))
+
+(def form
+ [:div
+  [:input {:field :text
+           :id :foo-input
+           :visible? :foo}]
+  [:input {:field :text
+           :id :bar-input
+           :visible? (fn [doc] @(re-frame/subscribe [:bar-visible?]))}]
+
+(defn page
   []
-  [bind-fields
-   [:input {:field :text
-            :id :foo-input
-            :visible? :foo-input-visible?}]
-   event-fns])
+  [:div
+   [bind-fields
+    [:input {:field :text
+             :id :foo-input
+             :visible? :foo-input-visible?}]
+     event-fns]
+   [:button
+    {:on-click #(re-frame/dispatch [:toggle-foo])}
+    "toggle foo"]
+   [:button
+    {:on-click #(re-frame/dispatch [:toggle-bar])}
+    "toggle bar"]])
 ```
 
 ## Adding custom fields

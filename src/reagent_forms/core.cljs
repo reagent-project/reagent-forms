@@ -102,7 +102,7 @@
 (defn call-attr
   [doc attr]
   (let [doc (if (fn? doc) (doc) @doc)]
-    (if (fn? attr) (attr doc) (get-in doc attr))))
+    (if (fn? attr) (attr doc) (get-in doc (id->path attr)))))
 
 (defn update-class [attrs classes]
   (if (not-empty classes)
@@ -193,8 +193,7 @@
 
 (defmethod init-field :container
   [[type attrs & body] {:keys [doc]}]
-  (render-element attrs doc
-                  (into [type attrs] body)))
+  (render-element attrs doc (into [type attrs] body)))
 
 (defmethod init-field :input-field
   [[_ {:keys [field] :as attrs} :as component] {:keys [doc] :as opts}]
@@ -270,7 +269,7 @@
 
 
 (defmethod init-field :checkbox
-  [[_ {:keys [id field checked default-checked] :as attrs} :as component] {:keys [doc get save!] :as opts}]
+  [[_ {:keys [id field checked default-checked] :as attrs} :as component] {:keys [doc save!] :as opts}]
   (when (or checked default-checked)
     (save! id true))
   (render-element (dissoc attrs :checked :default-checked) doc
@@ -279,7 +278,7 @@
 (defmethod init-field :label
   [[type {:keys [id preamble postamble placeholder fmt] :as attrs}] {:keys [doc get]}]
   (render-element attrs doc
-                  [type clean-attrs preamble
+                  [type attrs preamble
                    (let [value (get id)]
                      (if fmt
                        (fmt value)
@@ -288,7 +287,7 @@
                          placeholder)))]))
 
 (defmethod init-field :alert
-  [[type {:keys [id event touch-event closeable?] :or {closeable? true} :as attrs} & body] {:keys [doc get save!] :as opts}]
+  [[type {:keys [id event touch-event closeable?] :or {closeable? true} :as attrs} & body] {:keys [doc get save!]}]
   (render-element attrs doc
                   (if event
                     (when (event (get id))
@@ -304,7 +303,7 @@
                        message]))))
 
 (defmethod init-field :radio
-  [[type {:keys [field name value checked default-checked] :as attrs} & body] {:keys [doc get save!]}]
+  [[type {:keys [name value checked default-checked] :as attrs} & body] {:keys [doc get save!]}]
   (when (or checked default-checked)
     (save! name value))
   (render-element attrs doc
@@ -461,7 +460,7 @@
     selectors (first selectors)))
 
 (defn- selection-group
-  [[type {:keys [field id] :as attrs} & selection-items] {:keys [get] :as opts}]
+  [[type {:keys [field id] :as attrs} & selection-items] {:keys [get doc] :as opts}]
   (let [selection-items (extract-selectors selection-items)
         selections      (atom (mk-selections id selection-items opts))
         selectors       (map (fn [item]
@@ -475,7 +474,8 @@
             (->> selectors
                  (filter
                    #(if-let [visible? (:visible? %)]
-                      (visible? @(:doc opts)) true))
+                      (call-attr doc visible?)
+                      true))
                  (map :selector))))))
 
 (defmethod init-field :single-select
