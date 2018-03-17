@@ -296,7 +296,7 @@ The `:date-format` can also point to a function that returns the formatted date:
 ```Clojure
 {:field :datepicker
  :id :date
- :date-format (fn [{:keys [year month day]] (str year "/" month "/" day))}
+ :date-format (fn [{:keys [year month day]}] (str year "/" month "/" day))}
 ```
 
 The above is useful in conjunction with the `:save-fn` key that allows you to supply a custom function for saving the value.
