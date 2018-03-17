@@ -371,8 +371,6 @@ The File can be read using:
 The container element can be used to group different element.
 The container can be used to set the visibility of multiple elements.
 
-`:valid?` key accepts a function which takes the current state of the document as the sole argument. This function returns a class to be concatenated to the class list of the element.
-
 ```clojure
 [:div.form-group
  {:field :container
@@ -381,12 +379,24 @@ The container can be used to set the visibility of multiple elements.
  [:input {:field :text :id :last-name}]]
 ```
 
+### Validation
+
+A validator function can be attached to a component using the `:validator` keyword. This function accepts the current state of the document, and returns a collection of classes that will be appended to the element:
+
+```clojure
+[:input
+ {:field :text
+  :id :person.name.first
+  :validator (fn [doc]
+               (when (-> doc :person :name :first empty?)
+                 ["error"]))}]
+```
+
 
 ### Setting component visibility
 
 The components may  supply an optional `:visible?` key in their attributes that points to a decision function.
-The function is expected to take the current value of the document and produce a truthy value that will be used
-to decide whether the component should be rendered, eg:
+The function is expected to take the current value of the document and produce a truthy value that will be used to decide whether the component should be rendered, eg:
 
 ```clojure
 (def form
@@ -394,9 +404,29 @@ to decide whether the component should be rendered, eg:
    [:input {:field :text
             :id :foo}]
    [:input {:field :text
-            :visible? #(empty? (:foo %))
+            :visible? (fn [doc] (empty? (:foo doc)))
             :id :bar}]])
 ```
+
+### Updating attributes
+
+The `:set-attributes` key can be used in cases where you need to do an arbitrary update on the attributes of the component. The key must point to a function that
+accepts the current value of the document and the map of the attributes for the component. The function must return an updated attribute map:
+
+```clojure
+[:div
+ [:input {:field :text
+         :id :person.name.first
+         :validator (fn [doc]
+                      (when (= "Bob" (-> doc :person :name :first))
+                        ["error"]))}]
+ [:input {:field :text
+         :id :person.name.last
+         :set-attributes (fn [doc attrs]
+                           (assoc attrs :disabled (= "Bob" (-> doc :person :name :first))))}]]
+```
+
+Above example disables the last name input when the value of the first name input is "Bob".
 
 ## Binding the form to a document
 
@@ -504,36 +534,50 @@ You can provide a custom map of event functions to `bind-fields` to use reagent-
   (:require [re-frame.core :as re-frame]
             [reagent-forms.core :refer [bind-fields]]))
 
-; Functions that will be called by each individual form field with an id and a value
-(def event-fns
-  {:get (fn [id] @(re-frame/subscribe [id]))
-   :save! (fn [id val] (re-frame/dispatch [id val]))
-   :update! (fn [id val] (re-frame/dispatch [id val]))
-   :doc (fn [] @(re-frame/subscribe [:doc]))})
-
-; standard re-frame subscriptions
-(re-frame/reg-sub
- :foo-input
- (fn [db]
-   (:foo-input db)))
+; re-frame events
+(re-frame/reg-event-db
+ :init
+ (fn [_ _]
+   {:doc {}}))
 
 (re-frame/reg-sub
  :doc
- (fn [db]
-   db))
+ (fn [db _]
+   (:doc db)))
+
+(re-frame/reg-sub
+:value
+:<- [:doc]
+(fn [doc [_ path]]
+  (get-in doc path)))
 
 (re-frame/reg-event-db
-  :foo-input
-  (fn [db [_ v]]
-    (assoc db :foo-input v)))
+ :set-value
+ (fn [db [_ path value]]
+   (assoc-in db (into [:doc] path) value)))
+
+; Functions that will be called by each individual form field with an id and a value
+(def events
+  {:get (fn [path] @(re-frame/subscribe [:value path]))
+   :save! (fn [path value] (re-frame/dispatch [:set-value path value]))
+   :update! (fn [path save-fn value]
+              (re-frame/dispatch [:set-value path
+                                  (save-fn @(re-frame/subscribe [:value path]) value)]))
+   :doc (fn [] @(re-frame/subscribe [:doc]))})
 
 ; bind-fields called with a form and a map of custom events
 (defn foo
   []
   [bind-fields
-   [:input {:field :text
-            :id :foo-input}]
-   event-fns])
+   [:div
+    [:input {:field  :text
+             :id     :person.name.first
+             :valid? (fn [doc]
+                       (when (= "Bob" (-> doc :person :name :first))
+                         ["error"]))}]
+    [:input {:field :text
+             :id    :person.name.last}]]
+   events]])
 ```
 
 Similarly, when you want to set element's visibility, you'll provide a subscription key that will be passed to your `:get` function:

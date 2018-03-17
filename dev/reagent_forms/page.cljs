@@ -179,7 +179,11 @@
    [:div
     {:field :container
      :visible? #(not-empty (get-in % [:person :first-name]))}
-    (input "last name" :text :person.last-name)]
+    (row "last name" [:input.form-control
+                      {:field :text
+                       :id :person.last-name
+                       :valid? (fn [doc] (if-not (= "Bobberton" (-> doc :person :last-name))
+                                           ["error"]))}])]
    [:div.row
     [:div.col-md-2]
     [:div.col-md-5
