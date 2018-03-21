@@ -106,7 +106,7 @@
 
 (defn update-class [attrs classes]
   (if (not-empty classes)
-    (update attrs :class #(string/join " " (remove empty? (into [%] classes))))
+    (update attrs :class #(string/join " " (remove empty? (into (if (string? %) [%] %) classes))))
     attrs))
 
 (defn update-attrs [{:keys [set-attributes] :as attrs} doc]

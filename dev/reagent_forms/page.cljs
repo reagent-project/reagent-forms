@@ -169,6 +169,11 @@
 (defn form-template
   [doc]
   [:div
+   [:input.form-control
+    {:class ["foo" "bar"]
+     :validator (constantly ["baz" "faz"])
+     :field :text
+     :id "id"}]
    (input "first name" :text :person.first-name)
    [:div.row
     [:div.col-md-2]
