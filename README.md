@@ -33,6 +33,19 @@ The input fields can have an optional `:fmt` attribute that can provide a format
 [:input.form-control
   {:field :numeric :fmt "%.2f" :id :bmi :disabled true}]
 ```
+
+Numeric inputs support attributes for the HTML 5 number input:
+
+```clojure
+[:input
+ {:field     :numeric
+  :id        :volume
+  :fmt       "%.2f"
+  :step      "0.1"
+  :min       0
+  :max       10}]
+```
+
 #### :typeahead
 
 The typeahead field uses a `:data-source` key bound to a function that takes the current input and returns a list of matching results. The control uses an input element to handle user input and renders the list of choices as an  unordered list element containing one or more list item elements. Users may specify the css classes used to render each of these elements using the keys :input-class, :list-class and :item-class. Users may additionally specify a css class to handle highlighting of the current selection with the :highlight-class key. Reference css classes are included in the resources/public/css/reagent-forms.css file.

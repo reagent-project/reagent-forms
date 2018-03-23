@@ -201,20 +201,21 @@
                   (set-attrs component opts {:type field})))
 
 (defmethod init-field :numeric
-  [[type {:keys [id fmt] :as attrs}] {:keys [doc get save!]}]
+  [[type {:keys [id fmt] :as attrs}] {:keys [get save! doc]}]
   (let [input-value (atom nil)]
-    (render-element attrs doc
-                    [type (merge
-                            {:type      :text
-                             :value     (or @input-value (get id ""))
-                             :on-change #(reset! input-value (value-of %))
-                             :on-blur   #(do
-                                           (reset! input-value nil)
-                                           (->> (value-of %)
-                                                (format-value fmt)
-                                                (format-type :numeric)
-                                                (save! id)))}
-                            attrs)])))
+    (render-element
+      attrs doc
+      [type (merge
+              {:type      :number
+               :value     (or @input-value (get id ""))
+               :on-change #(->> (value-of %) (reset! input-value))
+               :on-blur #(do
+                           (reset! input-value nil)
+                           (->> (value-of %)
+                                (format-value fmt)
+                                (format-type :numeric)
+                                (save! id)))}
+              attrs)])))
 
 (defmethod init-field :datepicker
   [[_ {:keys [id date-format inline auto-close? disabled lang save-fn] :or {lang :en-US} :as attrs}] {:keys [doc get save! update!]}]
