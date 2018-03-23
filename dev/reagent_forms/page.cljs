@@ -166,14 +166,20 @@
         (swap! doc #(assoc % :animal nil))
         val))))
 
-(defn form-template
-  [doc]
+(defn form-template [doc]
   [:div
-   [:input.form-control
-    {:class ["foo" "bar"]
-     :validator (constantly ["baz" "faz"])
-     :field :text
-     :id "id"}]
+   [:div.row
+    [:div.col-md-2 [:label.col-form-label {:field :label :id :volume}]]
+    [:div.col-md-5
+     [:input.form-control
+      {:field     :numeric
+       :class     "classy"
+       :id        :volume
+       :validator (fn [doc] (if (= 5.00 (:volume doc)) ["error"]))
+       :fmt       "%.2f"
+       :step      "0.1"
+       :min       0
+       :max       1.3}]]]
    (input "first name" :text :person.first-name)
    [:div.row
     [:div.col-md-2]
@@ -182,13 +188,13 @@
       {:field :alert :id :errors.first-name}]]]
 
    [:div
-    {:field :container
+    {:field    :container
      :visible? #(not-empty (get-in % [:person :first-name]))}
     (row "last name" [:input.form-control
-                      {:field :text
-                       :id :person.last-name
-                       :valid? (fn [doc] (if-not (= "Bobberton" (-> doc :person :last-name))
-                                           ["error"]))}])]
+                      {:field     :text
+                       :id        :person.last-name
+                       :validator (fn [doc] (if-not (= "Bobberton" (-> doc :person :last-name))
+                                              ["error"]))}])]
    [:div.row
     [:div.col-md-2]
     [:div.col-md-5
@@ -302,25 +308,26 @@
     [:li.list-group-item {:key :baz} "baz"]]])
 
 (defn home-page []
-  (let [doc (r/atom {:person         {:first-name "John"
-                                      :age        35
-                                      :email      "foo@bar.baz"}
-                     :weight         100
-                     :height         200
-                     :bmi            0.5
-                     :comments       "some interesting comments\non this subject"
-                     :radioselection :b
-                     :position       [:left :right]
-                     :pick-one       :bar
-                     :unique         {:position :middle}
-                     :pick-a-few     [:bar :baz]
-                     :many           {:options :bar}
-                     :animal-text    ""
-                     :animal         nil})
-        opts {:get (fn [path] (get-in @doc path))
-              :save! (fn [path value] (swap! doc assoc-in path value))
+  (let [doc  (r/atom {:person         {:first-name "John"
+                                       :age        35
+                                       :email      "foo@bar.baz"}
+                      :volume         5
+                      :weight         100
+                      :height         200
+                      :bmi            0.5
+                      :comments       "some interesting comments\non this subject"
+                      :radioselection :b
+                      :position       [:left :right]
+                      :pick-one       :bar
+                      :unique         {:position :middle}
+                      :pick-a-few     [:bar :baz]
+                      :many           {:options :bar}
+                      :animal-text    ""
+                      :animal         nil})
+        opts {:get     (fn [path] (get-in @doc path))
+              :save!   (fn [path value] (swap! doc assoc-in path value))
               :update! (fn [f path new-value] (swap! doc #(f path new-value)))
-              :doc (fn [] @doc)}]
+              :doc     (fn [] @doc)}]
     (fn []
       [:div
        [:div.page-header [:h1 "Sample Form"]]
