@@ -591,7 +591,7 @@ You can provide a custom map of event functions to `bind-fields` to use reagent-
                          ["error"]))}]
     [:input {:field :text
              :id    :person.name.last}]]
-   events]])
+   events])
 ```
 
 Element visibility can be set by either providing the id in a document that will be
