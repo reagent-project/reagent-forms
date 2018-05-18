@@ -37,7 +37,7 @@
    :fi-FI {:days        ["Sunnuntai" "Maanantai" "Tiistai" "Keskiviikko" "Torstai" "Perjantai" "Lauantai"]
            :days-short  ["Su" "Ma" "Ti" "Ke" "To" "Pe" "La"]
            :months      ["Tammikuu" "Helmikuu" "Maaliskuu" "Huhtikuu" "Toukokuu" "Kesäkuu" "Heinäkuu" "Elokuu" "Syyskuu" "Lokakuu" "Marraskuu" "Joulukuu"]
-           :months-short ["Tammi" "Helmi" "Maalis" "Huhti" "Touko" "Kesä" "Heinä" "Elo" "Syys" "Marras" "Joulu"]
+           :months-short ["Tammi" "Helmi" "Maalis" "Huhti" "Touko" "Kesä" "Heinä" "Elo" "Syys" "Loka" "Marras" "Joulu"]
            :first-day 1}
    :nl-NL {:days        ["zondag" "maandag" "dinsdag" "woensdag" "donderdag" "vrijdag" "zaterdag"]
            :days-short  ["zo" "ma" "di" "wo" "do" "vr" "za"]
