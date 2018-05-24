@@ -4,18 +4,18 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :clojurescript? true
-  :dependencies [[reagent "0.7.0"]]
+  :dependencies [[reagent "0.8.1"]]
   :plugins [[codox "0.6.4"]]
   :profiles {:dev
-             {:dependencies [[org.clojure/clojure "1.8.0"]
-                             [org.clojure/clojurescript "1.9.946"]
+             {:dependencies [[org.clojure/clojure "1.9.0"]
+                             [org.clojure/clojurescript "1.10.238"]
                              [json-html "0.4.4"]
                              [com.cemerick/piggieback "0.2.2"]
-                             [figwheel-sidecar "0.5.15"]
-                             [doo "0.1.8"]]
+                             [figwheel-sidecar "0.5.16"]
+                             [doo "0.1.10" ]]
               :plugins      [[lein-cljsbuild "1.0.3"]
-                             [lein-figwheel "0.5.15"]
-                             [lein-doo "0.1.8"]]
+                             [lein-figwheel "0.5.16"]
+                             [lein-doo "0.1.10"]]
               :source-paths ["src" "dev"]
               :resource-paths ["dev"]
               :figwheel
