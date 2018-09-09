@@ -2,6 +2,37 @@
 
 A ClojureScript library to provide form data bindings for [Reagent](http://holmsand.github.io/reagent/), see [here](http://yogthos.github.io/reagent-forms-example.html) for a live demo.
 
+## Table of contents
+
+- [Install](#install)
+- [Usage](#usage)
+    - [:input](#input)
+    - [:typeahead](#typeahead)
+    - [:checkbox](#checkbox)
+    - [:range](#range)
+    - [:radio](#radio)
+    - [:file](#file)
+    - [:files](#files)
+  - [Lists](#lists)
+    - [:list](#list)
+    - [:single-select](#single-select)
+    - [:multi-select](#multi-select)
+    - [:label](#label)
+    - [:alert](#alert)
+    - [:datepicker](#datepicker)
+    - [:container](#container)
+  - [Validation](#validation)
+  - [Setting component visibility](#setting-component-visibility)
+  - [Updating attributes](#updating-attributes)
+- [Binding the form to a document](#binding-the-form-to-a-document)
+- [Adding events](#adding-events)
+- [Using with re-frame](#using-with-re-frame)
+- [Adding custom fields](#adding-custom-fields)
+- [Using adapters](#using-adapters)
+- [Mobile Gotchas](#mobile-gotchas)
+- [Testing](#testing)
+- [License](#license)
+
 ## Install
 
 [![Clojars Project](https://img.shields.io/clojars/v/reagent-forms.svg)](https://clojars.org/reagent-forms)
