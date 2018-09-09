@@ -4,7 +4,7 @@ A ClojureScript library to provide form data bindings for [Reagent](http://holms
 
 ## Install
 
-[![Clojars Project](http://clojars.org/reagent-forms/latest-version.svg)](http://clojars.org/reagent-forms)
+[![Clojars Project](https://img.shields.io/clojars/v/reagent-forms.svg)](https://clojars.org/reagent-forms)
 
 ## Usage
 
