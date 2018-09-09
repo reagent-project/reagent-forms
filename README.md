@@ -570,13 +570,18 @@ You can provide a custom map of event functions to `bind-fields` to use reagent-
  (fn [db [_ path value]]
    (assoc-in db (into [:doc] path) value)))
 
+(re-frame/reg-event-db
+ :update-value
+ (fn [db [_ f path value]]
+   (update-in db (into [:doc] path) f value)))
+
 ; Functions that will be called by each individual form field with an id and a value
 (def events
   {:get (fn [path] @(re-frame/subscribe [:value path]))
    :save! (fn [path value] (re-frame/dispatch [:set-value path value]))
    :update! (fn [path save-fn value]
-              (re-frame/dispatch [:set-value path
-                                  (save-fn @(re-frame/subscribe [:value path]) value)]))
+              ; save-fn should accept two arguments: old-value, new-value
+              (re-frame/dispatch [:update-value save-fn path value]))
    :doc (fn [] @(re-frame/subscribe [:doc]))})
 
 ; bind-fields called with a form and a map of custom events
