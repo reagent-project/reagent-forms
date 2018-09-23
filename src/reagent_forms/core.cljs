@@ -44,7 +44,7 @@
       (if (sequential? id)
         id
         (let [segments (split (subs (str id) 1) #"\.")]
-          (map keyword segments))))))
+          (mapv keyword segments))))))
 
 (def ^:private cursor-for-id
   (memoize
@@ -53,7 +53,7 @@
 
 (defn run-events [doc id value events]
   (let [path (id->path id)]
-    (reduce #(or (%2 path value %1) %1) doc events)))
+    (reduce #(or (%2 id path value %1) %1) doc events)))
 
 (defn- mk-update-fn [doc events]
   (fn [id update-fn value]

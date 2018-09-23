@@ -545,7 +545,7 @@ The form can be initialized with a populated document, and the fields will be in
 
 The `bind-fields` function accepts optional events. Events are triggered whenever the document is updated, and will be executed in the order they are listed. Each event sees the document modified by its predecessor.
 
-The event must take 3 parameters, which are the `id`, the `value`, and the `document`. The `id` and the `value` represent the value that was changed in the form, and the document is the atom that contains the state of the form. The event can either return an updated document or `nil`, when `nil` is returned then the state of the document is unmodified.
+The event must take 3 parameters, which are the `id`, the `path`, the `value`, and the `document`. The `id` matches the `:id` of the field, the `path` is the path of the field in the document, the `value` represent the value that was changed in the form, and the document contains the state of the form. The event can either return an updated document or `nil`, when `nil` is returned then the state of the document is unmodified.
 
 The following is an example of an event to calculate the value of the `:bmi` key when the `:weight` and `:height` keys are populated:
 
@@ -565,7 +565,7 @@ The following is an example of an event to calculate the value of the `:bmi` key
 [bind-fields
   form-template
   doc
-  (fn [id value {:keys [weight height] :as doc}]
+  (fn [id path value {:keys [weight height] :as doc}]
     (when (and (some #{id} [:height :weight]) weight height)
       (assoc-in doc [:bmi] (/ weight (* height height)))))]
 ```
@@ -711,7 +711,7 @@ You must install one of the Doo-supported environments, refer to [the docs](http
 To run the tests, for example using Phantom, do:
 
 ```
-lein doo phantom test
+lein doo slimer test
 ```
 
 ## License

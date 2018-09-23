@@ -9,33 +9,33 @@
 
 (deftest scroll-to-test
   (let [item-elem {:scrollHeight 100
-                   :offsetTop 300}
+                   :offsetTop    300}
         list-elem (fn [i]
                     (is (= i 0))
                     (clj->js {:scrollTop 999
                               :children
-                              {:item (fn [idx]
-                                       (is (= idx 3))
-                                       (clj->js item-elem))}}))
+                                         {:item (fn [idx]
+                                                  (is (= idx 3))
+                                                  (clj->js item-elem))}}))
         ul (fn [tag-name]
              (is (= tag-name "ul"))
              (clj->js {:item list-elem}))
         element (clj->js
-                 {:target
-                  {:parentNode
-                   {:getElementsByTagName ul}}})]
+                  {:target
+                   {:parentNode
+                    {:getElementsByTagName ul}}})]
     (is (= 100 (core/scroll-to element 3)))))
 
 (deftest id->path-test
   (are [input expected]
-       (= (core/id->path input) expected)
+    (= (core/id->path input) expected)
     :a [:a]
     :a.b.c [:a :b :c]))
 
 (deftest cursor-for-id-test
   (with-redefs [reagent.core/cursor (fn [doc id] [doc id])]
-    (is (= (core/cursor-for-id :doc :a.b.c)
-           [:doc [:a :b :c]]))))
+               (is (= (core/cursor-for-id :doc :a.b.c)
+                      [:doc [:a :b :c]]))))
 
 (deftest run-events-test
   (let [state {}
@@ -73,41 +73,41 @@
 
 (deftest wrap-fns-test
   (testing "Functions map is properly formed."
-    (let [fns {:doc :doc-fn
-               :get :get-fn
-               :save! :save-fn
+    (let [fns {:doc     :doc-fn
+               :get     :get-fn
+               :save!   :save-fn
                :update! :update-fn}]
       (is (= (core/wrap-fns fns nil)
-             {:doc :doc-fn
-              :get :get-fn
-              :save! :save-fn
+             {:doc     :doc-fn
+              :get     :get-fn
+              :save!   :save-fn
               :update! :update-fn}))))
   (testing "Functions are being wrapped."
-    (let [fns {:doc :doc-fn
-               :get :get-fn
-               :save! :save-fn
+    (let [fns {:doc     :doc-fn
+               :get     :get-fn
+               :save!   :save-fn
                :update! :update-fn}
-          node [:div {:in-fn :in-fn
+          node [:div {:in-fn  :in-fn
                       :out-fn :out-fn}]
           mock-wrap-fn (partial conj [])]
       (with-redefs [core/wrap-get-fn mock-wrap-fn
                     core/wrap-save-fn mock-wrap-fn
                     core/wrap-update-fn mock-wrap-fn]
-        (is (= (core/wrap-fns fns node)
-               {:doc :doc-fn
-                :get [:get-fn :in-fn]
-                :save! [:save-fn :out-fn]
-                :update! [:update-fn :out-fn]}))))))
+                   (is (= (core/wrap-fns fns node)
+                          {:doc     :doc-fn
+                           :get     [:get-fn :in-fn]
+                           :save!   [:save-fn :out-fn]
+                           :update! [:update-fn :out-fn]}))))))
 
 (deftest format-value-test
   (are [format input expected]
-       (= (core/format-value format input) expected)
+    (= (core/format-value format input) expected)
     "%.2f" "0.123123" "0.12"
     "%d" "3.123123" "3"))
 
 (deftest format-type-test
   (are [field-type input expected]
-       (= (core/format-type field-type input) expected)
+    (= (core/format-type field-type input) expected)
     :numeric nil nil
     :numeric "xyz" nil
     :numeric "12" 12
@@ -126,41 +126,41 @@
 
 (deftest bind-test
   (are [field expected]
-       (= (dissoc
-           (core/bind field
-                      {:get identity})
-           :on-change)
-          expected)
+    (= (dissoc
+         (core/bind field
+                    {:get identity})
+         :on-change)
+       expected)
 
     {:field :input-field
-     :id "12.12312312"
-     :fmt "%.2f"}
+     :id    "12.12312312"
+     :fmt   "%.2f"}
     {:value "12.12"}
 
     {:field :checkbox
-     :id :id}
+     :id    :id}
     {:checked true}
 
     {:field :checkbox
-     :id false}
+     :id    false}
     {:checked false}
 
     {:field :some-field} nil))
 
 (deftest set-attrs-test
-  (let [div [:div {:checked true
+  (let [div [:div {:checked         true
                    :default-checked true
-                   :fmt :fmt
-                   :event :event
-                   :field :field
-                   :inline :inline
-                   :save-fn :save-fn
-                   :preamble :preamble
-                   :postamble :postamble
-                   :visible? :visible?
-                   :date-format :date-format
-                   :auto-close? :auto-close?
-                   :random-attr :random-attr}
+                   :fmt             :fmt
+                   :event           :event
+                   :field           :field
+                   :inline          :inline
+                   :save-fn         :save-fn
+                   :preamble        :preamble
+                   :postamble       :postamble
+                   :visible?        :visible?
+                   :date-format     :date-format
+                   :auto-close?     :auto-close?
+                   :random-attr     :random-attr}
              "body"]]
     (testing "Attrs are cleaned."
       (is (= (core/set-attrs div {})
@@ -169,14 +169,14 @@
       (with-redefs [core/bind (fn [attrs opts]
                                 (is (= attrs (second div)))
                                 opts)]
-        (is (= (core/set-attrs div {:get :get :save! :save})
-               [:div {:random-attr :random-attr
-                      :get :get
-                      :save! :save}
-                "body"]))))
+                   (is (= (core/set-attrs div {:get :get :save! :save})
+                          [:div {:random-attr :random-attr
+                                 :get         :get
+                                 :save!       :save}
+                           "body"]))))
     (testing "Default attributes are applied."
       (is (= (core/set-attrs div {} {:default-attr :default-attr})
-             [:div {:random-attr :random-attr
+             [:div {:random-attr  :random-attr
                     :default-attr :default-attr}
               "body"])))))
 
@@ -195,24 +195,24 @@
     ; typeahead
     (let [state {:ta "a"}
           [_ input ul]
-          ((core/init-field [:div {:field :typeahead
-                                   :id :ta
+          ((core/init-field [:div {:field             :typeahead
+                                   :id                :ta
                                    :input-placeholder "pick a friend"
-                                   :data-source (fn [])
-                                   :input-class "form-control"
-                                   :list-class "typeahead-list"
-                                   :item-class "typeahead-item"
-                                   :highlight-class "highlighted"}]
-                            {:doc (atom state)
-                             :get (fn [kw] (when kw (kw state)))
-                             :save! (fn [& _])
+                                   :data-source       (fn [])
+                                   :input-class       "form-control"
+                                   :list-class        "typeahead-list"
+                                   :item-class        "typeahead-item"
+                                   :highlight-class   "highlighted"}]
+                            {:doc     (atom state)
+                             :get     (fn [kw] (when kw (kw state)))
+                             :save!   (fn [& _])
                              :update! (fn [& _])}))]
       (is (= (dissoc-fns input)
              [:input {:placeholder "pick a friend"
-                      :disabled nil
-                      :value "a"
-                      :type :text
-                      :class "form-control"}]))
+                      :disabled    nil
+                      :value       "a"
+                      :type        :text
+                      :class       "form-control"}]))
       (is (= (dissoc-fns ul)
              [:ul {:style {:display :none}
                    :class "typeahead-list"}
@@ -225,37 +225,37 @@
                              [:button.btn.btn-default {:key :left} "Left"]
                              [:button.btn.btn-default {:key :middle} "Middle"]
                              [:button.btn.btn-default {:key :right} "Right"]]
-                            {:doc (atom state)
-                             :get (fn [kw] (when kw (kw state)))
-                             :save! (fn [& _])
+                            {:doc     (atom state)
+                             :get     (fn [kw] (when kw (kw state)))
+                             :save!   (fn [& _])
                              :update! (fn [& _])}))]
       (is (= component
              [:div.btn-group {:field :single-select
-                              :id :selected}
+                              :id    :selected}
               [:button.btn.btn-default {:key :left} "Left"]
               [:button.btn.btn-default {:key :middle} "Middle"]
               [:button.btn.btn-default {:key :right} "Right"]])))
 
     (are [state input expected]
-         (let [comp ((core/init-field input {:doc (atom state)
-                                             :get (fn [kw] (when kw (kw state)))
-                                             :save! (fn [& _])
-                                             :update! (fn [[& _]])}))]
-           (is (= (dissoc-fns comp) expected)))
+      (let [comp ((core/init-field input {:doc     (atom state)
+                                          :get     (fn [kw] (when kw (kw state)))
+                                          :save!   (fn [& _])
+                                          :update! (fn [[& _]])}))]
+        (is (= (dissoc-fns comp) expected)))
       ; container
       {}
-      [:div {:field :container
+      [:div {:field  :container
              :valid? :invalid}
        "body"]
       [:div {:valid? :invalid}
        "body"]
 
       {:id "some-text"}
-      [:div {:field :container
+      [:div {:field  :container
              :valid? :id}
        "body"]
       [:div {:valid? :id
-             :class "some-text"}
+             :class  "some-text"}
        "body"]
 
       ; text
@@ -269,10 +269,10 @@
 
       {:id "some-text"}
       [:input {:field :text
-               :id :id}]
-      [:input {:type :text
+               :id    :id}]
+      [:input {:type  :text
                :value "some-text"
-               :id :id}]
+               :id    :id}]
 
       ; numeric
       {}
@@ -291,11 +291,11 @@
       ; range
       {:id 12}
       [:input {:field :range :min 10 :max 100 :id :id}]
-      [:input {:type :range
+      [:input {:type  :range
                :value 12
-               :min 10
-               :max 100
-               :id :id}]
+               :min   10
+               :max   100
+               :id    :id}]
 
       ; radio
       {}
@@ -339,27 +339,27 @@
 (deftest bind-fields-test
   (with-redefs [core/wrap-fns (fn [_ node] node)
                 core/init-field (fn [node _] node)]
-    (let [component [:div
-                     [:input {:field :text :id :a}]
-                     [:input {:field :numeric}]
-                     [:input {:field :range}]]
-          result ((core/bind-fields component nil))]
-      (is (= result component))))
+               (let [component [:div
+                                [:input {:field :text :id :a}]
+                                [:input {:field :numeric}]
+                                [:input {:field :range}]]
+                     result ((core/bind-fields component nil))]
+                 (is (= result component))))
 
   (testing ":doc is associated with :get when map is passed."
     (with-redefs [core/init-field
                   (fn [node opts]
                     (is (= opts
-                           {:doc :get
-                            :get :get
-                            :save! :save!
+                           {:doc     :get
+                            :get     :get
+                            :save!   :save!
                             :update! :update!}))
                     node)]
-      (let [component [:div
-                       [:input {:field :text :id :a}]
-                       [:input {:field :numeric}]
-                       [:input {:field :range}]]
-            result ((core/bind-fields component {:get :get
-                                                 :save! :save!
-                                                 :update! :update!}))]
-        (is (= result component))))))
+                 (let [component [:div
+                                  [:input {:field :text :id :a}]
+                                  [:input {:field :numeric}]
+                                  [:input {:field :range}]]
+                       result ((core/bind-fields component {:get     :get
+                                                            :save!   :save!
+                                                            :update! :update!}))]
+                   (is (= result component))))))
