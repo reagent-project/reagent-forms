@@ -398,7 +398,7 @@ Example of using a custom locale hash-map:
   :days-short  ["1st" "2nd" "3rd" "4th" "5th" "6th" "7th"]
   :months      ["Month-one" "Month-two" "Month-three" "Month-four" "Month-five" "Month-six"
                 "Month-seven" "Month-eight" "Month-nine" "Month-ten" "Month-eleven" "Month-twelve"]
-  :months-short ["M1" "M2" "M3" "M4" "M5" "M6" "M7" "M8" "M9" "M10" "M12"]
+  :months-short ["M1" "M2" "M3" "M4" "M5" "M6" "M7" "M8" "M9" "M10" "M11" "M12"]
   :first-day 0}}
 ```
 
