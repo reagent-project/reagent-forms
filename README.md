@@ -630,6 +630,8 @@ You can provide a custom map of event functions to `bind-fields` to use reagent-
    events])
 ```
 
+### managing visibility
+
 Element visibility can be set by either providing the id in a document that will be
 treated as a truthy value, or a function:
 
@@ -673,6 +675,63 @@ treated as a truthy value, or a function:
     {:on-click #(re-frame/dispatch [:toggle-bar])}
     "toggle bar"]])
 ```
+
+### adding business rules
+
+If you're using re-frame, then it's recommended that you use re-frame events to trigger recalculation of fields in the form. For example, let's take a look at a calculated BMI field:
+
+```clojure
+(re-frame/reg-sub
+ :value
+ :<- [:doc]
+ (fn [doc [_ path]]
+   (get-in doc path)))
+
+(defn bmi [{:keys [weight height] :as doc}]
+  (assoc doc :bmi (/ weight (* height height))))
+
+(defmulti rule (fn [_ path _] path))
+
+(defmethod rule [:height] [doc path value]
+  (bmi doc))
+
+(defmethod rule [:weight] [doc path value]
+  (bmi doc))
+
+(defmethod rule :default [doc path value]
+  doc)
+
+(re-frame/reg-event-db
+ :set-value
+ (fn [{:keys [doc] :as db} [_ path value]]
+   (-> db
+       (assoc-in (into [:doc] path) value)
+       (update :doc rule path value))))
+
+(def events
+  {:get (fn [path] @(re-frame/subscribe [:value path]))
+   :save! (fn [path value] (re-frame/dispatch [:set-value path value]))  
+   :doc (fn [] @(re-frame/subscribe [:doc]))})
+
+(defn row [label input]
+  [:div
+   [:div [:label label]]
+   [:div input]])
+
+(def form-template
+  [:div
+   [:h3 "BMI Calculator"]
+   (row "Height" [:input {:field :numeric :id :height}])
+   (row "Weight" [:input {:field :numeric :id :weight}])
+   (row "BMI" [:label {:field :label :id :bmi}])])
+
+(defn home-page []
+  [:div
+   [:h2 "BMI example"]
+   [bind-fields form-template events]])
+```
+
+The `rule` multiemthod will be triggered when the `:set-value` event is called, and it will calculate BMI any time the height or weight is updated.
 
 ## Adding custom fields
 
