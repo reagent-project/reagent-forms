@@ -14,6 +14,8 @@
     [reagent.core
      :as r
      :refer [atom cursor]]
+    [reagent.dom
+     :as rdom]
     [reagent-forms.datepicker
      :refer [parse-format format-date datepicker]]))
 
@@ -237,10 +239,10 @@
     (r/create-class
       {:component-did-mount
        (fn [this]
-         (->> this r/dom-node .-firstChild .-firstChild (reset! dom-node)))
+         (->> this rdom/dom-node .-firstChild .-firstChild (reset! dom-node)))
        :component-did-update
        (fn [this]
-         (->> this r/dom-node .-firstChild .-firstChild (reset! dom-node)))
+         (->> this rdom/dom-node .-firstChild .-firstChild (reset! dom-node)))
        :render
        (render-element attrs doc
                        [:div.datepicker-wrapper
